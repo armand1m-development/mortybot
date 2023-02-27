@@ -1,11 +1,6 @@
 import { getLogger } from "std/log/mod.ts";
-import { Bot } from "grammy/mod.ts";
 import { CommandMiddleware } from "grammy/composer.ts";
 import { BotContext } from "/src/context/mod.ts";
-
-export const injectCommand = (bot: Bot<BotContext>) => {
-  bot.command(["temperature", "temp"], cmdTemperature);
-};
 
 export const cmdTemperature: CommandMiddleware<BotContext> = async (ctx) => {
   const query = ctx.match;

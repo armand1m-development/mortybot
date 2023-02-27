@@ -1,4 +1,4 @@
-import { ConvertCurrencyValueFunction } from "../httpClients/convertCurrencyValue.ts";
+import { ConvertCurrencyValueFunction } from "../../httpClients/convertCurrencyValue.ts";
 
 export interface CurrencyApiContext {
   currencyApi: {
