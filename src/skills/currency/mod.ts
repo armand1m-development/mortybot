@@ -16,3 +16,6 @@ export const commands: SkillModule["commands"] = [
     handler: cmdConvert,
   },
 ];
+
+export const sessionDataInitializers: SkillModule["sessionDataInitializers"] =
+  [];

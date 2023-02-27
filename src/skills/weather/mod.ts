@@ -23,3 +23,6 @@ export const commands: SkillModule["commands"] = [
     handler: cmdTemperature,
   },
 ];
+
+export const sessionDataInitializers: SkillModule["sessionDataInitializers"] =
+  [];

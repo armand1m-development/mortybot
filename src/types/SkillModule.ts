@@ -6,4 +6,5 @@ export interface SkillModule {
   name: string;
   middlewares: (() => MiddlewareFn<BotContext>)[];
   commands: SkillCommand[];
+  sessionDataInitializers: (() => object)[];
 }
