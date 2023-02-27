@@ -9,7 +9,7 @@ processes = []
   DATA_PATH="./data"
 
 [mounts]
-  source="gringobot_data"
+  source="mortybot_data"
   destination="/app/data"
 
 [experimental]

@@ -1,3 +1,4 @@
+import { resolve } from "std/path/posix.ts";
 import { getLogger } from "std/log/mod.ts";
 import { Bot, Context, GrammyError, HttpError, session } from "grammy/mod.ts";
 import { sequentialize } from "grammy_runner/mod.ts";
@@ -35,7 +36,7 @@ export const createBot = (configuration: Configuration) => {
     getSessionKey,
     initial,
     storage: new FileAdapter({
-      dirName: "./data/sessions",
+      dirName: resolve(configuration.dataPath, "./sessions"),
     }),
   }));
 

@@ -7,6 +7,7 @@ const configuration = config({
 });
 
 const bot = createBot({
+  dataPath: configuration.DATA_PATH,
   botToken: configuration.BOT_TOKEN,
   exchangeApiToken: configuration.EXCHANGE_API_TOKEN,
   openWeatherMapApiToken: configuration.OPENWEATHERMAP_API_TOKEN,
