@@ -28,10 +28,10 @@ be checked as made available. Consider this my scrum board.
 
 ### Temperature Helpers
 
-- [ ] `/temperature <city-name>`: will check the city temperature
-- Aliases: `/temp`
-- [ ] `/forecast <city-name>`: will return the weather forecast for the next 24h
-- Aliases: `/previsao`
+- [x] `/temperature <city-name>`: will check the city temperature
+  - [x] Aliases: `/temp`
+- [x] `/forecast <city-name>`: will return the weather forecast for the next 24h
+  - [x] Aliases: `/previsao`
 
 ### Message Filters
 

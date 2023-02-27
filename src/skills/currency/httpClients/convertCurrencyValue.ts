@@ -1,4 +1,5 @@
 import { getLogger } from "std/log/mod.ts";
+import { OmitToken } from "/src/types/OmitToken.ts";
 
 export type CurrencyCode = `${Uppercase<string>}` & { length: 3 };
 
@@ -33,6 +34,8 @@ const fetchExchangeRateApiCurrencyEndpoint = async ({
   toCurrency,
   token,
 }: ExchangeRateApiPairRequestParams) => {
+  // TODO: implement fallback
+  // https://economia.awesomeapi.com.br/xml/USD-BRL/1?format=json
   const url =
     `https://v6.exchangerate-api.com/v6/${token}/pair/${fromCurrency}/${toCurrency}/${amount}`;
 
@@ -69,12 +72,6 @@ export const convertCurrencyValue = async (
   return currencyIntl.format(response.conversion_result);
 };
 
-export type ConvertCurrencyValueFunctionPure = typeof convertCurrencyValue;
-
-export const withToken =
-  (token: string) =>
-  (params: Omit<ExchangeRateApiPairRequestParams, "token">) => {
-    return convertCurrencyValue({ ...params, token });
-  };
-
-export type ConvertCurrencyValueFunction = ReturnType<typeof withToken>;
+export type ConvertCurrencyValueFunction = OmitToken<
+  typeof convertCurrencyValue
+>;

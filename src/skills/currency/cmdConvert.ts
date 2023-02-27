@@ -4,7 +4,7 @@ import { CommandMiddleware } from "grammy/composer.ts";
 import { parseConvertMessage } from "./parseConvertMessage.ts";
 import { BotContext } from "/src/context/mod.ts";
 
-export const injectConvertCommand = (bot: Bot<BotContext>) => {
+export const injectCommand = (bot: Bot<BotContext>) => {
   bot.command(["convert"], cmdConvert);
 };
 
