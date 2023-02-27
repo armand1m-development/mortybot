@@ -1,16 +1,15 @@
 import { MiddlewareFn } from "grammy/composer.ts";
 import { BotContext } from "/src/context/mod.ts";
+import { injectToken } from "/src/utilities/injectToken.ts";
 import { convertCurrencyValue } from "../httpClients/convertCurrencyValue.ts";
 
 export const createCurrencyApiMiddleware = () => {
   const middleware: MiddlewareFn<BotContext> = (ctx, next) => {
-    const withToken = <T>(params: T) => ({
-      ...params,
-      token: ctx.configuration.exchangeApiToken,
-    });
-
     ctx.currencyApi = {
-      convertCurrencyValue: (params) => convertCurrencyValue(withToken(params)),
+      convertCurrencyValue: injectToken(
+        ctx.configuration.exchangeApiToken,
+        convertCurrencyValue,
+      ),
     };
 
     return next();

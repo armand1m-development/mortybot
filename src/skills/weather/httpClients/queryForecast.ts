@@ -1,5 +1,5 @@
 import { getLogger } from "std/log/mod.ts";
-import { NoToken } from "/src/types/NoToken.ts";
+import { OmitToken } from "/src/types/OmitToken.ts";
 import { QueryForecastResponse } from "./types/queryForecast.ts";
 
 function logger() {
@@ -35,6 +35,4 @@ export const queryForecast = async ({ query, token }: QueryForecastParams) => {
   return data;
 };
 
-export type QueryForecastFunction = (
-  params: NoToken<QueryForecastParams>,
-) => ReturnType<typeof queryForecast>;
+export type QueryForecastFunction = OmitToken<typeof queryForecast>;

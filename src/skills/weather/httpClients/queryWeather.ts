@@ -1,5 +1,5 @@
 import { getLogger } from "std/log/mod.ts";
-import { NoToken } from "/src/types/NoToken.ts";
+import { OmitToken } from "/src/types/OmitToken.ts";
 import { QueryWeatherResponse } from "./types/queryWeather.ts";
 
 function logger() {
@@ -35,6 +35,4 @@ export const queryWeather = async ({ query, token }: QueryWeatherParams) => {
   return data;
 };
 
-export type QueryWeatherFunction = (
-  params: NoToken<QueryWeatherParams>,
-) => ReturnType<typeof queryWeather>;
+export type QueryWeatherFunction = OmitToken<typeof queryWeather>;

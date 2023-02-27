@@ -28,9 +28,10 @@ be checked as made available. Consider this my scrum board.
 
 ### Temperature Helpers
 
-- [x] `/temperature <city-name>`: will check the city temperature
+- [x] `/temperature <query>`: check the temperature of your city, country,
+      neighborhood, etc..
   - [x] Aliases: `/temp`
-- [x] `/forecast <city-name>`: will return the weather forecast for the next 24h
+- [x] `/forecast <query>`: gives you a simple weather forecast for the next 24h
   - [x] Aliases: `/previsao`
 
 ### Message Filters
