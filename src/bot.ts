@@ -11,7 +11,7 @@ import { injectGlobalErrorHandler } from "./platform/errorHandling/globalErrorHa
 
 import { skills } from "./platform/skillModules/skills.ts";
 import { setupSkillModulesLoader } from "./platform/skillModules/setupSkillModulesLoader.ts";
-import { getLogger } from "https://deno.land/std@0.174.0/log/mod";
+import { getLogger } from "std/log/mod.ts";
 
 export const createBot = async (configuration: Configuration) => {
   const bot = new Bot<BotContext>(configuration.botToken);
