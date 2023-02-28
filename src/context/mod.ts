@@ -8,6 +8,7 @@ import { CurrencyApiContext } from "/src/skills/currency/middlewares/createCurre
 import { WeatherApiContext } from "/src/skills/weather/middlewares/createWeatherApiMiddleware/types.ts";
 import { FilterSessionData } from "/src/skills/filters/sessionData/types.ts";
 import { GoodbyeCounterSessionData } from "/src/skills/goodbye/sessionData/types.ts";
+import { RodosolApiContext } from "/src/skills/espiritosanto/middlewares/createRodosolApiMiddleware/types.ts";
 
 export type SessionData = FilterSessionData & GoodbyeCounterSessionData;
 
@@ -15,5 +16,6 @@ export type BotContext =
   & FileFlavor<Context>
   & CurrencyApiContext
   & WeatherApiContext
+  & RodosolApiContext
   & ConfigurationContext
   & SessionFlavor<SessionData>;
