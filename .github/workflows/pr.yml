@@ -16,9 +16,6 @@ jobs:
       - name: Cache dependencies 
         run: deno cache deno.json
 
-      - name: Compile 
-        run: deno compile 
-
       - name: Lint
         run: deno lint
 
