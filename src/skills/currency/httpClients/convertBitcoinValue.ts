@@ -1,8 +1,6 @@
 import { getLogger } from "std/log/mod.ts";
 
-function logger() {
-  return getLogger("convertBitcoinValue");
-}
+const logger = () => getLogger();
 
 export interface MercadoBitcoinEndpointResult {
   ticker: {

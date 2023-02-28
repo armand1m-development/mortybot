@@ -2,9 +2,7 @@ import { getLogger } from "std/log/mod.ts";
 import { OmitToken } from "/src/types/OmitToken.ts";
 import { QueryForecastResponse } from "./types/queryForecast.ts";
 
-function logger() {
-  return getLogger("queryForecast");
-}
+const logger = () => getLogger();
 
 export interface QueryForecastParams {
   token: string;

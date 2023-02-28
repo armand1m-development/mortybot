@@ -2,9 +2,7 @@ import { getLogger } from "std/log/mod.ts";
 import { OmitToken } from "/src/types/OmitToken.ts";
 import { QueryWeatherResponse } from "./types/queryWeather.ts";
 
-function logger() {
-  return getLogger("convertCurrencyValue");
-}
+const logger = () => getLogger();
 
 export interface QueryWeatherParams {
   token: string;

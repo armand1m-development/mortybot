@@ -6,7 +6,7 @@ import { BotContext, SessionData } from "/src/context/mod.ts";
 import type { Skill } from "./skills.ts";
 import { SkillModule } from "./types/SkillModule.ts";
 
-const logger = () => getLogger("skillModules");
+const logger = () => getLogger();
 
 const loadSkill = async (skillName: Skill) => {
   const skillModule = await import(

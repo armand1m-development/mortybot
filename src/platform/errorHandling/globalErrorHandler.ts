@@ -2,7 +2,7 @@ import { getLogger } from "std/log/mod.ts";
 import { Bot, GrammyError, HttpError } from "grammy/mod.ts";
 import { BotContext } from "/src/context/mod.ts";
 
-const logger = () => getLogger("globalerrorhandler");
+const logger = () => getLogger();
 
 export const injectGlobalErrorHandler = (bot: Bot<BotContext>) => {
   bot.catch((err) => {

@@ -3,9 +3,7 @@ import { OmitToken } from "/src/types/OmitToken.ts";
 
 export type CurrencyCode = `${Uppercase<string>}`;
 
-function logger() {
-  return getLogger("convertCurrencyValue");
-}
+const logger = () => getLogger();
 
 export interface ExchangeRateApiPairResponse {
   result: string;
