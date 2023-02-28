@@ -10,13 +10,13 @@ export const middlewares: SkillModule["middlewares"] = [
 ];
 export const commands: SkillModule["commands"] = [
   {
-    command: "/rodosol_now",
+    command: "rodosol_now",
     aliases: [],
     description: "Fetch Vila Velha's Rodosol Road camera pictures now.",
     handler: cmdRodosolNow,
   },
   {
-    command: "/tp_now",
+    command: "tp_now",
     aliases: [],
     description: "Fetch Vila Velha's Third Bridge camera pictures now.",
     handler: cmdTerceiraPonteNow,
