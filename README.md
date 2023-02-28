@@ -17,6 +17,15 @@ manage the data accordingly.
 This is a working in progress list of features. The implemented functions will
 be checked as made available. Consider this my scrum board.
 
+### Multilanguage
+
+Supported locales:
+
+- [x] en
+- [ ] ptbr
+
+- [ ] `/set_language <locale>`: changes the group preferred language
+
 ### Currency Conversion utilities
 
 - [x] `/currency <value> <currencyA> to <currencyB>`
@@ -39,10 +48,13 @@ be checked as made available. Consider this my scrum board.
 Message Filters are listeners that will send a pre-defined message when someone
 in the group sends a message contains a piece of text.
 
-- [ ] `/filters`: list all filters that exist currently
-- [ ] `/filter_owners`: list all filters but with their owners associated
-- [ ] `/add_filter`: should only be used when replying a message previously sent
-      to the group
+- [x] `/filters`: list all filters that exist currently
+- [x] `/add_filter <filter>`: adds a new filter listener based on the replied
+      message
+- [ ] `/stop_filter <filter>`: stops listening to the filter
+- [ ] `/activate_filter <filter>`: reactivates a filter
+- [ ] `/delete_filter <filter>`: removes a filter permanently
+- [x] Listens to registered filters in the chat session and replies accordingly.
 
 ### Leaving count
 

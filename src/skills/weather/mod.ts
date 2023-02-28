@@ -1,4 +1,4 @@
-import { SkillModule } from "../../types/SkillModule.ts";
+import { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
 import { cmdForecast } from "./commands/cmdForecast.ts";
 import { cmdTemperature } from "./commands/cmdTemperature.ts";
 import { createWeatherApiMiddleware } from "./middlewares/createWeatherApiMiddleware/mod.ts";
@@ -26,3 +26,5 @@ export const commands: SkillModule["commands"] = [
 
 export const sessionDataInitializers: SkillModule["sessionDataInitializers"] =
   [];
+
+export const listeners: SkillModule["listeners"] = [];

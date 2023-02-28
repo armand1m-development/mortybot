@@ -1,4 +1,4 @@
-import { SkillModule } from "/src/types/SkillModule.ts";
+import { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
 import { cmdConvert } from "./commands/cmdConvert.ts";
 import { createCurrencyApiMiddleware } from "./middlewares/createCurrencyApiMiddleware/mod.ts";
 
@@ -19,3 +19,5 @@ export const commands: SkillModule["commands"] = [
 
 export const sessionDataInitializers: SkillModule["sessionDataInitializers"] =
   [];
+
+export const listeners: SkillModule["listeners"] = [];

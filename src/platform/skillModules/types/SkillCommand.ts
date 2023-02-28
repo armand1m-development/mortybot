@@ -1,5 +1,5 @@
 import { CommandMiddleware } from "grammy/composer.ts";
-import { BotContext } from "../context/mod.ts";
+import { BotContext } from "/src/context/mod.ts";
 
 export interface SkillCommand {
   command: string;
