@@ -18,6 +18,16 @@ export interface Filter {
       path: string;
       fileId: string;
     };
+    voice?: {
+      path: string;
+      fileId: string;
+    };
+    sticker?: {
+      fileId: string;
+    };
+    videoNote?: {
+      fileId: string;
+    };
   };
 }
 

@@ -35,19 +35,53 @@ export const filterListener: Middleware<Filter<BotContext, "message:text">> = (
 
       if (filterMessage.message.video) {
         const { fileId } = filterMessage.message.video;
-        await ctx.replyWithVideo(fileId, { caption });
+        await ctx.replyWithVideo(fileId, {
+          caption,
+          reply_to_message_id: ctx.msg.message_id,
+        });
         return;
       }
 
       if (filterMessage.message.audio) {
         const { fileId } = filterMessage.message.audio;
-        await ctx.replyWithAudio(fileId, { caption });
+        await ctx.replyWithAudio(fileId, {
+          caption,
+          reply_to_message_id: ctx.msg.message_id,
+        });
         return;
       }
 
       if (filterMessage.message.image) {
         const { fileId } = filterMessage.message.image;
-        await ctx.replyWithPhoto(fileId, { caption });
+        await ctx.replyWithPhoto(fileId, {
+          caption,
+          reply_to_message_id: ctx.msg.message_id,
+        });
+        return;
+      }
+
+      if (filterMessage.message.voice) {
+        const { fileId } = filterMessage.message.voice;
+        await ctx.replyWithVoice(fileId, {
+          caption,
+          reply_to_message_id: ctx.msg.message_id,
+        });
+        return;
+      }
+
+      if (filterMessage.message.sticker) {
+        const { fileId } = filterMessage.message.sticker;
+        await ctx.replyWithSticker(fileId, {
+          reply_to_message_id: ctx.msg.message_id,
+        });
+        return;
+      }
+
+      if (filterMessage.message.videoNote) {
+        const { fileId } = filterMessage.message.videoNote;
+        await ctx.replyWithVideoNote(fileId, {
+          reply_to_message_id: ctx.msg.message_id,
+        });
         return;
       }
 
@@ -55,7 +89,9 @@ export const filterListener: Middleware<Filter<BotContext, "message:text">> = (
         return;
       }
 
-      await ctx.reply(caption);
+      await ctx.reply(caption, {
+        reply_to_message_id: ctx.msg.message_id,
+      });
     });
   }
 };

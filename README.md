@@ -61,14 +61,14 @@ in the group sends a message contains a piece of text.
 This feature supports the following types of messages:
 
 - [x] text
-- [ ] sticker
+- [x] sticker
 - [x] photo
 - [ ] multiple photos
 - [x] video
-- [ ] face recording
-- [ ] gif
+- [x] video note
+- [x] gif
 - [x] audio
-- [ ] voice recording
+- [x] voice recording
 
 ### Leaving count
 
