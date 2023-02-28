@@ -5,7 +5,7 @@ import { cmdUSDtoBRL } from "./commands/cmdUSDtoBRL.ts";
 import { cmdEURtoBRL } from "./commands/cmdEURtoBRL.ts";
 
 export const name: SkillModule["name"] = "currency";
-
+export const initializers: SkillModule["initializers"] = [];
 export const middlewares: SkillModule["middlewares"] = [
   createCurrencyApiMiddleware,
 ];
