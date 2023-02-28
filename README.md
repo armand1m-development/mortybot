@@ -128,6 +128,11 @@ self protection mechanism.
 - [ ] `/usage_stats`: will render a report with monthly usage of commands and a
       total in the end.
 
+### Github Code Expander
+
+- [ ] `/github_expand`: will parse a github link, render a code image and send
+      it to the group.
+
 ## Developing
 
 Make sure you have Git and Deno 1.31+ available in your local environment.

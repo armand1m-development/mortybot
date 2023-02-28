@@ -98,7 +98,7 @@ export const setupSkillModulesLoader = async (
     let commands: BotCommand[] = [];
 
     await Promise.allSettled(loadedSkills.map(async (skill) => {
-      logger().info(`Loading skill "${skill.name}"`);
+      logger().debug(`Loading skill "${skill.name}"`);
 
       await runSkillInitializers(skill);
 
@@ -108,6 +108,9 @@ export const setupSkillModulesLoader = async (
 
       commands = [...commands, ...compileSkillCommandsToDocs(skill)];
     }));
+
+    logger().debug("Setting bot command docs.");
+    logger().debug(commands);
 
     await bot.api.setMyCommands(commands);
   };

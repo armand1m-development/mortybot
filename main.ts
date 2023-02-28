@@ -25,16 +25,6 @@ const bot = await createBot({
   exchangeApiToken: Deno.env.get("EXCHANGE_API_TOKEN")!,
   openWeatherMapApiToken: Deno.env.get("OPENWEATHERMAP_API_TOKEN")!,
 });
-// const configuration = await dotenv.load({
-//   export: true
-// });
-
-// const bot = await createBot({
-//   dataPath: configuration.DATA_PATH,
-//   botToken: configuration.BOT_TOKEN,
-//   exchangeApiToken: configuration.EXCHANGE_API_TOKEN,
-//   openWeatherMapApiToken: configuration.OPENWEATHERMAP_API_TOKEN,
-// });
 
 const runner = run(bot);
 
