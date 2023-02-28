@@ -13,19 +13,19 @@ export interface Filter {
       fileId: string;
     };
     image?: {
-      path: string;
+      path?: string;
       fileId: string;
     };
     video?: {
-      path: string;
+      path?: string;
       fileId: string;
     };
     audio?: {
-      path: string;
+      path?: string;
       fileId: string;
     };
     voice?: {
-      path: string;
+      path?: string;
       fileId: string;
     };
     sticker?: {

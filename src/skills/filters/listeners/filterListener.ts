@@ -20,6 +20,10 @@ export const filterListener: Middleware<Filter<BotContext, "message:text">> = (
     return filterMessage.active;
   });
 
+  const commandsFoundInText = [...filterTriggers].filter((trigger) =>
+    text.includes(trigger)
+  );
+
   logger().debug({
     user: ctx.msg.from,
     text,
@@ -28,9 +32,14 @@ export const filterListener: Middleware<Filter<BotContext, "message:text">> = (
     intersection,
   });
 
-  if (intersection.length > 0) {
-    intersection.forEach(async (keyword) => {
-      const filterMessage = ctx.session.filters.get(keyword)!;
+  const matches = [
+    ...intersection,
+    ...commandsFoundInText,
+  ];
+
+  if (matches.length > 0) {
+    matches.forEach(async (match) => {
+      const filterMessage = ctx.session.filters.get(match)!;
       const caption = filterMessage.message.caption;
 
       if (filterMessage.message.video) {

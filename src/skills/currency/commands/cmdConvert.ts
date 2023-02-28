@@ -21,7 +21,7 @@ export const cmdConvert: CommandMiddleware<BotContext> = async (ctx) => {
       toCurrency,
     });
 
-    return ctx.reply(`Result: ${convertedValue}`);
+    return ctx.reply(`${amount} ${fromCurrency}: ${convertedValue}`);
   } catch (error) {
     getLogger().error(error);
     return ctx.reply("Failed to convert the value.");

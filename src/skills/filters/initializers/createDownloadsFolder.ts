@@ -8,10 +8,10 @@ export const createDownloadsFolder = async () => {
 
   try {
     await Deno.stat(path);
-    logger().info(`Downloads folder is in place.`);
-  } catch (e) {
-    if (e instanceof Deno.errors.NotFound) {
-      logger().info(`Creating ${path} folder..`);
+    logger().debug(`Downloads folder is in place.`);
+  } catch (err) {
+    if (err instanceof Deno.errors.NotFound) {
+      logger().debug(`Creating ${path} folder..`);
       await Deno.mkdir(path);
     }
   }

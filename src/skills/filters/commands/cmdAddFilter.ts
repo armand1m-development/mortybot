@@ -1,3 +1,4 @@
+import { getLogger } from "std/log/mod.ts";
 import { CommandMiddleware } from "grammy/composer.ts";
 import { format, relative, resolve } from "std/path/posix.ts";
 import { BotContext } from "/src/context/mod.ts";
@@ -54,6 +55,79 @@ export const cmdAddFilter: CommandMiddleware<BotContext> = async (ctx) => {
       caption: messageCaption,
     };
 
+    if (messageVoice !== undefined) {
+      let path: string | undefined = undefined;
+
+      try {
+        path = await downloadFile(messageVoice.file_id, messageVoice.mime_type);
+      } catch (err) {
+        getLogger().debug(
+          "Failed to download file. This is a best effort non blocking operation.",
+        );
+        getLogger().error(err);
+      }
+
+      filterMessage.voice = {
+        path,
+        fileId: messageVoice.file_id,
+      };
+    }
+
+    if (messageVideo !== undefined) {
+      let path: string | undefined = undefined;
+
+      try {
+        path = await downloadFile(messageVideo.file_id, messageVideo.mime_type);
+      } catch (err) {
+        getLogger().debug(
+          "Failed to download file. This is a best effort non blocking operation.",
+        );
+        getLogger().error(err);
+      }
+
+      filterMessage.video = {
+        path,
+        fileId: messageVideo.file_id,
+      };
+    }
+
+    if (messageAudio !== undefined) {
+      let path: string | undefined = undefined;
+
+      try {
+        path = await downloadFile(messageAudio.file_id, messageAudio.mime_type);
+      } catch (err) {
+        getLogger().debug(
+          "Failed to download file. This is a best effort non blocking operation.",
+        );
+        getLogger().error(err);
+      }
+
+      filterMessage.audio = {
+        path,
+        fileId: messageAudio.file_id,
+      };
+    }
+
+    if (messagePhotos.length > 0) {
+      const firstPhoto = messagePhotos[0];
+      let path: string | undefined = undefined;
+
+      try {
+        path = await downloadFile(firstPhoto.file_id);
+      } catch (err) {
+        getLogger().debug(
+          "Failed to download file. This is a best effort non blocking operation.",
+        );
+        getLogger().error(err);
+      }
+
+      filterMessage.image = {
+        path,
+        fileId: firstPhoto.file_id,
+      };
+    }
+
     if (messageAnimation !== undefined) {
       filterMessage.animation = {
         fileId: messageAnimation.file_id,
@@ -72,41 +146,9 @@ export const cmdAddFilter: CommandMiddleware<BotContext> = async (ctx) => {
       };
     }
 
-    if (messageVoice !== undefined) {
-      filterMessage.voice = {
-        fileId: messageVoice.file_id,
-        path: await downloadFile(messageVoice.file_id, messageVoice.mime_type),
-      };
-    }
-
     if (messageVideoNote !== undefined) {
       filterMessage.videoNote = {
         fileId: messageVideoNote.file_id,
-      };
-    }
-
-    if (messageVideo !== undefined) {
-      filterMessage.video = {
-        path: await downloadFile(messageVideo.file_id, messageVideo.mime_type),
-        fileId: messageVideo.file_id,
-      };
-    }
-
-    if (messageAudio !== undefined) {
-      filterMessage.audio = {
-        path: await downloadFile(messageAudio.file_id, messageAudio.mime_type),
-        fileId: messageAudio.file_id,
-      };
-    }
-
-    if (messagePhotos.length > 0) {
-      /**
-       * TODO: support for multiple images at once
-       */
-      const firstPhoto = messagePhotos[0];
-      filterMessage.image = {
-        path: await downloadFile(firstPhoto.file_id),
-        fileId: firstPhoto.file_id,
       };
     }
 
