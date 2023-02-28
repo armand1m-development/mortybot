@@ -12,10 +12,6 @@ export interface Filter {
     document?: {
       fileId: string;
     };
-    gif?: {
-      path: string;
-      fileId: string;
-    };
     image?: {
       path: string;
       fileId: string;

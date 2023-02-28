@@ -68,7 +68,6 @@ This feature supports the following types of messages:
 - [x] documents
 - [x] video
 - [x] video note
-- [x] gif
 - [x] audio
 - [x] voice recording
 

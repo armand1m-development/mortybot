@@ -85,6 +85,24 @@ export const filterListener: Middleware<Filter<BotContext, "message:text">> = (
         return;
       }
 
+      if (filterMessage.message.animation) {
+        const { fileId } = filterMessage.message.animation;
+        await ctx.replyWithAnimation(fileId, {
+          caption,
+          reply_to_message_id: ctx.msg.message_id,
+        });
+        return;
+      }
+
+      if (filterMessage.message.document) {
+        const { fileId } = filterMessage.message.document;
+        await ctx.replyWithDocument(fileId, {
+          caption,
+          reply_to_message_id: ctx.msg.message_id,
+        });
+        return;
+      }
+
       if (!caption) {
         return;
       }
