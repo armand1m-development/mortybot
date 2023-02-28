@@ -11,6 +11,7 @@ import { injectGlobalErrorHandler } from "./platform/errorHandling/globalErrorHa
 
 import { skills } from "./platform/skillModules/skills.ts";
 import { setupSkillModulesLoader } from "./platform/skillModules/setupSkillModulesLoader.ts";
+import { getLogger } from "https://deno.land/std@0.174.0/log/mod";
 
 export const createBot = async (configuration: Configuration) => {
   const bot = new Bot<BotContext>(configuration.botToken);
@@ -33,7 +34,12 @@ export const createBot = async (configuration: Configuration) => {
     storage: new FileAdapter({
       dirName: resolve(configuration.dataPath, "./sessions"),
       deserializer: (input) => {
-        return JSON.parse(input, reviver);
+        try {
+          return JSON.parse(input, reviver);
+        } catch (err) {
+          getLogger().error(err);
+          return {};
+        }
       },
       serializer: (input) => {
         return JSON.stringify(input, replacer, `\t`);
