@@ -134,6 +134,16 @@ self protection mechanism.
 - [ ] `/github_expand`: will parse a github link, render a code image and send
       it to the group.
 
+### Rodosol Now
+
+Rodosol is a big road and company based in the city of Vila Velha, Espirito
+Santo, Brazil. They maintain two big roads: Rodosol, and the Third Bridge that
+connects Vila Velha to Vitoria. We have some commands that fetch images from
+their cameras so we can have a glimpse of the traffic there.
+
+- [x] `/rodosol_now`: fetch and display rodosol pictures if available
+- [x] `/tp_now`: fetch and display third bridge pictures if available
+
 ## Developing
 
 Make sure you have Git and Deno 1.31+ available in your local environment.
