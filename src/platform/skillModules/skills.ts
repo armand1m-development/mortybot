@@ -9,6 +9,7 @@ export const skills = [
   "filters",
   "weather",
   "goodbye",
-  "espiritosanto"
+  "espiritosanto",
 ] as const;
+
 export type Skill = typeof skills[number];
