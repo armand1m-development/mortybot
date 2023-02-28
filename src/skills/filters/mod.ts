@@ -3,7 +3,7 @@ import { SkillListener } from "/src/platform/skillModules/types/SkillListener.ts
 import { cmdAddFilter } from "./commands/cmdAddFilter.ts";
 import { getInitialFilterSessionData } from "./sessionData/getInitialFilterSessionData.ts";
 import { cmdListFilters } from "./commands/cmdListFilters.ts";
-import { filterListener } from "./listeners/filterLIstener.ts";
+import { filterListener } from "./listeners/filterListener.ts";
 import { cmdStopFilter } from "./commands/cmdStopFilter.ts";
 import { cmdActivateFilter } from "./commands/cmdActivateFilter.ts";
 import { cmdDeleteFilter } from "./commands/cmdDeleteFilter.ts";

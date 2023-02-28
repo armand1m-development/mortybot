@@ -65,7 +65,7 @@ leaving the group at some point and returning. This is a counter that will
 monitor who left and increment that metric.
 
 - [ ] `/leaving_rank`: send the rank of how many times a member left the group
-- [ ] Listens to the left group event and sends a goodbye message.
+- [x] Listens to the left group event, sends a goodbye message and increment that person's counter.
 - [ ] `/set_goodbye_message <message>`: Sets the goodbye message for the group.
 
 ### Treta counter

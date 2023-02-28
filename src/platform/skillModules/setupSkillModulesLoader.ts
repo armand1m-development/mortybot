@@ -1,10 +1,10 @@
 import { resolve } from "std/path/posix.ts";
 import { getLogger } from "std/log/mod.ts";
 import { Bot } from "grammy/mod.ts";
-import { BotContext, SessionData } from "/src/context/mod.ts";
-import { SkillModule } from "./types/SkillModule.ts";
-import type { Skill } from "./skills.ts";
 import { BotCommand } from "grammy/types.ts";
+import { BotContext, SessionData } from "/src/context/mod.ts";
+import type { Skill } from "./skills.ts";
+import { SkillModule } from "./types/SkillModule.ts";
 
 const logger = () => getLogger("skillModules");
 
