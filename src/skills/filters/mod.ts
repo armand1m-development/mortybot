@@ -2,8 +2,9 @@ import { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
 import { SkillListener } from "/src/platform/skillModules/types/SkillListener.ts";
 import { cmdAddFilter } from "./commands/cmdAddFilter.ts";
 import { getInitialFilterSessionData } from "./sessionData/getInitialFilterSessionData.ts";
-import { cmdListFilters } from "./commands/cmdListFilters.ts";
 import { filterListener } from "./listeners/filterListener.ts";
+import { cmdListFilters } from "./commands/cmdListFilters.ts";
+import { cmdListFilterOwners } from "./commands/cmdListFilterOwners.ts";
 import { cmdStopFilter } from "./commands/cmdStopFilter.ts";
 import { cmdActivateFilter } from "./commands/cmdActivateFilter.ts";
 import { cmdDeleteFilter } from "./commands/cmdDeleteFilter.ts";
@@ -21,6 +22,12 @@ export const commands: SkillModule["commands"] = [
     aliases: [],
     description: "List all filters",
     handler: cmdListFilters,
+  },
+  {
+    command: "filterowners",
+    aliases: ["filterinfo"],
+    description: "List filters with owner info",
+    handler: cmdListFilterOwners,
   },
   {
     command: "add_filter",
