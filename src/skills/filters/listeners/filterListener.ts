@@ -32,12 +32,12 @@ export const filterListener: Middleware<Filter<BotContext, "message:text">> = (
     intersection,
   });
 
-  const matches = [
+  const matches = new Set([
     ...intersection,
     ...commandsFoundInText,
-  ];
+  ]);
 
-  if (matches.length > 0) {
+  if (matches.size > 0) {
     matches.forEach(async (match) => {
       const filterMessage = ctx.session.filters.get(match)!;
       const caption = filterMessage.message.caption;
