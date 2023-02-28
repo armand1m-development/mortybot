@@ -21,6 +21,7 @@ export const filterListener: Middleware<Filter<BotContext, "message:text">> = (
   });
 
   logger().debug({
+    user: ctx.msg.from,
     text,
     words,
     filterTriggers,
