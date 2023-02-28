@@ -109,10 +109,16 @@ export const setupSkillModulesLoader = async (
       commands = [...commands, ...compileSkillCommandsToDocs(skill)];
     }));
 
-    logger().debug("Skill loading result");
-    logger().debug(result);
+    const skillLoadingReport = result.map((result, index) => ({
+      skill: loadedSkills[index],
+      result,
+    }));
+
+    logger().debug("Skill loading report:");
+    logger().debug(JSON.stringify(skillLoadingReport, null, 2));
+
     logger().debug("Setting bot command docs.");
-    logger().debug(commands);
+    logger().debug(JSON.stringify(commands, null, 2));
 
     await bot.api.setMyCommands(commands);
   };
