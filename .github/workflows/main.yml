@@ -15,25 +15,25 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Use Node 19 
-        uses: actions/setup-node@v1
+      - name: Setup Deno v1.x
+        uses: denoland/setup-deno@v1
         with:
-          node-version: 19 
+          deno-version: v1.x
 
-      - name: Install dependencies 
-        run: yarn 
+      - name: Cache dependencies 
+        run: deno cache deno.json
 
-      - name: Build
-        run: yarn build
+      - name: Compile
+        run: deno compile
 
       - name: Lint
-        run: yarn lint
+        run: deno lint
 
       - name: Test
-        run: yarn test:coverage
+        run: deno test --allow-none
 
       - name: Coverage 
-        run: npx codecov -f coverage/*.json 
+        uses: codecov/codecov-action@v3
 
       - name: Docker Build
         uses: docker/build-push-action@v4

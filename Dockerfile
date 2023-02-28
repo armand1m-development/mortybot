@@ -1,18 +1,31 @@
-FROM denoland/deno:alpine
+# Dockerfile
+ARG DENO_VERSION=1.31.1
+ARG BIN_IMAGE=denoland/deno:bin-${DENO_VERSION}
+FROM ${BIN_IMAGE} AS bin
+
+FROM frolvlad/alpine-glibc:alpine-3.13
+
+RUN apk --no-cache add ca-certificates
+
+RUN addgroup --gid 1000 deno \
+  && adduser --uid 1000 --disabled-password deno --ingroup deno \
+  && mkdir /app/ \
+  && chown deno:deno /app/
+
+ENV DENO_DIR /app/
+ENV DENO_INSTALL_ROOT /usr/local
+
+ARG DENO_VERSION
+ENV DENO_VERSION=${DENO_VERSION}
+COPY --from=bin /deno /bin/deno
 
 WORKDIR /app
+COPY . .
 
-# Prefer not to run as root.
-USER deno
+RUN deno cache \
+  --lock=deno.lock \
+  --lock-write \
+  main.ts
 
-# Cache the dependencies as a layer (the following two steps are re-run only when deps.ts is modified).
-# Ideally cache deps.ts will download and compile _all_ external files used in main.ts.
-COPY deno.json .
-RUN deno cache deno.json
-
-ADD . .
-
-# Compile the main app so that it doesn't need to be compiled each startup/entry.
-RUN deno cache main.ts
-
-CMD ["run", "--allow-net", "--allow-env", "allow-read", "--allow-write", "main.ts"]
+ENTRYPOINT ["/bin/deno"]
+CMD ["run", "--allow-net", "--allow-env", "--allow-read", "--allow-write", "main.ts"]

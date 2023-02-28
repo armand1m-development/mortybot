@@ -1,0 +1,5 @@
+# Use Unix line endings in all text files.
+* text=auto eol=lf
+
+# Never touch the cache, otherwise the hashes won't match anymore.
+.deno_cache/** -text

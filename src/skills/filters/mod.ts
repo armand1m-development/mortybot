@@ -7,11 +7,14 @@ import { filterListener } from "./listeners/filterListener.ts";
 import { cmdStopFilter } from "./commands/cmdStopFilter.ts";
 import { cmdActivateFilter } from "./commands/cmdActivateFilter.ts";
 import { cmdDeleteFilter } from "./commands/cmdDeleteFilter.ts";
+import { createDownloadsFolder } from "./initializers/createDownloadsFolder.ts";
 
 export const name: SkillModule["name"] = "filters";
+export const initializers: SkillModule["initializers"] = [
+  createDownloadsFolder,
+];
 
 export const middlewares: SkillModule["middlewares"] = [];
-
 export const commands: SkillModule["commands"] = [
   {
     command: "filters",

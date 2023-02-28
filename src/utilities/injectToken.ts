@@ -10,6 +10,7 @@
  * @returns curried function with token injected
  */
 export const injectToken =
+  // deno-lint-ignore no-explicit-any
   <T extends (...args: any) => any>(token: string, fn: T) =>
   (params: Omit<Parameters<T>[0], "token">) =>
     fn({

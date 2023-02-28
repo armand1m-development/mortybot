@@ -1,4 +1,10 @@
 .env
-./data
 *.log
 *.test.ts
+data/
+coverage/
+Dockerfile
+.gitattributes
+.gitignore
+.vscode/
+.github/

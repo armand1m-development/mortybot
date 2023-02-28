@@ -32,7 +32,7 @@ export const setupSkillModulesLoader = async (
     let initialSessionData: Partial<SessionData> = {};
 
     loadedSkills.forEach((skill) => {
-      logger().info(`Running session initializer for skill "${skill.name}"`);
+      logger().debug(`Running "${skill.name}" session initializers..`);
       skill.sessionDataInitializers.forEach((initializer) => {
         initialSessionData = {
           ...initialSessionData,
@@ -45,9 +45,8 @@ export const setupSkillModulesLoader = async (
   };
 
   const loadSkillMiddlewares = (skill: SkillModule) => {
+    logger().debug(`Loading skill "${skill.name}" middlewares..`);
     skill.middlewares.forEach((createMiddleware) => {
-      logger().info(`Loading middlewares for skill "${skill.name}"`);
-
       // TODO: consider properties to be injected
       // in every middleware loader, to enhance flexibility
       bot.use(createMiddleware());
@@ -55,6 +54,7 @@ export const setupSkillModulesLoader = async (
   };
 
   const loadSkillCommands = (skill: SkillModule) => {
+    logger().debug(`Loading skill "${skill.name}" commands..`);
     skill.commands.forEach(({ command, aliases, handler }) => {
       const logMessage = `Loading command "/${command}" with aliases "${
         aliases.join(", ")
@@ -66,9 +66,17 @@ export const setupSkillModulesLoader = async (
   };
 
   const loadSkillListeners = (skill: SkillModule) => {
+    logger().debug(`Loading skill "${skill.name}" listeners..`);
     skill.listeners.forEach(({ event, handler }) => {
       bot.on(event, handler);
     });
+  };
+
+  const runSkillInitializers = (skill: SkillModule) => {
+    logger().debug(`Running skill "${skill.name}" initializers..`);
+    return Promise.allSettled(
+      skill.initializers.map((initializer) => initializer()),
+    );
   };
 
   const compileSkillCommandsToDocs = (skill: SkillModule) => {
@@ -89,13 +97,17 @@ export const setupSkillModulesLoader = async (
   const loadSkills = async () => {
     let commands: BotCommand[] = [];
 
-    loadedSkills.forEach((skill) => {
+    await Promise.allSettled(loadedSkills.map(async (skill) => {
       logger().info(`Loading skill "${skill.name}"`);
+
+      await runSkillInitializers(skill);
+
       loadSkillMiddlewares(skill);
       loadSkillCommands(skill);
       loadSkillListeners(skill);
+
       commands = [...commands, ...compileSkillCommandsToDocs(skill)];
-    });
+    }));
 
     await bot.api.setMyCommands(commands);
   };

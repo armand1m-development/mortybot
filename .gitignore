@@ -3,3 +3,4 @@ data/
 *.log
 *.test.ts
 rose-migration/
+coverage/

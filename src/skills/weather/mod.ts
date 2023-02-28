@@ -5,6 +5,8 @@ import { createWeatherApiMiddleware } from "./middlewares/createWeatherApiMiddle
 
 export const name: SkillModule["name"] = "weather";
 
+export const initializers: SkillModule["initializers"] = [];
+
 export const middlewares: SkillModule["middlewares"] = [
   createWeatherApiMiddleware,
 ];

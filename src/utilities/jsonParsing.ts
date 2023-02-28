@@ -1,4 +1,4 @@
-export function replacer(_key: string, value: any) {
+export function replacer(_key: string, value: unknown) {
   if (value instanceof Map) {
     return {
       dataType: "Map",
@@ -9,9 +9,19 @@ export function replacer(_key: string, value: any) {
   }
 }
 
-export function reviver(_key: string, value: any) {
+interface MapDataType<T> {
+  dataType: "Map";
+  value: [string, T][];
+}
+
+// deno-lint-ignore ban-types
+function isMap(value: object): value is MapDataType<unknown> {
+  return "dataType" in value && value.dataType === "Map";
+}
+
+export function reviver(_key: string, value: unknown) {
   if (typeof value === "object" && value !== null) {
-    if (value.dataType === "Map") {
+    if (isMap(value)) {
       return new Map(value.value);
     }
   }

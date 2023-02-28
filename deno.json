@@ -6,11 +6,11 @@
     "grammy/": "https://deno.land/x/grammy@v1.14.1/",
     "grammy_runner/": "https://deno.land/x/grammy_runner@v1.0.4/",
     "grammy_storages/": "https://deno.land/x/grammy_storages@v2.1.1/",
-    "grammy_files/": "https://deno.land/x/grammy_files@v1.0.4/",
-    "dotenv/": "https://deno.land/x/dotenv@v3.2.2/"
+    "grammy_files/": "https://deno.land/x/grammy_files@v1.0.4/"
   },
   "tasks": {
     "start": "deno run --allow-net --allow-env --allow-read --allow-write ./main.ts",
-    "dev": "deno run --allow-net --allow-env --allow-read --allow-write --watch ./main.ts"
+    "dev": "deno run --allow-net --allow-env --allow-read --allow-write --watch ./main.ts",
+    "test:coverage": "deno test --allow-none --coverage=coverage"
   }
 }

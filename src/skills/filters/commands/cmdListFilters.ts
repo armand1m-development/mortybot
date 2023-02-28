@@ -14,5 +14,9 @@ export const cmdListFilters: CommandMiddleware<BotContext> = async (ctx) => {
     }),
   );
 
-  await ctx.reply(lines.join("\n"));
+  const message = lines.length > 0
+    ? lines.join("\n")
+    : "There are no filters defined for this group currently.";
+
+  await ctx.reply(message);
 };

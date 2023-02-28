@@ -58,6 +58,18 @@ in the group sends a message contains a piece of text.
 - [x] `/delete_filter <filter>`: removes a filter permanently
 - [x] Listens to registered filters in the chat session and replies accordingly.
 
+This feature supports the following types of messages:
+
+- [x] text
+- [ ] sticker
+- [x] photo
+- [ ] multiple photos
+- [x] video
+- [ ] face recording
+- [ ] gif
+- [x] audio
+- [ ] voice recording
+
 ### Leaving count
 
 More than we'd like to, we get into arguments and someone (me included) ends up
@@ -65,7 +77,8 @@ leaving the group at some point and returning. This is a counter that will
 monitor who left and increment that metric.
 
 - [ ] `/leaving_rank`: send the rank of how many times a member left the group
-- [x] Listens to the left group event, sends a goodbye message and increment that person's counter.
+- [x] Listens to the left group event, sends a goodbye message and increment
+      that person's counter.
 - [ ] `/set_goodbye_message <message>`: Sets the goodbye message for the group.
 
 ### Treta counter

@@ -4,6 +4,7 @@ import { getInitialGoodbyeCounterSessionData } from "./sessionData/getInitialGoo
 import { goodbyeListener } from "./listeners/goodbyeListener.ts";
 
 export const name: SkillModule["name"] = "goodbye";
+export const initializers: SkillModule["initializers"] = [];
 export const middlewares: SkillModule["middlewares"] = [];
 export const commands: SkillModule["commands"] = [];
 
