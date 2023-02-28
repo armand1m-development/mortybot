@@ -41,7 +41,8 @@ export const createBot = async (configuration: Configuration) => {
     }),
   }));
 
-  loadSkills();
+  await loadSkills();
+
   injectGlobalErrorHandler(bot);
 
   return bot;

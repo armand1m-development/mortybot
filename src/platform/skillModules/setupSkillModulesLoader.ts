@@ -4,6 +4,7 @@ import { Bot } from "grammy/mod.ts";
 import { BotContext, SessionData } from "/src/context/mod.ts";
 import { SkillModule } from "./types/SkillModule.ts";
 import type { Skill } from "./skills.ts";
+import { BotCommand } from "grammy/types.ts";
 
 const logger = () => getLogger("skillModules");
 
@@ -70,13 +71,33 @@ export const setupSkillModulesLoader = async (
     });
   };
 
-  const loadSkills = () => {
+  const compileSkillCommandsToDocs = (skill: SkillModule) => {
+    const commands = skill.commands.flatMap(
+      ({ command, aliases, description }) => {
+        const variants = [command, ...aliases];
+
+        return variants.map((variantCommand): BotCommand => ({
+          command: variantCommand,
+          description,
+        }));
+      },
+    );
+
+    return commands;
+  };
+
+  const loadSkills = async () => {
+    let commands: BotCommand[] = [];
+
     loadedSkills.forEach((skill) => {
       logger().info(`Loading skill "${skill.name}"`);
       loadSkillMiddlewares(skill);
       loadSkillCommands(skill);
       loadSkillListeners(skill);
+      commands = [...commands, ...compileSkillCommandsToDocs(skill)];
     });
+
+    await bot.api.setMyCommands(commands);
   };
 
   return {

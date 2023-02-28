@@ -33,8 +33,8 @@ Commands:
 - [x] `/currency <value> <currencyA> to <currencyB>`
   - Example: `/currency 150 BRL to EUR` will convert 150 EUR to BRL and reply
     with the current matching value.
-- [ ] `/dolar` render the value of 1 USD in BRL
-- [ ] `/euro` render the value of 1 EUR in BRL
+- [x] `/dolar` render the value of 1 USD in BRL
+- [x] `/euro` render the value of 1 EUR in BRL
 - [ ] `/bitcoin` render the value of 1 BTC in BRL
 
 ### Temperature Helpers
@@ -97,6 +97,9 @@ code with references and function names like `getTretas(fromThisPessoa)`.
 - `/filters`
 - `/filter_owners`
 - `/add_filter`
+- `/stop_filter`
+- `/activate_filter`
+- `/delete_filter`
 
 ### Annoying user listener
 
