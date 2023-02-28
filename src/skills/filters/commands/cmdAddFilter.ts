@@ -19,9 +19,14 @@ export const cmdAddFilter: CommandMiddleware<BotContext> = async (ctx) => {
     "./downloads",
   );
 
-  const repliedMessage = ctx.update.message?.reply_to_message;
+  const repliedMessage = (ctx.msg ?? ctx.update.message).reply_to_message;
 
   if (!repliedMessage) {
+    getLogger().error("Failed to find reply_to_message");
+    getLogger().debug({
+      ctxMsg: ctx.msg,
+      ctxUpdateMessage: ctx.update.message,
+    });
     return ctx.reply("You should run this command when replying to a message.");
   }
 

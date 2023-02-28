@@ -24,7 +24,7 @@ export const commands: SkillModule["commands"] = [
   },
   {
     command: "add_filter",
-    aliases: [],
+    aliases: ["filter"],
     description: "Adds a new filter",
     handler: cmdAddFilter,
   },
