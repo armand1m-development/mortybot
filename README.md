@@ -64,6 +64,8 @@ This feature supports the following types of messages:
 - [x] sticker
 - [x] photo
 - [ ] multiple photos
+- [x] animation
+- [x] documents
 - [x] video
 - [x] video note
 - [x] gif

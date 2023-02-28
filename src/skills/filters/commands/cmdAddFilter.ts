@@ -47,10 +47,24 @@ export const cmdAddFilter: CommandMiddleware<BotContext> = async (ctx) => {
     const messageSticker = repliedMessage.sticker;
     const messageVoice = repliedMessage.voice;
     const messageVideoNote = repliedMessage.video_note;
+    const messageDocument = repliedMessage.document;
+    const messageAnimation = repliedMessage.animation;
 
     const filterMessage: Filter["message"] = {
       caption: messageCaption,
     };
+
+    if (messageAnimation !== undefined) {
+      filterMessage.animation = {
+        fileId: messageAnimation.file_id,
+      };
+    }
+
+    if (messageDocument !== undefined) {
+      filterMessage.document = {
+        fileId: messageDocument.file_id,
+      };
+    }
 
     if (messageSticker !== undefined) {
       filterMessage.sticker = {

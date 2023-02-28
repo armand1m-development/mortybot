@@ -6,6 +6,16 @@ export interface Filter {
   active: boolean;
   message: {
     caption?: string;
+    animation?: {
+      fileId: string;
+    };
+    document?: {
+      fileId: string;
+    };
+    gif?: {
+      path: string;
+      fileId: string;
+    };
     image?: {
       path: string;
       fileId: string;
