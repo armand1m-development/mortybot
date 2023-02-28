@@ -79,6 +79,7 @@ export const cmdAddFilter: CommandMiddleware<BotContext> = async (ctx) => {
 
   ctx.session.filters.set(filterTrigger, {
     filterTrigger,
+    active: true,
     ownerId: ctx.message!.from.id,
     message: await downloadMessage(),
   });

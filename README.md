@@ -24,6 +24,8 @@ Supported locales:
 - [x] en
 - [ ] ptbr
 
+Commands:
+
 - [ ] `/set_language <locale>`: changes the group preferred language
 
 ### Currency Conversion utilities
@@ -51,9 +53,9 @@ in the group sends a message contains a piece of text.
 - [x] `/filters`: list all filters that exist currently
 - [x] `/add_filter <filter>`: adds a new filter listener based on the replied
       message
-- [ ] `/stop_filter <filter>`: stops listening to the filter
-- [ ] `/activate_filter <filter>`: reactivates a filter
-- [ ] `/delete_filter <filter>`: removes a filter permanently
+- [x] `/stop_filter <filter>`: stops listening to the filter
+- [x] `/activate_filter <filter>`: reactivates a filter
+- [x] `/delete_filter <filter>`: removes a filter permanently
 - [x] Listens to registered filters in the chat session and replies accordingly.
 
 ### Leaving count

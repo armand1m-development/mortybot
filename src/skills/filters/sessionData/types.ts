@@ -3,6 +3,7 @@ import { User } from "grammy/types.ts";
 export interface Filter {
   filterTrigger: string;
   ownerId: User["id"];
+  active: boolean;
   message: {
     caption?: string;
     image?: {

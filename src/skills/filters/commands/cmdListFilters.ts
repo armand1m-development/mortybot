@@ -8,7 +8,9 @@ export const cmdListFilters: CommandMiddleware<BotContext> = async (ctx) => {
   const lines = await Promise.all(
     entries.map(async ([filterTrigger, filter]) => {
       const { user } = await ctx.getChatMember(filter.ownerId);
-      return `- ${filterTrigger} (created by @${user.username})`;
+      return `- ${filterTrigger} (owner: @${user.username}, ${
+        filter.active ? "active" : "stopped"
+      })`;
     }),
   );
 

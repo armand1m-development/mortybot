@@ -6,41 +6,48 @@ import { BotContext } from "/src/context/mod.ts";
 
 const logger = () => getLogger();
 
-export const filterListener: Middleware<Filter<BotContext, "message:text">> =
-  async (ctx) => {
-    const text: string = ctx.msg.text;
-    const words = new Set(text.split(" "));
+export const filterListener: Middleware<Filter<BotContext, "message:text">> = (
+  ctx,
+) => {
+  const text: string = ctx.msg.text;
+  const words = new Set(text.split(" "));
 
-    const filterEntries = Object.fromEntries(ctx.session.filters);
-    const filterTriggers = new Set(Object.keys(filterEntries));
+  const filterEntries = Object.fromEntries(ctx.session.filters);
+  const filterTriggers = new Set(Object.keys(filterEntries));
 
-    const intersection = intersect(words, filterTriggers);
+  const intersection = intersect(words, filterTriggers).filter((trigger) => {
+    const filterMessage = ctx.session.filters.get(trigger)!;
+    return filterMessage.active;
+  });
 
-    logger().debug({
-      text,
-      words,
-      filterTriggers,
-      intersection,
-    });
+  logger().debug({
+    text,
+    words,
+    filterTriggers,
+    intersection,
+  });
 
-    if (intersection.length > 0) {
-      const keyword = intersection[0];
+  if (intersection.length > 0) {
+    intersection.forEach(async (keyword) => {
       const filterMessage = ctx.session.filters.get(keyword)!;
       const caption = filterMessage.message.caption;
 
       if (filterMessage.message.video) {
         const { fileId } = filterMessage.message.video;
-        return ctx.replyWithVideo(fileId, { caption });
+        await ctx.replyWithVideo(fileId, { caption });
+        return;
       }
 
       if (filterMessage.message.audio) {
         const { fileId } = filterMessage.message.audio;
-        return ctx.replyWithAudio(fileId, { caption });
+        await ctx.replyWithAudio(fileId, { caption });
+        return;
       }
 
       if (filterMessage.message.image) {
         const { fileId } = filterMessage.message.image;
-        return ctx.replyWithPhoto(fileId, { caption });
+        await ctx.replyWithPhoto(fileId, { caption });
+        return;
       }
 
       if (!caption) {
@@ -48,5 +55,6 @@ export const filterListener: Middleware<Filter<BotContext, "message:text">> =
       }
 
       await ctx.reply(caption);
-    }
-  };
+    });
+  }
+};
