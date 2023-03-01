@@ -3,7 +3,7 @@ import { getLogger } from "std/log/mod.ts";
 import { Bot } from "grammy/mod.ts";
 import { BotCommand } from "grammy/types.ts";
 import { BotContext, SessionData } from "/src/context/mod.ts";
-import type { Skill } from "./skills.ts";
+import type { Skill } from "/src/skills/skills.ts";
 import { SkillModule } from "./types/SkillModule.ts";
 
 const logger = () => getLogger();

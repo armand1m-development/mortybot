@@ -1,3 +1,4 @@
+import { getLogger } from "std/log/mod.ts";
 import { resolve } from "std/path/posix.ts";
 import { Bot, Context, session } from "grammy/mod.ts";
 import { sequentialize } from "grammy_runner/mod.ts";
@@ -8,10 +9,9 @@ import { replacer, reviver } from "/src/utilities/jsonParsing.ts";
 import { Configuration } from "./platform/configuration/middlewares/types.ts";
 import { createConfigurationMiddleware } from "./platform/configuration/middlewares/createConfigurationMiddleware.ts";
 import { injectGlobalErrorHandler } from "./platform/errorHandling/globalErrorHandler.ts";
-
-import { skills } from "./platform/skillModules/skills.ts";
 import { setupSkillModulesLoader } from "./platform/skillModules/setupSkillModulesLoader.ts";
-import { getLogger } from "std/log/mod.ts";
+
+import { skills } from "./skills/skills.ts";
 
 export const createBot = async (configuration: Configuration) => {
   const bot = new Bot<BotContext>(configuration.botToken);
