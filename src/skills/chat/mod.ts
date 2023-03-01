@@ -12,15 +12,18 @@ export const commands: SkillModule["commands"] = [
       const newChatTitle = ctx.match;
 
       if (!newChatTitle) {
-        await ctx.reply("Missing chat title. Usage: `/set_title new group title`");
+        await ctx.reply(
+          "Missing chat title. Usage: `/set_title new group title`",
+        );
         return;
       }
 
       await ctx.setChatTitle(newChatTitle);
-    }
-  }
+    },
+  },
 ];
 
-export const sessionDataInitializers: SkillModule["sessionDataInitializers"] = [];
+export const sessionDataInitializers: SkillModule["sessionDataInitializers"] =
+  [];
 
 export const listeners: SkillModule["listeners"] = [];
