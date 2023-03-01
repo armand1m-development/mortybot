@@ -134,6 +134,13 @@ self protection mechanism.
 - [ ] `/github_expand`: will parse a github link, render a code image and send
       it to the group.
 
+### Chat Skills
+
+Nice utilities for democratizing the chat.
+
+- [x] `/set_title <title>`: will set the chat title. Anyone can use it. MortyBot
+      must be added as an admin.
+
 ### Rodosol Now
 
 Rodosol is a big road and company based in the city of Vila Velha, Espirito
