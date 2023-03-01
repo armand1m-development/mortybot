@@ -86,7 +86,7 @@ export const setupSkillModulesLoader = async (
 
         return variants.map((variantCommand): BotCommand => ({
           command: variantCommand,
-          description,
+          description: `${description} [skill: ${skill.name}]`,
         }));
       },
     );
