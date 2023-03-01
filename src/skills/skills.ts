@@ -2,6 +2,7 @@
 // RUN `deno task generate:skills` TO UPDATE
 export const skills = [
   "filters",
+  "chat",
   "espiritosanto",
   "goodbye",
   "weather",
