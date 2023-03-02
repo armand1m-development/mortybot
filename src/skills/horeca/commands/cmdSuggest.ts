@@ -3,46 +3,6 @@ import outdent from "outdent";
 import { Result } from "../httpClients/fetchNearbyLocations.ts";
 import { BotContext } from "/src/context/mod.ts";
 
-function compareLocationRating(a: Result, b: Result) {
-  const hasBetterRating = a.rating > b.rating;
-
-  if (hasBetterRating) {
-    return -1;
-  }
-
-  if (!hasBetterRating) {
-    return 1;
-  }
-
-  return 0;
-}
-
-const locationToMessage = (
-  {
-    name,
-    place_id,
-    rating,
-    user_ratings_total,
-    vicinity: address,
-    geometry: { location },
-  }: Result,
-) => {
-  const googleMapsLink =
-    `https://www.google.com/maps/place/?q=place_id:${place_id}`;
-  const bikeDirections =
-    `https://www.google.com/maps/dir/?api=1&destination=${location.lat},${location.lng}&travelmode=bicycling`;
-  const publicTransportationDirections =
-    `https://www.google.com/maps/dir/?api=1&destination=${location.lat},${location.lng}&travelmode=transit`;
-
-  return outdent`
-Name: ${name}
-Rating: ${rating} (${user_ratings_total})
-Address: ${address}
-See in Google Maps: ${googleMapsLink}
-Directions by Bike: ${bikeDirections}
-Directions by Public Transportation: ${publicTransportationDirections}`;
-};
-
 export const cmdSuggest: CommandMiddleware<BotContext> = async (ctx) => {
   const keyword = ctx.match;
 
@@ -67,13 +27,47 @@ export const cmdSuggest: CommandMiddleware<BotContext> = async (ctx) => {
     longitude,
   });
 
+  const bestRated = getBestRated(locations.results);
+
+  const message = outdent`
+Best rated with more +1000 reviews:
+
+${
+    bestRated.plusThousand
+      ? locationToMessage(bestRated.plusThousand)
+      : "No place with +1000 reviews."
+  }
+
+Best rated with +500 reviews:
+
+${
+    bestRated.plusFiveHundred
+      ? locationToMessage(bestRated.plusFiveHundred)
+      : "No place with +500 reviews."
+  } 
+
+Best rated with +100 reviews:
+
+${
+    bestRated.plusOneHundred
+      ? locationToMessage(bestRated.plusOneHundred)
+      : "No place with +100 reviews."
+  }
+`;
+
+  return ctx.reply(message, {
+    parse_mode: "Markdown",
+  });
+};
+
+const getBestRated = (locations: Result[]) => {
   type GroupedByReviewCount = {
     plusThousandReviews: Result[];
     plusFiveHundredReviews: Result[];
     plusOneHundredReviews: Result[];
   };
 
-  const locationsGroupedByReviewCount = locations.results.reduce(
+  const locationsGroupedByReviewCount = locations.reduce(
     (accumulator, current) => {
       if (current.user_ratings_total > 999) {
         return {
@@ -125,28 +119,46 @@ export const cmdSuggest: CommandMiddleware<BotContext> = async (ctx) => {
     plusThousand: sortedLocationGroups.plusThousandReviews[0],
   };
 
-  const message = outdent`
-Best rated with more +1000 reviews:
-${
-    bestRated.plusThousand
-      ? locationToMessage(bestRated.plusThousand)
-      : "No place with +1000 reviews."
+  return bestRated;
+};
+
+function compareLocationRating(a: Result, b: Result) {
+  const hasBetterRating = a.rating > b.rating;
+
+  if (hasBetterRating) {
+    return -1;
   }
 
-Best rated with +500 reviews:
-${
-    bestRated.plusFiveHundred
-      ? locationToMessage(bestRated.plusFiveHundred)
-      : "No place with +500 reviews."
-  } 
-
-Best rated with +100 reviews:
-${
-    bestRated.plusOneHundred
-      ? locationToMessage(bestRated.plusOneHundred)
-      : "No place with +100 reviews."
+  if (!hasBetterRating) {
+    return 1;
   }
-`;
 
-  return ctx.reply(message);
+  return 0;
+}
+
+const locationToMessage = (
+  {
+    name,
+    place_id,
+    rating,
+    user_ratings_total,
+    vicinity: address,
+    geometry: { location },
+  }: Result,
+) => {
+  const googleMapsLink =
+    `https://www.google.com/maps/place/?q=place_id:${place_id}`;
+  const bikeDirections =
+    `https://www.google.com/maps/dir/?api=1&destination=${location.lat},${location.lng}&travelmode=bicycling`;
+  const publicTransportationDirections =
+    `https://www.google.com/maps/dir/?api=1&destination=${location.lat},${location.lng}&travelmode=transit`;
+
+  return outdent`
+**Name**: ${name}
+**Rating**: ${rating} (${user_ratings_total})
+**Address**: ${address}
+
+[See in Google Maps](${googleMapsLink}) 
+[Directions by Bike](${bikeDirections})
+[Directions by Public Transportation](${publicTransportationDirections})`;
 };
