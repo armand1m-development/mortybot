@@ -7,7 +7,8 @@
     "grammy_runner/": "https://deno.land/x/grammy_runner@v1.0.4/",
     "grammy_storages/": "https://deno.land/x/grammy_storages@v2.1.1/",
     "grammy_files/": "https://deno.land/x/grammy_files@v1.0.4/",
-    "linkedom": "https://esm.sh/linkedom@0.14.22"
+    "linkedom": "https://esm.sh/linkedom@0.14.22",
+    "outdent": "https://deno.land/x/outdent@v0.8.0/mod.ts"
   },
   "tasks": {
     "start": "deno run --allow-net --allow-env --allow-read --allow-write ./main.ts",

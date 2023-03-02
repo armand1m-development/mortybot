@@ -6,9 +6,10 @@ import { FileFlavor } from "grammy_files/mod.ts";
 import { ConfigurationContext } from "/src/platform/configuration/middlewares/types.ts";
 import { CurrencyApiContext } from "/src/skills/currency/middlewares/createCurrencyApiMiddleware/types.ts";
 import { WeatherApiContext } from "/src/skills/weather/middlewares/createWeatherApiMiddleware/types.ts";
+import { RodosolApiContext } from "/src/skills/espiritosanto/middlewares/createRodosolApiMiddleware/types.ts";
+import { LocationsApiContext } from "/src/skills/horeca/middlewares/createLocationsApiMiddleware/types.ts";
 import { FilterSessionData } from "/src/skills/filters/sessionData/types.ts";
 import { GoodbyeCounterSessionData } from "/src/skills/goodbye/sessionData/types.ts";
-import { RodosolApiContext } from "/src/skills/espiritosanto/middlewares/createRodosolApiMiddleware/types.ts";
 
 export type SessionData = FilterSessionData & GoodbyeCounterSessionData;
 
@@ -18,4 +19,5 @@ export type BotContext =
   & WeatherApiContext
   & RodosolApiContext
   & ConfigurationContext
+  & LocationsApiContext
   & SessionFlavor<SessionData>;
