@@ -63,6 +63,11 @@ From here on you can implement these functionalities as you wish: be it in a
 single file or multiple different files and directories. It will depend on how
 complex your skill will be.
 
+All of these should be type safe, so you should also get some nice
+autocompletion to get started with.
+
+Tip: refer to already implemented commands as examples.
+
 ## Updating the skills.ts file
 
 Run `deno task generate:skills` from the project root.

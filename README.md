@@ -151,6 +151,20 @@ their cameras so we can have a glimpse of the traffic there.
 - [x] `/rodosol_now`: fetch and display rodosol pictures if available
 - [x] `/tp_now`: fetch and display third bridge pictures if available
 
+### Horeca Skills
+
+Horeca means "Catery Services" in Dutch. Although all Dutch know the meaning of
+“horeca”, not everyone is aware of its origin: “horeca” is constructed by
+combining the first two letters of the Dutch words “hotel”, “restaurant” and
+“café” (meaning “bar”).
+
+Horeca Skills are skills meant to make it easy for one to find a nice hotel,
+restaurant or bar around a location.
+
+- [x] `/suggest <keyword>`: will suggest you the best places around a 2km radius
+      from the location provided by the replied message. Send a location to the
+      channel, and reply to it using this command to get suggestions.
+
 ## Developing
 
 Make sure you have Git and Deno 1.31+ available in your local environment.
