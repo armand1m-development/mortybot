@@ -105,11 +105,11 @@ const getBestRated = (locations: Result[]) => {
 
   const sortedLocationGroups: GroupedByReviewCount = {
     plusOneHundredReviews: locationsGroupedByReviewCount.plusOneHundredReviews
-      .sort(compareLocationRating),
+      .sort(compareUsingWeightedAverage),
     plusFiveHundredReviews: locationsGroupedByReviewCount.plusFiveHundredReviews
-      .sort(compareLocationRating),
+      .sort(compareUsingWeightedAverage),
     plusThousandReviews: locationsGroupedByReviewCount.plusThousandReviews.sort(
-      compareLocationRating,
+      compareUsingWeightedAverage,
     ),
   };
 
@@ -122,7 +122,7 @@ const getBestRated = (locations: Result[]) => {
   return bestRated;
 };
 
-function compareLocationRating(a: Result, b: Result) {
+function _compareLocationRating(a: Result, b: Result) {
   const hasBetterRating = a.rating > b.rating;
 
   if (hasBetterRating) {
@@ -134,6 +134,13 @@ function compareLocationRating(a: Result, b: Result) {
   }
 
   return 0;
+}
+
+function compareUsingWeightedAverage(a: Result, b: Result) {
+  const k = 0.1; // adjust as needed
+  const scoreA = a.rating - k * Math.log(a.user_ratings_total);
+  const scoreB = b.rating - k * Math.log(b.user_ratings_total);
+  return scoreB - scoreA;
 }
 
 const locationToMessage = (
