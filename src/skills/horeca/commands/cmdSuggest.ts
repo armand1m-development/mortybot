@@ -94,7 +94,7 @@ export const cmdSuggest: CommandMiddleware<BotContext> = async (ctx) => {
       if (current.user_ratings_total > 99) {
         return {
           ...accumulator,
-          plusFiveHundredReviews: accumulator.plusOneHundredReviews.concat(
+          plusOneHundredReviews: accumulator.plusOneHundredReviews.concat(
             current,
           ),
         };
