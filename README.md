@@ -77,7 +77,7 @@ More than we'd like to, we get into arguments and someone (me included) ends up
 leaving the group at some point and returning. This is a counter that will
 monitor who left and increment that metric.
 
-- [ ] `/leaving_rank`: send the rank of how many times a member left the group
+- [x] `/leaving_rank`: send the rank of how many times a member left the group
 - [x] Listens to the left group event, sends a goodbye message and increment
       that person's counter.
 - [ ] `/set_goodbye_message <message>`: Sets the goodbye message for the group.
