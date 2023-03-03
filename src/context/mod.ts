@@ -8,8 +8,12 @@ import { CurrencyApiContext } from "/src/skills/currency/middlewares/createCurre
 import { WeatherApiContext } from "/src/skills/weather/middlewares/createWeatherApiMiddleware/types.ts";
 import { FilterSessionData } from "/src/skills/filters/sessionData/types.ts";
 import { GoodbyeCounterSessionData } from "/src/skills/goodbye/sessionData/types.ts";
+import { TagChannelSessionData } from "../skills/group-tags/sessionData/types.ts";
 
-export type SessionData = FilterSessionData & GoodbyeCounterSessionData;
+export type SessionData =
+  & FilterSessionData
+  & GoodbyeCounterSessionData
+  & TagChannelSessionData;
 
 export type BotContext =
   & FileFlavor<Context>

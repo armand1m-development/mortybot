@@ -115,6 +115,14 @@ code with references and function names like `getTretas(fromThisPessoa)`.
 - `/activate_filter`
 - `/delete_filter`
 
+### Group tag
+
+- [ ] `/join #subject`: user joins to the selected channel and will be mentioned
+      every time that hashted is used
+- [ ] `/leave #subject`: user leave the channel and will be not mentioned
+      anymore
+- [ ] Listen to the `#` texts and mention people if they are in the channel
+
 ### Annoying user listener
 
 Sometimes you have that annoying friend in the chat and you want to annoy him a
