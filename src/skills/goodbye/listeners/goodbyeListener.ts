@@ -11,7 +11,7 @@ export const goodbyeListener: Middleware<
     reply_to_message_id: ctx.message?.message_id,
   });
 
-  const userId = ctx.from?.id!;
+  const userId = ctx.msg.left_chat_member.id;
 
   if (ctx.session.goodbyeCounter.has(userId)) {
     const current = ctx.session.goodbyeCounter.get(userId)!;
