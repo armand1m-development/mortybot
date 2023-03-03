@@ -13,16 +13,13 @@ export const cmdLeavingRank: CommandMiddleware<BotContext> = async (ctx) => {
       const rank = index + 1;
 
       const { user } = await ctx.getChatMember(userId);
+      const mention = createMemberMention(user, false);
 
       if (rank === 1) {
-        return `${rank}. ${
-          createMemberMention(user, false)
-        } - left the group ${metadata.count} times (the winner! 🏆)`;
+        return `${rank}. ${mention} - left the group ${metadata.count} times (the winner! 🏆)`;
       }
 
-      return `${rank}. ${
-        createMemberMention(user, false)
-      } - left the group ${metadata.count} times`;
+      return `${rank}. ${mention} - left the group ${metadata.count} times`;
     }),
   );
 
