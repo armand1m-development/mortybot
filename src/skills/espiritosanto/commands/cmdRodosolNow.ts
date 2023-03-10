@@ -4,6 +4,8 @@ import { BotContext } from "/src/context/mod.ts";
 
 export const cmdRodosolNow: CommandMiddleware<BotContext> = async (ctx) => {
   try {
+    await ctx.api.sendChatAction(ctx.chat.id, "upload_photo");
+
     const { rodosolRoadPicturesUrls } = await ctx.rodosolApi.fetchImages();
 
     await Promise.allSettled(rodosolRoadPicturesUrls.map((url) => {

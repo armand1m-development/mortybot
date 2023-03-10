@@ -6,6 +6,8 @@ export const cmdTerceiraPonteNow: CommandMiddleware<BotContext> = async (
   ctx,
 ) => {
   try {
+    await ctx.api.sendChatAction(ctx.chat.id, "upload_photo");
+
     const { thirdBridgePictureUrls } = await ctx.rodosolApi.fetchImages();
 
     await Promise.allSettled(thirdBridgePictureUrls.map((url) => {
