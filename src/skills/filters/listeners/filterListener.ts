@@ -15,13 +15,15 @@ export const filterListener: Middleware<Filter<BotContext, "message:text">> = (
   const filterEntries = Object.fromEntries(ctx.session.filters);
   const filterTriggers = new Set(Object.keys(filterEntries));
 
-  const intersection = intersect(words, filterTriggers).filter((trigger) => {
+  const isActive = (trigger: string) => {
     const filterMessage = ctx.session.filters.get(trigger)!;
     return filterMessage.active;
-  });
+  };
+
+  const intersection = intersect(words, filterTriggers).filter(isActive);
 
   const commandsFoundInText = [...filterTriggers].filter((trigger) =>
-    text.includes(trigger)
+    text.includes(trigger) && isActive(trigger)
   );
 
   logger().debug({
@@ -43,6 +45,7 @@ export const filterListener: Middleware<Filter<BotContext, "message:text">> = (
       const caption = filterMessage.message.caption;
 
       if (filterMessage.message.video) {
+        await ctx.api.sendChatAction(ctx.chat.id, "upload_video");
         const { fileId } = filterMessage.message.video;
         await ctx.replyWithVideo(fileId, {
           caption,
@@ -52,6 +55,7 @@ export const filterListener: Middleware<Filter<BotContext, "message:text">> = (
       }
 
       if (filterMessage.message.audio) {
+        await ctx.api.sendChatAction(ctx.chat.id, "upload_voice");
         const { fileId } = filterMessage.message.audio;
         await ctx.replyWithAudio(fileId, {
           caption,
@@ -61,6 +65,7 @@ export const filterListener: Middleware<Filter<BotContext, "message:text">> = (
       }
 
       if (filterMessage.message.image) {
+        await ctx.api.sendChatAction(ctx.chat.id, "upload_photo");
         const { fileId } = filterMessage.message.image;
         await ctx.replyWithPhoto(fileId, {
           caption,
@@ -70,6 +75,7 @@ export const filterListener: Middleware<Filter<BotContext, "message:text">> = (
       }
 
       if (filterMessage.message.voice) {
+        await ctx.api.sendChatAction(ctx.chat.id, "upload_voice");
         const { fileId } = filterMessage.message.voice;
         await ctx.replyWithVoice(fileId, {
           caption,
@@ -79,6 +85,7 @@ export const filterListener: Middleware<Filter<BotContext, "message:text">> = (
       }
 
       if (filterMessage.message.sticker) {
+        await ctx.api.sendChatAction(ctx.chat.id, "choose_sticker");
         const { fileId } = filterMessage.message.sticker;
         await ctx.replyWithSticker(fileId, {
           reply_to_message_id: ctx.msg.message_id,
@@ -87,6 +94,7 @@ export const filterListener: Middleware<Filter<BotContext, "message:text">> = (
       }
 
       if (filterMessage.message.videoNote) {
+        await ctx.api.sendChatAction(ctx.chat.id, "upload_video_note");
         const { fileId } = filterMessage.message.videoNote;
         await ctx.replyWithVideoNote(fileId, {
           reply_to_message_id: ctx.msg.message_id,
@@ -95,6 +103,7 @@ export const filterListener: Middleware<Filter<BotContext, "message:text">> = (
       }
 
       if (filterMessage.message.animation) {
+        await ctx.api.sendChatAction(ctx.chat.id, "upload_video");
         const { fileId } = filterMessage.message.animation;
         await ctx.replyWithAnimation(fileId, {
           caption,
@@ -104,6 +113,7 @@ export const filterListener: Middleware<Filter<BotContext, "message:text">> = (
       }
 
       if (filterMessage.message.document) {
+        await ctx.api.sendChatAction(ctx.chat.id, "upload_document");
         const { fileId } = filterMessage.message.document;
         await ctx.replyWithDocument(fileId, {
           caption,
@@ -116,6 +126,7 @@ export const filterListener: Middleware<Filter<BotContext, "message:text">> = (
         return;
       }
 
+      await ctx.api.sendChatAction(ctx.chat.id, "typing");
       await ctx.reply(caption, {
         reply_to_message_id: ctx.msg.message_id,
       });
