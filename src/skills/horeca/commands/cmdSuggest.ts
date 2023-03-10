@@ -19,6 +19,8 @@ export const cmdSuggest: CommandMiddleware<BotContext> = async (ctx) => {
     return ctx.reply("Reply to a location message to get suggestions.");
   }
 
+  await ctx.api.sendChatAction(ctx.chat.id, "typing");
+
   const { latitude, longitude } = repliedMessageLocation;
 
   const locations = await ctx.locationsApi.fetchNearbyLocations({

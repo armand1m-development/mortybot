@@ -15,6 +15,8 @@ export const cmdConvert: CommandMiddleware<BotContext> = async (ctx) => {
   }
 
   try {
+    await ctx.api.sendChatAction(ctx.chat.id, "typing");
+
     const convertedValue = await ctx.currencyApi.convertCurrencyValue({
       amount,
       fromCurrency,

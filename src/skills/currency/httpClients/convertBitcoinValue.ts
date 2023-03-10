@@ -23,11 +23,13 @@ export const fetchMercadoBitcoinValue = async () => {
   if (!response.ok) {
     const body = await response.text();
     logger().error(
-      `Failed to fetch mercado bitcoin value. Response body in debug.`,
+      `Failed to fetch bitcoin value from MercadoBitcoin. Response body in debug logs.`,
     );
     logger().debug(`Response Body: ${body}`);
 
-    throw new Error("Failed to fetch mercado bitcoin value");
+    throw new Error(
+      "Failed to fetch bitcoin value from MercadoBitcoin. Response body in debug logs.",
+    );
   }
 
   const data = await response.json() as MercadoBitcoinEndpointResult;

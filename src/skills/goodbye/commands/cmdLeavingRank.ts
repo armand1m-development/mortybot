@@ -3,6 +3,8 @@ import { BotContext } from "/src/context/mod.ts";
 import { createMemberMention } from "/src/utilities/createMemberMention.ts";
 
 export const cmdLeavingRank: CommandMiddleware<BotContext> = async (ctx) => {
+  await ctx.api.sendChatAction(ctx.chat.id, "typing");
+
   const goodbyeCounter = [...ctx.session.goodbyeCounter.entries()]
     .sort(([_keyA, valueA], [_keyB, valueB]) => {
       return valueB.count - valueA.count;
