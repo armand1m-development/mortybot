@@ -13,7 +13,8 @@ export const goodbyeListener: Middleware<
   });
 
   const authorId = ctx.from?.id;
-  const userId = ctx.msg.left_chat_member.id;
+  const user = ctx.msg.left_chat_member;
+  const userId = user.id;
 
   if (authorId !== userId) {
     getLogger().info(
@@ -25,14 +26,16 @@ export const goodbyeListener: Middleware<
   if (ctx.session.goodbyeCounter.has(userId)) {
     const current = ctx.session.goodbyeCounter.get(userId)!;
     ctx.session.goodbyeCounter.set(userId, {
-      userId,
       count: current.count + 1,
+      user,
+      userId,
     });
     return;
   }
 
   ctx.session.goodbyeCounter.set(userId, {
-    userId,
     count: 1,
+    user,
+    userId,
   });
 };
