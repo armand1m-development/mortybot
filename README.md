@@ -52,7 +52,11 @@ in the group sends a message contains a piece of text.
 
 - [x] `/filters`: list all filters that exist currently
 - [x] `/add_filter <filter>`: adds a new filter listener based on the replied
-      message
+      message. This will add an "exact" filter: it will only reply to a message
+      that is exactly the same as the filter.
+- [x] `/add_loud_filter <filter>`: adds a new filter listener based on the
+      replied message. This will add an "loud" filter: it will reply to any
+      message that contains the filter within it.
 - [x] `/stop_filter <filter>`: stops listening to the filter
 - [x] `/activate_filter <filter>`: reactivates a filter
 - [x] `/delete_filter <filter>`: removes a filter permanently
@@ -70,6 +74,7 @@ This feature supports the following types of messages:
 - [x] video note
 - [x] audio
 - [x] voice recording
+- [ ] spoiler
 
 ### Leaving count
 

@@ -1,6 +1,7 @@
 import { User } from "grammy/types.ts";
 
 export interface Filter {
+  isLoud: boolean;
   filterTrigger: string;
   ownerId: User["id"];
   active: boolean;

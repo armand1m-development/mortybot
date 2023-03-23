@@ -1,6 +1,6 @@
 import { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
 import { SkillListener } from "/src/platform/skillModules/types/SkillListener.ts";
-import { cmdAddFilter } from "./commands/cmdAddFilter.ts";
+import { createAddFilterCommand } from "./commands/cmdAddFilter.ts";
 import { getInitialFilterSessionData } from "./sessionData/getInitialFilterSessionData.ts";
 import { filterListener } from "./listeners/filterListener.ts";
 import { cmdListFilters } from "./commands/cmdListFilters.ts";
@@ -33,7 +33,13 @@ export const commands: SkillModule["commands"] = [
     command: "add_filter",
     aliases: ["filter"],
     description: "Adds a new filter",
-    handler: cmdAddFilter,
+    handler: createAddFilterCommand({ isLoud: false }),
+  },
+  {
+    command: "add_loud_filter",
+    aliases: ["loud_filter"],
+    description: "Adds a new loud filter.",
+    handler: createAddFilterCommand({ isLoud: true }),
   },
   {
     command: "stop_filter",

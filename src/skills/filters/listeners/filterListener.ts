@@ -20,10 +20,16 @@ export const filterListener: Middleware<Filter<BotContext, "message:text">> = (
     return filterMessage.active;
   };
 
-  const intersection = intersect(words, filterTriggers).filter(isActive);
+  const isLoud = (trigger: string) => {
+    const filterMessage = ctx.session.filters.get(trigger)!;
+    return filterMessage.isLoud === true;
+  };
+
+  const intersection = intersect(words, filterTriggers)
+    .filter((trigger) => isActive(trigger) && !isLoud(trigger));
 
   const commandsFoundInText = [...filterTriggers].filter((trigger) =>
-    text.includes(trigger) && isActive(trigger)
+    isActive(trigger) && isLoud(trigger) && text.includes(trigger)
   );
 
   logger().debug({
