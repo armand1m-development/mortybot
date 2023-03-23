@@ -30,7 +30,7 @@ export const parseFilterMatches = (
 
   const textMatchesFilter = session.filters.get(text);
   const isExactMatch = textMatchesFilter !== undefined &&
-    textMatchesFilter.isLoud === false;
+    !textMatchesFilter.isLoud;
 
   const matches = new Set([
     ...intersection,

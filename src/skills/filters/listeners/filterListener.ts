@@ -11,7 +11,7 @@ export const filterListener: Middleware<Filter<BotContext, "message:text">> =
   async (
     ctx,
   ) => {
-    const text: string = ctx.msg.text;
+    const text = ctx.msg.text;
     const {
       words,
       matches,
@@ -36,11 +36,9 @@ export const filterListener: Middleware<Filter<BotContext, "message:text">> =
       return replyFilter(text, ctx);
     }
 
-    if (matches.size > 0) {
-      const promises = Array.from(matches).map((match) => {
-        return replyFilter(match, ctx);
-      });
+    const promises = Array.from(matches).map((match) => {
+      return replyFilter(match, ctx);
+    });
 
-      await Promise.allSettled(promises);
-    }
+    await Promise.allSettled(promises);
   };
