@@ -5,8 +5,6 @@ import { BotContext } from "/src/context/mod.ts";
 import { replyFilter } from "../utilities/replyFilter.ts";
 import { parseFilterMatches } from "../utilities/parseFilterMatches.ts";
 
-const logger = () => getLogger();
-
 export const filterListener: Middleware<Filter<BotContext, "message:text">> =
   async (
     ctx,
@@ -21,7 +19,7 @@ export const filterListener: Middleware<Filter<BotContext, "message:text">> =
       commandsFoundInText,
     } = parseFilterMatches(text, ctx.session);
 
-    logger().debug({
+    getLogger().debug({
       user: ctx.msg.from,
       text,
       words,
@@ -36,9 +34,7 @@ export const filterListener: Middleware<Filter<BotContext, "message:text">> =
       return replyFilter(text, ctx);
     }
 
-    const promises = Array.from(matches).map((match) => {
-      return replyFilter(match, ctx);
-    });
-
-    await Promise.allSettled(promises);
+    for (const match of matches) {
+      await replyFilter(match, ctx);
+    }
   };
