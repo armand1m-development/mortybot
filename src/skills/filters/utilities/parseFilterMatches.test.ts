@@ -157,3 +157,25 @@ Deno.test("should work with exact filters even if the isLoud key is missing", ()
   assertEquals(matches.size, 0);
   assertEquals(isExactMatch, true);
 });
+
+Deno.test("should only consider active filters", () => {
+  const text = "nice";
+
+  const testSession = {
+    filters: new Map(Object.entries({
+      nice: {
+        "filterTrigger": "nice",
+        "active": false,
+        "ownerId": 222222222,
+        "message": {
+          "caption": "test loud",
+        },
+      },
+    })),
+  } as FilterSessionData;
+
+  const { matches, isExactMatch } = parseFilterMatches(text, testSession);
+
+  assertEquals(matches.size, 0);
+  assertEquals(isExactMatch, false);
+});

@@ -30,6 +30,7 @@ export const parseFilterMatches = (
 
   const textMatchesFilter = session.filters.get(text);
   const isExactMatch = textMatchesFilter !== undefined &&
+    textMatchesFilter.active &&
     !textMatchesFilter.isLoud;
 
   const matches = new Set([
