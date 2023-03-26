@@ -42,18 +42,25 @@ async (ctx) => {
   }
 
   const downloadFile = async (fileId: string, mimeType?: string) => {
-    const file = await ctx.api.getFile(fileId);
+    try {
+      const file = await ctx.api.getFile(fileId);
 
-    const downloadFileName = format({
-      name: fileId,
-      ext: mimeType ? "." + extensionsByType(mimeType)![0] : undefined,
-    });
+      const downloadFileName = format({
+        name: fileId,
+        ext: mimeType ? "." + extensionsByType(mimeType)![0] : undefined,
+      });
 
-    const downloadedPath = await file.download(
-      resolve(filePath, downloadFileName),
-    );
+      const downloadedPath = await file.download(
+        resolve(filePath, downloadFileName),
+      );
 
-    return relative(ctx.configuration.dataPath, downloadedPath);
+      return relative(ctx.configuration.dataPath, downloadedPath);
+    } catch (err) {
+      getLogger().debug(
+        "Failed to download file. This is a best effort non blocking operation.",
+      );
+      getLogger().error(err);
+    }
   };
 
   ctx.session.filters.set(filterTrigger, {

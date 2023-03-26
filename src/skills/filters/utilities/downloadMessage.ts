@@ -1,126 +1,65 @@
-import { getLogger } from "std/log/mod.ts";
+import { match, P } from "npm:ts-pattern";
 import { ReplyMessage } from "grammy/types.ts";
 import { Filter } from "../sessionData/types.ts";
 
 type DownloadFileFunction = (
   fileId: string,
   mimeType?: string,
-) => Promise<string>;
+) => Promise<string | undefined>;
 
 export const downloadMessage = async (
-  repliedMessage: ReplyMessage,
+  replyMessage: ReplyMessage,
   downloadFile: DownloadFileFunction,
 ) => {
-  const messageCaption = repliedMessage.text ?? repliedMessage.caption;
-  const messagePhotos = repliedMessage.photo ?? [];
-  const messageAudio = repliedMessage.audio;
-  const messageVideo = repliedMessage.video;
-  const messageSticker = repliedMessage.sticker;
-  const messageVoice = repliedMessage.voice;
-  const messageVideoNote = repliedMessage.video_note;
-  const messageDocument = repliedMessage.document;
-  const messageAnimation = repliedMessage.animation;
+  const filterMessage: Filter["message"] = await match(replyMessage)
+    .with({ audio: P.not(undefined) }, async ({ audio }) => ({
+      audio: {
+        fileId: audio.file_id,
+        path: await downloadFile(audio.file_id, audio.mime_type),
+      },
+    }))
+    .with({ video: P.not(undefined) }, async ({ video }) => ({
+      video: {
+        fileId: video.file_id,
+        path: await downloadFile(video.file_id, video.mime_type),
+      },
+    }))
+    .with({ sticker: P.not(undefined) }, ({ sticker }) => ({
+      sticker: {
+        fileId: sticker.file_id,
+      },
+    }))
+    .with({ voice: P.not(undefined) }, async ({ voice }) => ({
+      voice: {
+        fileId: voice.file_id,
+        path: await downloadFile(voice.file_id, voice.mime_type),
+      },
+    }))
+    .with({ video_note: P.not(undefined) }, ({ video_note }) => ({
+      videoNote: {
+        fileId: video_note.file_id,
+      },
+    }))
+    .with({ photo: P.not(undefined) }, async ({ photo: [image] }) => ({
+      image: {
+        fileId: image.file_id,
+        path: await downloadFile(image.file_id),
+      },
+    }))
+    .with({ document: P.not(undefined) }, ({ document }) => ({
+      document: {
+        fileId: document.file_id,
+      },
+    }))
+    .with({ animation: P.not(undefined) }, ({ animation }) => ({
+      animation: {
+        fileId: animation.file_id,
+      },
+    }))
+    .otherwise(() => ({}));
 
-  const filterMessage: Filter["message"] = {
-    caption: messageCaption,
-  };
-
-  if (messageVoice !== undefined) {
-    let path: string | undefined = undefined;
-
-    try {
-      path = await downloadFile(messageVoice.file_id, messageVoice.mime_type);
-    } catch (err) {
-      getLogger().debug(
-        "Failed to download file. This is a best effort non blocking operation.",
-      );
-      getLogger().error(err);
-    }
-
-    filterMessage.voice = {
-      path,
-      fileId: messageVoice.file_id,
-    };
-  }
-
-  if (messageVideo !== undefined) {
-    let path: string | undefined = undefined;
-
-    try {
-      path = await downloadFile(messageVideo.file_id, messageVideo.mime_type);
-    } catch (err) {
-      getLogger().debug(
-        "Failed to download file. This is a best effort non blocking operation.",
-      );
-      getLogger().error(err);
-    }
-
-    filterMessage.video = {
-      path,
-      fileId: messageVideo.file_id,
-    };
-  }
-
-  if (messageAudio !== undefined) {
-    let path: string | undefined = undefined;
-
-    try {
-      path = await downloadFile(messageAudio.file_id, messageAudio.mime_type);
-    } catch (err) {
-      getLogger().debug(
-        "Failed to download file. This is a best effort non blocking operation.",
-      );
-      getLogger().error(err);
-    }
-
-    filterMessage.audio = {
-      path,
-      fileId: messageAudio.file_id,
-    };
-  }
-
-  if (messagePhotos.length > 0) {
-    const firstPhoto = messagePhotos[0];
-    let path: string | undefined = undefined;
-
-    try {
-      path = await downloadFile(firstPhoto.file_id);
-    } catch (err) {
-      getLogger().debug(
-        "Failed to download file. This is a best effort non blocking operation.",
-      );
-      getLogger().error(err);
-    }
-
-    filterMessage.image = {
-      path,
-      fileId: firstPhoto.file_id,
-    };
-  }
-
-  if (messageAnimation !== undefined) {
-    filterMessage.animation = {
-      fileId: messageAnimation.file_id,
-    };
-  }
-
-  if (messageDocument !== undefined) {
-    filterMessage.document = {
-      fileId: messageDocument.file_id,
-    };
-  }
-
-  if (messageSticker !== undefined) {
-    filterMessage.sticker = {
-      fileId: messageSticker.file_id,
-    };
-  }
-
-  if (messageVideoNote !== undefined) {
-    filterMessage.videoNote = {
-      fileId: messageVideoNote.file_id,
-    };
-  }
+  // Always try to insert a caption.
+  filterMessage.caption = replyMessage.text ?? replyMessage.caption;
 
   return filterMessage;
 };

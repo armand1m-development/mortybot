@@ -1,8 +1,8 @@
 import { assertEquals } from "std/testing/asserts.ts";
 import { FilterSessionData } from "../sessionData/types.ts";
-import { parseFilterMatches } from "./parseFilterMatches.ts";
+import { hasLoudMatches, isExactMatch } from "./parseFilterMatches.ts";
 
-Deno.test("should match to exact filter", () => {
+Deno.test("should match exact filter", () => {
   const text = "uuuu";
 
   const testSession: FilterSessionData = {
@@ -19,13 +19,14 @@ Deno.test("should match to exact filter", () => {
     })),
   };
 
-  const { matches, isExactMatch } = parseFilterMatches(text, testSession);
+  const exactMatch = isExactMatch(text, testSession);
+  const { matches } = hasLoudMatches(text, testSession);
 
   assertEquals(matches.size, 0);
-  assertEquals(isExactMatch, true);
+  assertEquals(exactMatch, true);
 });
 
-Deno.test("should match to loud filter", () => {
+Deno.test("should match loud filter", () => {
   const text = "this is super nice my friend";
 
   const testSession: FilterSessionData = {
@@ -42,13 +43,14 @@ Deno.test("should match to loud filter", () => {
     })),
   };
 
-  const { matches, isExactMatch } = parseFilterMatches(text, testSession);
+  const exactMatch = isExactMatch(text, testSession);
+  const { matches } = hasLoudMatches(text, testSession);
 
   assertEquals(matches.size, 1);
-  assertEquals(isExactMatch, false);
+  assertEquals(exactMatch, false);
 });
 
-Deno.test("should match to multiple loud filters in the same message", () => {
+Deno.test("should match multiple loud filters in the same message", () => {
   const text = "buenos dias acorde amigo";
 
   const testSession: FilterSessionData = {
@@ -74,10 +76,11 @@ Deno.test("should match to multiple loud filters in the same message", () => {
     })),
   };
 
-  const { matches, isExactMatch } = parseFilterMatches(text, testSession);
+  const exactMatch = isExactMatch(text, testSession);
+  const { matches } = hasLoudMatches(text, testSession);
 
   assertEquals(matches.size, 2);
-  assertEquals(isExactMatch, false);
+  assertEquals(exactMatch, false);
 });
 
 Deno.test("should not match exact filters found in the middle of a message", () => {
@@ -97,10 +100,11 @@ Deno.test("should not match exact filters found in the middle of a message", () 
     })),
   };
 
-  const { matches, isExactMatch } = parseFilterMatches(text, testSession);
+  const exactMatch = isExactMatch(text, testSession);
+  const { matches } = hasLoudMatches(text, testSession);
 
   assertEquals(matches.size, 0);
-  assertEquals(isExactMatch, false);
+  assertEquals(exactMatch, false);
 });
 
 Deno.test("should not match exact filters found in the middle of a message but should match the loud ones", () => {
@@ -130,13 +134,14 @@ Deno.test("should not match exact filters found in the middle of a message but s
     })),
   };
 
-  const { matches, isExactMatch } = parseFilterMatches(text, testSession);
+  const exactMatch = isExactMatch(text, testSession);
+  const { matches } = hasLoudMatches(text, testSession);
 
   assertEquals(matches.size, 1);
-  assertEquals(isExactMatch, false);
+  assertEquals(exactMatch, false);
 });
 
-Deno.test("should work with exact filters even if the isLoud key is missing", () => {
+Deno.test("should match exact filters even if the isLoud key is missing", () => {
   const text = "nice";
 
   const testSession = {
@@ -152,13 +157,14 @@ Deno.test("should work with exact filters even if the isLoud key is missing", ()
     })),
   } as FilterSessionData;
 
-  const { matches, isExactMatch } = parseFilterMatches(text, testSession);
+  const exactMatch = isExactMatch(text, testSession);
+  const { matches } = hasLoudMatches(text, testSession);
 
   assertEquals(matches.size, 0);
-  assertEquals(isExactMatch, true);
+  assertEquals(exactMatch, true);
 });
 
-Deno.test("should only consider active filters", () => {
+Deno.test("should not match inactive exact filters", () => {
   const text = "nice";
 
   const testSession = {
@@ -174,8 +180,9 @@ Deno.test("should only consider active filters", () => {
     })),
   } as FilterSessionData;
 
-  const { matches, isExactMatch } = parseFilterMatches(text, testSession);
+  const exactMatch = isExactMatch(text, testSession);
+  const { matches } = hasLoudMatches(text, testSession);
 
   assertEquals(matches.size, 0);
-  assertEquals(isExactMatch, false);
+  assertEquals(exactMatch, false);
 });

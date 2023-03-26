@@ -31,6 +31,7 @@ export const replyFilter = async (
     const { fileId } = filterMessage.message.image;
     await ctx.replyWithPhoto(fileId, {
       caption,
+      reply_to_message_id: ctx.msg.message_id,
     });
     return;
   }
@@ -47,7 +48,9 @@ export const replyFilter = async (
   if (filterMessage.message.sticker) {
     await ctx.api.sendChatAction(ctx.chat.id, "choose_sticker");
     const { fileId } = filterMessage.message.sticker;
-    await ctx.replyWithSticker(fileId);
+    await ctx.replyWithSticker(fileId, {
+      reply_to_message_id: ctx.msg.message_id,
+    });
     return;
   }
 
@@ -72,6 +75,7 @@ export const replyFilter = async (
     const { fileId } = filterMessage.message.document;
     await ctx.replyWithDocument(fileId, {
       caption,
+      reply_to_message_id: ctx.msg.message_id,
     });
     return;
   }
@@ -81,5 +85,7 @@ export const replyFilter = async (
   }
 
   await ctx.api.sendChatAction(ctx.chat.id, "typing");
-  await ctx.reply(caption);
+  await ctx.reply(caption, {
+    reply_to_message_id: ctx.msg.message_id,
+  });
 };
