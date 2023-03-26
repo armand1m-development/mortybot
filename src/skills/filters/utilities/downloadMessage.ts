@@ -1,4 +1,4 @@
-import { match, P } from "npm:ts-pattern";
+import { match, P } from "ts-pattern";
 import { ReplyMessage } from "grammy/types.ts";
 import { Filter } from "../sessionData/types.ts";
 
@@ -24,20 +24,10 @@ export const downloadMessage = async (
         path: await downloadFile(video.file_id, video.mime_type),
       },
     }))
-    .with({ sticker: P.not(undefined) }, ({ sticker }) => ({
-      sticker: {
-        fileId: sticker.file_id,
-      },
-    }))
     .with({ voice: P.not(undefined) }, async ({ voice }) => ({
       voice: {
         fileId: voice.file_id,
         path: await downloadFile(voice.file_id, voice.mime_type),
-      },
-    }))
-    .with({ video_note: P.not(undefined) }, ({ video_note }) => ({
-      videoNote: {
-        fileId: video_note.file_id,
       },
     }))
     .with({ photo: P.not(undefined) }, async ({ photo: [image] }) => ({
@@ -46,14 +36,24 @@ export const downloadMessage = async (
         path: await downloadFile(image.file_id),
       },
     }))
-    .with({ document: P.not(undefined) }, ({ document }) => ({
-      document: {
-        fileId: document.file_id,
+    .with({ sticker: P.not(undefined) }, ({ sticker }) => ({
+      sticker: {
+        fileId: sticker.file_id,
+      },
+    }))
+    .with({ video_note: P.not(undefined) }, ({ video_note }) => ({
+      videoNote: {
+        fileId: video_note.file_id,
       },
     }))
     .with({ animation: P.not(undefined) }, ({ animation }) => ({
       animation: {
         fileId: animation.file_id,
+      },
+    }))
+    .with({ document: P.not(undefined) }, ({ document }) => ({
+      document: {
+        fileId: document.file_id,
       },
     }))
     .otherwise(() => ({}));
