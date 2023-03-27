@@ -10,7 +10,7 @@
     "linkedom": "https://esm.sh/linkedom@0.14.22",
     "outdent": "https://deno.land/x/outdent@v0.8.0/mod.ts",
     "@grammyjs/types": "https://esm.sh/@grammyjs/types@2.12.1",
-    "ts-pattern": "npm:ts-pattern"
+    "ts-pattern": "https://deno.land/x/fuzzy_octo_guacamole@v3.0.0/mod.ts"
   },
   "tasks": {
     "start": "deno run --allow-net --allow-env --allow-read --allow-write ./main.ts",
