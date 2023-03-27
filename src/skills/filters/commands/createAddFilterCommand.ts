@@ -13,6 +13,17 @@ type CommandFactory = (
   props: CommandFactoryProps,
 ) => CommandMiddleware<BotContext>;
 
+/**
+ * This command, differently from the other ones,
+ * expose a command factory.
+ *
+ * This is because this command is used in two
+ * different commands and it needs some flags
+ * to switch behavior.
+ *
+ * This is where this higher function/factory pattern
+ * becomes helpful.
+ */
 export const createAddFilterCommand: CommandFactory = ({
   isLoud,
 }) =>
@@ -31,6 +42,11 @@ async (ctx) => {
   );
 
   const repliedMessage = (ctx.msg ?? ctx.update.message).reply_to_message;
+
+  console.log({
+    message: repliedMessage,
+    entities: repliedMessage?.entities,
+  });
 
   if (!repliedMessage) {
     getLogger().error("Failed to find reply_to_message");

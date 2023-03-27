@@ -1,6 +1,6 @@
 import { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
 import { SkillListener } from "/src/platform/skillModules/types/SkillListener.ts";
-import { createAddFilterCommand } from "./commands/cmdAddFilter.ts";
+import { createAddFilterCommand } from "./commands/createAddFilterCommand.ts";
 import { getInitialFilterSessionData } from "./sessionData/getInitialFilterSessionData.ts";
 import { filterListener } from "./listeners/filterListener.ts";
 import { cmdListFilters } from "./commands/cmdListFilters.ts";

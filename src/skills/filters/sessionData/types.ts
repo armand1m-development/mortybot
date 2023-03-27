@@ -1,4 +1,9 @@
-import { User } from "grammy/types.ts";
+import { MessageEntity, User } from "grammy/types.ts";
+
+export interface SpoilerOffsets {
+  offset: number;
+  length: number;
+}
 
 export interface Filter {
   isLoud: boolean;
@@ -7,6 +12,7 @@ export interface Filter {
   active: boolean;
   message: {
     caption?: string;
+    captionEntities?: MessageEntity[];
     animation?: {
       fileId: string;
     };

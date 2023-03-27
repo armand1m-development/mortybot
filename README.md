@@ -74,7 +74,8 @@ This feature supports the following types of messages:
 - [x] video note
 - [x] audio
 - [x] voice recording
-- [ ] spoiler
+- [x] spoiler
+- [x] bold, italic, any formatting
 
 ### Leaving count
 
