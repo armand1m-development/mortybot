@@ -60,6 +60,8 @@ export const downloadMessage = async (
 
   // Always try to insert a caption.
   filterMessage.caption = replyMessage.text ?? replyMessage.caption;
+
+  // Always try to insert caption entities.
   filterMessage.captionEntities = replyMessage.entities ??
     replyMessage.caption_entities;
 

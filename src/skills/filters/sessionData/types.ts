@@ -1,10 +1,5 @@
 import { MessageEntity, User } from "grammy/types.ts";
 
-export interface SpoilerOffsets {
-  offset: number;
-  length: number;
-}
-
 export interface Filter {
   isLoud: boolean;
   filterTrigger: string;

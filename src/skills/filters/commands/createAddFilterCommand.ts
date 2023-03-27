@@ -43,11 +43,6 @@ async (ctx) => {
 
   const repliedMessage = (ctx.msg ?? ctx.update.message).reply_to_message;
 
-  console.log({
-    message: repliedMessage,
-    entities: repliedMessage?.entities,
-  });
-
   if (!repliedMessage) {
     getLogger().error("Failed to find reply_to_message");
     getLogger().debug({
