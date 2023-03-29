@@ -72,6 +72,13 @@ export const setupSkillModulesLoader = async (
     });
   };
 
+  const loadSkillInlineQueryListeners = (skill: SkillModule) => {
+    logger().debug(`Loading skill "${skill.name}" listeners..`);
+    skill.inlineQueryListeners.forEach(({ pattern, handler }) => {
+      bot.inlineQuery(pattern, handler);
+    });
+  };
+
   const runSkillInitializers = (skill: SkillModule) => {
     logger().debug(`Running skill "${skill.name}" initializers..`);
     return Promise.allSettled(
@@ -105,6 +112,7 @@ export const setupSkillModulesLoader = async (
       loadSkillMiddlewares(skill);
       loadSkillCommands(skill);
       loadSkillListeners(skill);
+      loadSkillInlineQueryListeners(skill);
 
       commands = [...commands, ...compileSkillCommandsToDocs(skill)];
     }));

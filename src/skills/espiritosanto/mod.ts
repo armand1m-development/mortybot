@@ -25,3 +25,5 @@ export const commands: SkillModule["commands"] = [
 export const sessionDataInitializers: SkillModule["sessionDataInitializers"] =
   [];
 export const listeners: SkillModule["listeners"] = [];
+
+export const inlineQueryListeners: SkillModule["inlineQueryListeners"] = [];

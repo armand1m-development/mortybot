@@ -9,6 +9,7 @@ import { cmdStopFilter } from "./commands/cmdStopFilter.ts";
 import { cmdActivateFilter } from "./commands/cmdActivateFilter.ts";
 import { cmdDeleteFilter } from "./commands/cmdDeleteFilter.ts";
 import { createDownloadsFolder } from "./initializers/createDownloadsFolder.ts";
+import { filterSearchListener } from "./inlineQueryListeners/filterSearchListener.ts";
 
 export const name: SkillModule["name"] = "filters";
 export const initializers: SkillModule["initializers"] = [
@@ -71,5 +72,12 @@ export const listeners: SkillModule["listeners"] = [
     description:
       "This listener checks and replies messages that match defined filters",
     handler: filterListener,
+  },
+];
+
+export const inlineQueryListeners: SkillModule["inlineQueryListeners"] = [
+  {
+    pattern: /^filters\s*(.*)$/,
+    handler: filterSearchListener,
   },
 ];

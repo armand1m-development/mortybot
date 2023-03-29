@@ -22,7 +22,7 @@ export const createBot = async (configuration: Configuration) => {
   );
 
   const getSessionKey = (ctx: Context) => {
-    return ctx.chat?.id.toString();
+    return ctx.chat?.id.toString() ?? ctx.inlineQuery?.from.id.toString();
   };
 
   bot.api.config.use(hydrateFiles(bot.token));
@@ -50,6 +50,8 @@ export const createBot = async (configuration: Configuration) => {
   await loadSkills();
 
   injectGlobalErrorHandler(bot);
+
+  bot.on("inline_query", (ctx) => ctx.answerInlineQuery([]));
 
   return bot;
 };

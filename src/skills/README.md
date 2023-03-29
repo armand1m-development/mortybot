@@ -55,6 +55,8 @@ export const sessionDataInitializers: SkillModule["sessionDataInitializers"] =
  * ];
  */
 export const listeners: SkillModule["listeners"] = [];
+
+export const inlineQueryListeners: SkillModule["inlineQueryListeners"] = [];
 ```
 
 - Make sure to update the `skills.ts` file so your skill module gets loaded.

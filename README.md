@@ -61,6 +61,8 @@ in the group sends a message contains a piece of text.
 - [x] `/activate_filter <filter>`: reactivates a filter
 - [x] `/delete_filter <filter>`: removes a filter permanently
 - [x] Listens to registered filters in the chat session and replies accordingly.
+- [x] Replies to inline query searches through
+      `@MortyBrasileiroBot filters <query>`
 
 This feature supports the following types of messages:
 

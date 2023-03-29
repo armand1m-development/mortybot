@@ -2,6 +2,7 @@ import { MiddlewareFn } from "grammy/composer.ts";
 import { BotContext } from "/src/context/mod.ts";
 import { SkillCommand } from "./SkillCommand.ts";
 import { SkillListener } from "./SkillListener.ts";
+import { SkillInlineQueryListener } from "./SkillInlineQueryListener.ts";
 
 export interface SkillModule {
   name: string;
@@ -18,4 +19,5 @@ export interface SkillModule {
    * You can do things like create folders, for example.
    */
   initializers: (() => Promise<void> | void)[];
+  inlineQueryListeners: SkillInlineQueryListener[];
 }

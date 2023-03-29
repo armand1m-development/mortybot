@@ -29,3 +29,5 @@ export const listeners: SkillModule["listeners"] = [
     handler: goodbyeListener,
   },
 ];
+
+export const inlineQueryListeners: SkillModule["inlineQueryListeners"] = [];
