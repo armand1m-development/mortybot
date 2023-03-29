@@ -61,6 +61,8 @@ in the group sends a message contains a piece of text.
 - [x] `/activate_filter <filter>`: reactivates a filter
 - [x] `/delete_filter <filter>`: removes a filter permanently
 - [x] Listens to registered filters in the chat session and replies accordingly.
+- [ ] Allow for multiple filters with the same name
+  - In case there are more than one filter with the same name, the bot will randomly choose one and send just one.
 
 This feature supports the following types of messages:
 
