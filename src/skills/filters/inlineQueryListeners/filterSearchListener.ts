@@ -44,6 +44,9 @@ export const filterSearchListener: InlineQueryMiddleware<BotContext> = (
 
   if (query.trim() === "") {
     const allFilters = filters.map(mapFilterToInlineQueryResult);
+    console.log({
+      allFilters,
+    });
     return ctx.answerInlineQuery(allFilters);
   }
 
@@ -56,6 +59,8 @@ export const filterSearchListener: InlineQueryMiddleware<BotContext> = (
   });
 
   console.log({
+    filters,
+    query,
     answer,
   });
 
