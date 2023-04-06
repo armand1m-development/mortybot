@@ -1,4 +1,6 @@
 import { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
+import { cmdReport } from "./commands/cmdReport.ts";
+import { cmdSetTitle } from "./commands/cmdSetTitle.ts";
 
 export const name: SkillModule["name"] = "chat";
 export const initializers: SkillModule["initializers"] = [];
@@ -8,18 +10,13 @@ export const commands: SkillModule["commands"] = [
     command: "set_title",
     aliases: ["batiza"],
     description: "Sets the chat title. Only works if the bot is a chat admin.",
-    handler: async (ctx) => {
-      const newChatTitle = ctx.match;
-
-      if (!newChatTitle) {
-        await ctx.reply(
-          "Missing chat title. Usage: `/set_title new group title`",
-        );
-        return;
-      }
-
-      await ctx.setChatTitle(newChatTitle);
-    },
+    handler: cmdSetTitle,
+  },
+  {
+    command: "report",
+    aliases: ["admin"],
+    description: "Pings the group admin about the replied message.",
+    handler: cmdReport,
   },
 ];
 
