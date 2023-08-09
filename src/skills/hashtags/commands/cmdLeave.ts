@@ -3,12 +3,12 @@ import { CommandMiddleware } from "grammy/composer.ts";
 import { BotContext } from "/src/context/mod.ts";
 import { parseHashtags } from "../utilities/parseHashtags.ts";
 
-export const cmdJoin: CommandMiddleware<BotContext> = (ctx) => {
+export const cmdLeave: CommandMiddleware<BotContext> = (ctx) => {
   const hashtags = parseHashtags(ctx.match);
 
   if (hashtags.length === 0) {
     ctx.reply(
-      "You should provide a hashtag in order to join one. Example: `/join_hashtag #games`",
+      "You should provide a hashtag in order to leave one. Example: `/leave_hashtag #games`",
     );
     return;
   }
@@ -17,20 +17,13 @@ export const cmdJoin: CommandMiddleware<BotContext> = (ctx) => {
     const channel = ctx.session.hashtagChannels.get(hashtag);
     const userId = ctx.message!.from.id;
 
-    if (channel?.participants.includes(userId)) {
-      ctx.reply(
-        `You're already registered to the channel ${hashtag}`,
-      );
-      return;
-    }
-
     const oldParticipants = channel?.participants ?? [];
 
     ctx.session.hashtagChannels.set(hashtag, {
-      participants: [...oldParticipants, userId],
+      participants: oldParticipants.filter((id) => id !== userId),
       hashtag,
     });
 
-    getLogger().info(`Registered ${userId} into tag ${hashtag}`);
+    getLogger().info(`Removed ${userId} from hashtag channel ${hashtag}`);
   });
 };

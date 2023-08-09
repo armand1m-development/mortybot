@@ -1,12 +1,10 @@
 import { User } from "grammy/types.ts";
 
-type TagName = string;
-
-export interface TagChannel {
-  tagName: TagName;
+export interface HashtagChannel {
+  hashtag: string;
   participants: User["id"][];
 }
 
-export interface TagChannelSessionData {
-  tagChannels: Map<TagName, TagChannel>;
+export interface HashtagChannelSessionData {
+  hashtagChannels: Map<string, HashtagChannel>;
 }

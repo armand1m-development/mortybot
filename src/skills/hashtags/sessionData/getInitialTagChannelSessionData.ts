@@ -1,7 +1,8 @@
-import { TagChannelSessionData } from "./types.ts";
+import { HashtagChannelSessionData } from "./types.ts";
 
-export const getInitialTagChannelSessionData = (): TagChannelSessionData => {
-  return {
-    tagChannels: new Map(),
+export const getInitialHashtagChannelSessionData =
+  (): HashtagChannelSessionData => {
+    return {
+      hashtagChannels: new Map(),
+    };
   };
-};
