@@ -6,8 +6,8 @@ export const skills = [
   "chat",
   "espiritosanto",
   "goodbye",
-  "group-tags",
   "weather",
+  "hashtags",
   "currency",
 ] as const;
 

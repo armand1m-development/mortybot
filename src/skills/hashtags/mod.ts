@@ -4,14 +4,14 @@ import { tagMentionListener } from "./listeners/tagMention.ts";
 import { cmdJoin } from "./commands/cmdJoin.ts";
 import { getInitialTagChannelSessionData } from "./sessionData/getInitialTagChannelSessionData.ts";
 
-export const name: SkillModule["name"] = "group-tag";
+export const name: SkillModule["name"] = "hashtags";
 export const initializers: SkillModule["initializers"] = [];
 export const middlewares: SkillModule["middlewares"] = [];
 export const commands: SkillModule["commands"] = [
   {
-    command: "join",
+    command: "join_hashtag",
     aliases: [],
-    description: "Join tag channel",
+    description: "Join hashtag channel and get notified",
     handler: cmdJoin,
   },
 ];
@@ -22,7 +22,8 @@ export const sessionDataInitializers: SkillModule["sessionDataInitializers"] = [
 export const listeners: SkillModule["listeners"] = [
   <SkillListener<"message:text">> {
     event: "message:text",
-    description: "Listen to a tag mention",
+    description:
+      "Listens to a hashtag and mentions the people registered on it.",
     handler: tagMentionListener,
   },
 ];

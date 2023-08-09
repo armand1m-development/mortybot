@@ -7,30 +7,30 @@ export const cmdJoin: CommandMiddleware<BotContext> = (ctx) => {
   const hashtags = parseHashtags(ctx.match);
 
   if (hashtags.length === 0) {
-    ctx.reply("Tem que passa a hashtag");
+    ctx.reply(
+      "You should provide a hashtag in order to join one. Example: `/!myfilter`",
+    );
     return;
   }
 
-  hashtags.map((tagName) => {
+  hashtags.forEach((tagName) => {
     const channel = ctx.session.tagChannels.get(tagName);
     const userId = ctx.message!.from.id;
 
     if (channel?.participants.includes(userId)) {
-      ctx.reply(`Voce ja esta no canal #${tagName}`);
+      ctx.reply(
+        `You're already registered to the channel ${tagName}`,
+      );
       return;
     }
 
-    if (!channel) {
-      ctx.session.tagChannels.set(tagName, {
-        participants: [userId],
-        tagName,
-      });
-      return;
-    }
+    const oldParticipants = channel?.participants ?? [];
 
     ctx.session.tagChannels.set(tagName, {
-      participants: [...channel.participants, userId],
+      participants: [...oldParticipants, userId],
       tagName,
     });
+
+    getLogger().info(`Registered ${userId} into tag ${tagName}`);
   });
 };

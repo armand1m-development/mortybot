@@ -123,13 +123,16 @@ code with references and function names like `getTretas(fromThisPessoa)`.
 - `/activate_filter`
 - `/delete_filter`
 
-### Group tag
+### Hashtags
 
-- [ ] `/join #subject`: user joins to the selected channel and will be mentioned
-      every time that hashted is used
-- [ ] `/leave #subject`: user leave the channel and will be not mentioned
-      anymore
-- [ ] Listen to the `#` texts and mention people if they are in the channel
+- [ ] `/join_hashtag <hashtag>`: user joins to the selected channel and will be
+      mentioned every time that hashted is used. Example: `/join_hashtag #games`
+- [ ] `/leave_hashtag #subject`: user leave the channel and will be not
+      mentioned anymore.
+- [ ] Listens to hashtags in the chat and mentions people registered to those
+      hashtags when they appear. Example: People registered to the `#games`
+      hashtag will be mentioned when the following message is sent:
+      `new drop! <url> #games`
 
 ### Annoying user listener
 
