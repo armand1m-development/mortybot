@@ -1,6 +1,6 @@
 import { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
 import { SkillListener } from "/src/platform/skillModules/types/SkillListener.ts";
-import { cmdAddFilter } from "./commands/cmdAddFilter.ts";
+import { createAddFilterCommand } from "./commands/createAddFilterCommand.ts";
 import { getInitialFilterSessionData } from "./sessionData/getInitialFilterSessionData.ts";
 import { filterListener } from "./listeners/filterListener.ts";
 import { cmdListFilters } from "./commands/cmdListFilters.ts";
@@ -9,6 +9,7 @@ import { cmdStopFilter } from "./commands/cmdStopFilter.ts";
 import { cmdActivateFilter } from "./commands/cmdActivateFilter.ts";
 import { cmdDeleteFilter } from "./commands/cmdDeleteFilter.ts";
 import { createDownloadsFolder } from "./initializers/createDownloadsFolder.ts";
+import { filterSearchListener } from "./inlineQueryListeners/filterSearchListener.ts";
 
 export const name: SkillModule["name"] = "filters";
 export const initializers: SkillModule["initializers"] = [
@@ -33,7 +34,13 @@ export const commands: SkillModule["commands"] = [
     command: "add_filter",
     aliases: ["filter"],
     description: "Adds a new filter",
-    handler: cmdAddFilter,
+    handler: createAddFilterCommand({ isLoud: false }),
+  },
+  {
+    command: "add_loud_filter",
+    aliases: ["loud_filter"],
+    description: "Adds a new loud filter.",
+    handler: createAddFilterCommand({ isLoud: true }),
   },
   {
     command: "stop_filter",
@@ -65,5 +72,12 @@ export const listeners: SkillModule["listeners"] = [
     description:
       "This listener checks and replies messages that match defined filters",
     handler: filterListener,
+  },
+];
+
+export const inlineQueryListeners: SkillModule["inlineQueryListeners"] = [
+  {
+    pattern: /^filters\s*(.*)$/,
+    handler: filterSearchListener,
   },
 ];

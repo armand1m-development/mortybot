@@ -52,11 +52,17 @@ in the group sends a message contains a piece of text.
 
 - [x] `/filters`: list all filters that exist currently
 - [x] `/add_filter <filter>`: adds a new filter listener based on the replied
-      message
+      message. This will add an "exact" filter: it will only reply to a message
+      that is exactly the same as the filter.
+- [x] `/add_loud_filter <filter>`: adds a new filter listener based on the
+      replied message. This will add an "loud" filter: it will reply to any
+      message that contains the filter within it.
 - [x] `/stop_filter <filter>`: stops listening to the filter
 - [x] `/activate_filter <filter>`: reactivates a filter
 - [x] `/delete_filter <filter>`: removes a filter permanently
 - [x] Listens to registered filters in the chat session and replies accordingly.
+- [x] Replies to inline query searches through
+      `@MortyBrasileiroBot filters <query>`
 
 This feature supports the following types of messages:
 
@@ -70,6 +76,8 @@ This feature supports the following types of messages:
 - [x] video note
 - [x] audio
 - [x] voice recording
+- [x] spoiler
+- [x] bold, italic, any formatting
 
 ### Leaving count
 
@@ -77,7 +85,7 @@ More than we'd like to, we get into arguments and someone (me included) ends up
 leaving the group at some point and returning. This is a counter that will
 monitor who left and increment that metric.
 
-- [ ] `/leaving_rank`: send the rank of how many times a member left the group
+- [x] `/leaving_rank`: send the rank of how many times a member left the group
 - [x] Listens to the left group event, sends a goodbye message and increment
       that person's counter.
 - [ ] `/set_goodbye_message <message>`: Sets the goodbye message for the group.
@@ -141,6 +149,37 @@ self protection mechanism.
 
 - [ ] `/github_expand`: will parse a github link, render a code image and send
       it to the group.
+
+### Chat Skills
+
+Nice utilities for democratizing the chat.
+
+- [x] `/set_title <title>`: will set the chat title. Anyone can use it. MortyBot
+      must be added as an admin.
+
+### Rodosol Now
+
+Rodosol is a big road and company based in the city of Vila Velha, Espirito
+Santo, Brazil. They maintain two big roads: Rodosol, and the Third Bridge that
+connects Vila Velha to Vitoria. We have some commands that fetch images from
+their cameras so we can have a glimpse of the traffic there.
+
+- [x] `/rodosol_now`: fetch and display rodosol pictures if available
+- [x] `/tp_now`: fetch and display third bridge pictures if available
+
+### Horeca Skills
+
+Horeca means "Catery Services" in Dutch. Although all Dutch know the meaning of
+“horeca”, not everyone is aware of its origin: “horeca” is constructed by
+combining the first two letters of the Dutch words “hotel”, “restaurant” and
+“café” (meaning “bar”).
+
+Horeca Skills are skills meant to make it easy for one to find a nice hotel,
+restaurant or bar around a location.
+
+- [x] `/suggest <keyword>`: will suggest you the best places around a 2km radius
+      from the location provided by the replied message. Send a location to the
+      channel, and reply to it using this command to get suggestions.
 
 ## Developing
 

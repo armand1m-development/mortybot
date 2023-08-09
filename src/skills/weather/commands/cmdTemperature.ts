@@ -6,8 +6,9 @@ export const cmdTemperature: CommandMiddleware<BotContext> = async (ctx) => {
   const query = ctx.match;
 
   try {
-    const result = await ctx.weatherApi.queryWeather({ query });
-    return ctx.reply(`Temperature in "${query}": ${result.main.temp}ºC`);
+    await ctx.api.sendChatAction(ctx.chat.id, "typing");
+    const { main: { temp } } = await ctx.weatherApi.queryWeather({ query });
+    return ctx.reply(`Temperature in "${query}": ${temp}ºC`);
   } catch (error) {
     getLogger().error(error);
     return ctx.reply(

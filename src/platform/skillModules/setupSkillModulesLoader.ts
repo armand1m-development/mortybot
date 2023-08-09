@@ -3,7 +3,7 @@ import { getLogger } from "std/log/mod.ts";
 import { Bot } from "grammy/mod.ts";
 import { BotCommand } from "grammy/types.ts";
 import { BotContext, SessionData } from "/src/context/mod.ts";
-import type { Skill } from "./skills.ts";
+import type { Skill } from "/src/skills/skills.ts";
 import { SkillModule } from "./types/SkillModule.ts";
 
 const logger = () => getLogger();
@@ -72,6 +72,13 @@ export const setupSkillModulesLoader = async (
     });
   };
 
+  const loadSkillInlineQueryListeners = (skill: SkillModule) => {
+    logger().debug(`Loading skill "${skill.name}" listeners..`);
+    skill.inlineQueryListeners.forEach(({ pattern, handler }) => {
+      bot.inlineQuery(pattern, handler);
+    });
+  };
+
   const runSkillInitializers = (skill: SkillModule) => {
     logger().debug(`Running skill "${skill.name}" initializers..`);
     return Promise.allSettled(
@@ -86,7 +93,7 @@ export const setupSkillModulesLoader = async (
 
         return variants.map((variantCommand): BotCommand => ({
           command: variantCommand,
-          description,
+          description: `${description} [skill: ${skill.name}]`,
         }));
       },
     );
@@ -105,6 +112,7 @@ export const setupSkillModulesLoader = async (
       loadSkillMiddlewares(skill);
       loadSkillCommands(skill);
       loadSkillListeners(skill);
+      loadSkillInlineQueryListeners(skill);
 
       commands = [...commands, ...compileSkillCommandsToDocs(skill)];
     }));

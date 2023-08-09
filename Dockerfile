@@ -22,10 +22,13 @@ COPY --from=bin /deno /bin/deno
 WORKDIR /app
 COPY . .
 
+
 RUN deno cache \
   --lock=deno.lock \
   --lock-write \
   main.ts
+
+RUN deno task generate:skills
 
 ENTRYPOINT ["/bin/deno"]
 CMD ["run", "--allow-net", "--allow-env", "--allow-read", "--allow-write", "main.ts"]

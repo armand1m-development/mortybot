@@ -6,6 +6,8 @@ export const cmdForecast: CommandMiddleware<BotContext> = async (ctx) => {
   const query = ctx.match;
 
   try {
+    await ctx.api.sendChatAction(ctx.chat.id, "typing");
+
     const forecast = await ctx.weatherApi.queryForecast({ query });
 
     const firstFourEvents = forecast.list.slice(0, 4).map(

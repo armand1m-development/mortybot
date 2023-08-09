@@ -1,11 +1,13 @@
-import { User } from "grammy/types.ts";
+import { MessageEntity, User } from "grammy/types.ts";
 
 export interface Filter {
+  isLoud: boolean;
   filterTrigger: string;
   ownerId: User["id"];
   active: boolean;
   message: {
     caption?: string;
+    captionEntities?: MessageEntity[];
     animation?: {
       fileId: string;
     };
