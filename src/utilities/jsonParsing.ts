@@ -14,7 +14,6 @@ interface MapDataType<T> {
   value: [string, T][];
 }
 
-// deno-lint-ignore ban-types
 function isMap(value: object): value is MapDataType<unknown> {
   return "dataType" in value && value.dataType === "Map";
 }
