@@ -3,7 +3,7 @@ import { run } from "grammy_runner/mod.ts";
 import * as log from "std/log/mod.ts";
 import * as dotenv from "std/dotenv/mod.ts";
 
-log.setup({
+await log.setup({
   handlers: {
     console: new log.handlers.ConsoleHandler("DEBUG"),
   },

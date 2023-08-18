@@ -1,4 +1,3 @@
-// deno-lint-ignore-file ban-unused-ignore
 export function replacer(_key: string, value: unknown) {
   if (value instanceof Map) {
     return {
