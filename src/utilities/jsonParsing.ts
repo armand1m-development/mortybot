@@ -1,5 +1,4 @@
-// deno-lint-ignore-file ban-types
-
+// deno-lint-ignore-file
 export function replacer(_key: string, value: unknown) {
   if (value instanceof Map) {
     return {
