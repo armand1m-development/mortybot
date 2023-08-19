@@ -1,3 +1,5 @@
+// deno-lint-ignore-file ban-types
+
 export function replacer(_key: string, value: unknown) {
   if (value instanceof Map) {
     return {
@@ -14,7 +16,6 @@ interface MapDataType<T> {
   value: [string, T][];
 }
 
-// deno-lint-ignore ban-types
 function isMap(value: object): value is MapDataType<unknown> {
   return "dataType" in value && value.dataType === "Map";
 }
