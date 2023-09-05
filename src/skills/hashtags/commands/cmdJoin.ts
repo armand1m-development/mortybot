@@ -15,11 +15,12 @@ export const cmdJoin: CommandMiddleware<BotContext> = (ctx) => {
 
   hashtags.forEach((hashtag) => {
     const channel = ctx.session.hashtagChannels.get(hashtag);
+
     const userId = ctx.message!.from.id;
 
-    if (channel?.participants.includes(userId)) {
+    if (channel?.participants?.includes(userId)) {
       ctx.reply(
-        `You're already registered to the channel ${hashtag}`,
+        `You're already registered to the hashtag ${hashtag}`,
       );
       return;
     }
@@ -32,5 +33,9 @@ export const cmdJoin: CommandMiddleware<BotContext> = (ctx) => {
     });
 
     getLogger().info(`Registered ${userId} into tag ${hashtag}`);
+
+    ctx.reply(
+      `You're registered to the hashtag ${hashtag}. Use "/leave_hashtag ${hashtag}" to stop unsubscribe.`,
+    );
   });
 };

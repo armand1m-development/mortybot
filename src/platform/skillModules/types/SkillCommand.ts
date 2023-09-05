@@ -1,4 +1,5 @@
 import { CommandMiddleware } from "grammy/composer.ts";
+import { Chat } from "grammy/types.ts";
 import { BotContext } from "/src/context/mod.ts";
 
 export interface SkillCommand {
@@ -6,4 +7,5 @@ export interface SkillCommand {
   aliases: string[];
   description: string;
   handler: CommandMiddleware<BotContext>;
+  chatType?: Chat["type"][];
 }

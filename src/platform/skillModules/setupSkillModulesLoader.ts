@@ -67,9 +67,14 @@ export const setupSkillModulesLoader = async (
 
   const loadSkillListeners = (skill: SkillModule) => {
     logger().debug(`Loading skill "${skill.name}" listeners..`);
-    skill.listeners.forEach(({ event, handler }) => {
-      bot.on(event, handler);
-    });
+
+    for (const { event, handler, chatType } of skill.listeners) {
+      if (chatType != undefined) {
+        bot.chatType(chatType).fork().on(event, handler);
+      } else {
+        bot.fork().on(event, handler);
+      }
+    }
   };
 
   const loadSkillInlineQueryListeners = (skill: SkillModule) => {
@@ -105,16 +110,20 @@ export const setupSkillModulesLoader = async (
     let commands: BotCommand[] = [];
 
     const result = await Promise.allSettled(loadedSkills.map(async (skill) => {
-      logger().debug(`Loading skill "${skill.name}"`);
+      try {
+        logger().debug(`Loading skill "${skill.name}"`);
 
-      await runSkillInitializers(skill);
+        await runSkillInitializers(skill);
 
-      loadSkillMiddlewares(skill);
-      loadSkillCommands(skill);
-      loadSkillListeners(skill);
-      loadSkillInlineQueryListeners(skill);
+        loadSkillMiddlewares(skill);
+        loadSkillCommands(skill);
+        loadSkillListeners(skill);
+        loadSkillInlineQueryListeners(skill);
 
-      commands = [...commands, ...compileSkillCommandsToDocs(skill)];
+        commands = [...commands, ...compileSkillCommandsToDocs(skill)];
+      } catch (e) {
+        logger().error(e);
+      }
     }));
 
     const skillLoadingReport = result.map((result, index) => ({

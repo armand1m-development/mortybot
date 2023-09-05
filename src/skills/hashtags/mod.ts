@@ -4,6 +4,7 @@ import { hashtagMentionListener } from "./listeners/hashtagMention.ts";
 import { cmdJoin } from "./commands/cmdJoin.ts";
 import { cmdLeave } from "./commands/cmdLeave.ts";
 import { getInitialHashtagChannelSessionData } from "./sessionData/getInitialTagChannelSessionData.ts";
+import { SessionData } from "../../context/mod.ts";
 
 export const name: SkillModule["name"] = "hashtags";
 export const initializers: SkillModule["initializers"] = [];
@@ -12,13 +13,14 @@ export const commands: SkillModule["commands"] = [
   {
     command: "join_hashtag",
     aliases: [],
-    description: "Join hashtag channel and get notified",
+    description:
+      "Join hashtag channel and get notified. Example: /join_hashtag #games",
     handler: cmdJoin,
   },
   {
     command: "leave_hashtag",
     aliases: [],
-    description: "Leave hashtag channel",
+    description: "Leave a hashtag channel. Example: /leave_hashtag #games",
     handler: cmdLeave,
   },
 ];
@@ -35,3 +37,14 @@ export const listeners: SkillModule["listeners"] = [
     handler: hashtagMentionListener,
   },
 ];
+
+export const inlineQueryListeners: SkillModule["listeners"] = [];
+
+export const migrations: SkillModule["migrations"] = {
+  1: function addHashtagChannelsToSession(old: SessionData): SessionData {
+    return {
+      ...old,
+      hashtagChannels: old.hashtagChannels ?? new Map(),
+    };
+  },
+};
