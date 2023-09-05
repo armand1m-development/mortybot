@@ -25,5 +25,9 @@ export const cmdLeave: CommandMiddleware<BotContext> = (ctx) => {
     });
 
     getLogger().info(`Removed ${userId} from hashtag channel ${hashtag}`);
+
+    ctx.reply(
+      `You're now unsubscribed from the hashtag ${hashtag}.`,
+    );
   });
 };
