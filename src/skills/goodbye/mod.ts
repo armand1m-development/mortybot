@@ -14,6 +14,7 @@ export const commands: SkillModule["commands"] = [
     description:
       "Ranks the group members by the amount of times they left the group.",
     handler: cmdLeavingRank,
+    chatType: ["group", "supergroup"],
   },
 ];
 

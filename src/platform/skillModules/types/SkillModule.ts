@@ -1,3 +1,4 @@
+import { Migrations } from "grammy/mod.ts";
 import { MiddlewareFn } from "grammy/composer.ts";
 import { BotContext } from "/src/context/mod.ts";
 import { SkillCommand } from "./SkillCommand.ts";
@@ -20,4 +21,5 @@ export interface SkillModule {
    */
   initializers: (() => Promise<void> | void)[];
   inlineQueryListeners: SkillInlineQueryListener[];
+  migrations: Migrations;
 }

@@ -10,8 +10,12 @@ import { RodosolApiContext } from "/src/skills/espiritosanto/middlewares/createR
 import { LocationsApiContext } from "/src/skills/horeca/middlewares/createLocationsApiMiddleware/types.ts";
 import { FilterSessionData } from "/src/skills/filters/sessionData/types.ts";
 import { GoodbyeCounterSessionData } from "/src/skills/goodbye/sessionData/types.ts";
+import { HashtagChannelSessionData } from "/src/skills/hashtags/sessionData/types.ts";
 
-export type SessionData = FilterSessionData & GoodbyeCounterSessionData;
+export type SessionData =
+  & FilterSessionData
+  & GoodbyeCounterSessionData
+  & HashtagChannelSessionData;
 
 export type BotContext =
   & FileFlavor<Context>

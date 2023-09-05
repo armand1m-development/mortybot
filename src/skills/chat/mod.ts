@@ -11,12 +11,14 @@ export const commands: SkillModule["commands"] = [
     aliases: ["batiza"],
     description: "Sets the chat title. Only works if the bot is a chat admin.",
     handler: cmdSetTitle,
+    chatType: ["group", "supergroup"],
   },
   {
     command: "report",
     aliases: ["admin"],
     description: "Pings the group admin about the replied message.",
     handler: cmdReport,
+    chatType: ["group", "supergroup"],
   },
 ];
 

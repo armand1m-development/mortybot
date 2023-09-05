@@ -1,6 +1,6 @@
 import { getLogger } from "std/log/mod.ts";
 import { resolve } from "std/path/posix.ts";
-import { Bot, Context, session } from "grammy/mod.ts";
+import { Bot, Context, enhanceStorage, session } from "grammy/mod.ts";
 import { sequentialize } from "grammy_runner/mod.ts";
 import { hydrateFiles } from "grammy_files/mod.ts";
 import { FileAdapter } from "grammy_storages/file/src/mod.ts";
@@ -12,6 +12,7 @@ import { injectGlobalErrorHandler } from "./platform/errorHandling/globalErrorHa
 import { setupSkillModulesLoader } from "./platform/skillModules/setupSkillModulesLoader.ts";
 
 import { skills } from "./skills/skills.ts";
+import { setupSkillMigrationLoader } from "./platform/skillModules/setupSkillMigrationLoader.ts";
 
 export const createBot = async (configuration: Configuration) => {
   const bot = new Bot<BotContext>(configuration.botToken);
@@ -25,33 +26,37 @@ export const createBot = async (configuration: Configuration) => {
     return ctx.chat?.id.toString() ?? ctx.inlineQuery?.from.id.toString();
   };
 
+  const migrationLoader = await setupSkillMigrationLoader(skills);
+  const migrations = migrationLoader.loadSkillMigrations();
+
   bot.api.config.use(hydrateFiles(bot.token));
   bot.use(createConfigurationMiddleware(configuration));
   bot.use(sequentialize(getSessionKey));
   bot.use(session({
     getSessionKey,
     initial: createSessionData,
-    storage: new FileAdapter({
-      dirName: resolve(configuration.dataPath, "./sessions"),
-      deserializer: (input) => {
-        try {
-          return JSON.parse(input, reviver);
-        } catch (err) {
-          getLogger().error(err);
-          return {};
-        }
-      },
-      serializer: (input) => {
-        return JSON.stringify(input, replacer, `\t`);
-      },
+    storage: enhanceStorage({
+      migrations,
+      storage: new FileAdapter({
+        dirName: resolve(configuration.dataPath, "./sessions"),
+        deserializer: (input) => {
+          try {
+            return JSON.parse(input, reviver);
+          } catch (err) {
+            getLogger().error(err);
+            return {};
+          }
+        },
+        serializer: (input) => {
+          return JSON.stringify(input, replacer, `\t`);
+        },
+      }),
     }),
   }));
 
   await loadSkills();
 
   injectGlobalErrorHandler(bot);
-
-  bot.on("inline_query", (ctx) => ctx.answerInlineQuery([]));
 
   return bot;
 };
