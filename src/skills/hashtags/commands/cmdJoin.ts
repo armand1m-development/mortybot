@@ -35,7 +35,7 @@ export const cmdJoin: CommandMiddleware<BotContext> = (ctx) => {
     getLogger().info(`Registered ${userId} into tag ${hashtag}`);
 
     ctx.reply(
-      `You're registered to the hashtag ${hashtag}. Use "/leave_hashtag ${hashtag}" to stop unsubscribe.`,
+      `You're registered to the hashtag ${hashtag}. Use "/leave_hashtag ${hashtag}" to unsubscribe.`,
     );
   });
 };
