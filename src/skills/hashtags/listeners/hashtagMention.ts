@@ -18,11 +18,13 @@ export const hashtagMentionListener: Middleware<
     }
 
     const mentions = await Promise.all(
-      hashtagChannel.participants.map(async (userId) => {
-        const { user } = await ctx.getChatMember(userId);
-        const mention = createMemberMention(user, false);
-        return mention;
-      }),
+      hashtagChannel.participants
+        .filter((userId) => userId !== ctx.msg.from.id)
+        .map(async (userId) => {
+          const { user } = await ctx.getChatMember(userId);
+          const mention = createMemberMention(user, false);
+          return mention;
+        })
     );
 
     const mentionChunks = getChunks(mentions);
