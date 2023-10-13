@@ -2,7 +2,7 @@ import { CommandMiddleware } from "grammy/composer.ts";
 import { BotContext } from "/src/context/mod.ts";
 import { parsePosition } from "../utilities/parsePosition.ts";
 import { GeoPosition } from "./types.ts";
-import { formatIssPassMesage } from "../utilities/formatIssPassMesage.ts";
+import { formatIssPassMessage } from "../utilities/formatIssPassMessage.ts";
 
 export const nextIssPasses: CommandMiddleware<BotContext> = async (ctx) => {
   const position: GeoPosition = parsePosition(ctx.match);
@@ -21,5 +21,5 @@ export const nextIssPasses: CommandMiddleware<BotContext> = async (ctx) => {
     ctx.reply("Iss will not pass visible in your sky for the next 3 days :(");
   }
 
-  ctx.reply(formatIssPassMesage(passes));
+  ctx.reply(formatIssPassMessage(passes));
 };

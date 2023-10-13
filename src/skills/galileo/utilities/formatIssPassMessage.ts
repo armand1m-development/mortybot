@@ -18,7 +18,7 @@ const generateMagnitudeBar = (mag: number) => {
 
 const sateliteEmoji = "\uD83D\uDEF0\uFE0F";
 
-export const formatIssPassMesage = (passes: N2yoVisualPasses["passes"]) => {
+export const formatIssPassMessage = (passes: N2yoVisualPasses["passes"]) => {
   const fullMessage = passes.reduce((acc, pass) => {
     const message = `${sateliteEmoji} ISS pass on day: ${
       formatDate(pass.startUTC).date
