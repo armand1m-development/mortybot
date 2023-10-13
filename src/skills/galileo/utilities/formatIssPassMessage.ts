@@ -4,16 +4,38 @@ const formatDate = (date: number) => {
   const timestamp = new Date(date * 1000);
 
   return {
-    date: timestamp.toLocaleDateString(),
-    time: timestamp.toLocaleTimeString(),
+    date: timestamp.toLocaleDateString("pt-br"),
+    time: timestamp.toLocaleTimeString("pt-br", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
   };
 };
 
 const generateMagnitudeBar = (mag: number) => {
   if (mag > 0) return "*";
-  return Array(Math.floor(Math.abs(mag)))
-    .fill("#")
-    .join("");
+  const roundedMag = Math.floor(Math.abs(mag));
+  const fillSpace = Array(roundedMag).fill("█");
+  const emptySpace = Array(10 - roundedMag).fill("▒");
+
+  console.log(
+    "%cformatIssPassMessage.ts line:18 object",
+    "color: #007acc;",
+    fillSpace
+  );
+  console.log(
+    "%cformatIssPassMessage.ts line:18 object",
+    "color: #007acc;",
+    emptySpace
+  );
+
+  return [...fillSpace, ...emptySpace].join("");
+};
+
+const formatPassDuration = (duration: number) => {
+  return `${Math.floor(duration / 60)}:${Intl.NumberFormat("pt-br", {
+    minimumIntegerDigits: 2,
+  }).format(Math.floor(duration & 60))} minutes`;
 };
 
 const sateliteEmoji = "\uD83D\uDEF0\uFE0F";
@@ -24,21 +46,19 @@ export const formatIssPassMessage = (passes: N2yoVisualPasses["passes"]) => {
       formatDate(pass.startUTC).date
     }
 
-    Starts at:            ${formatDate(pass.startUTC).time}  ${
+    Starts at:  ${formatDate(pass.startUTC).time}  ${
       pass.startAzCompass
-    }/${Math.floor(pass.startAz)}°  elevation: ${pass.startEl}°
-    Max elevation:  ${formatDate(pass.maxUTC).time}  ${
+    }/${Math.floor(pass.startAz)}°  elev: ${pass.startEl}°
+    Max elev:  ${formatDate(pass.maxUTC).time}  ${
       pass.maxAzCompass
-    }/${Math.floor(pass.maxAz)}°  elevation: ${pass.maxEl}°
-    Ends at:              ${formatDate(pass.endUTC).time}  ${
+    }/${Math.floor(pass.maxAz)}°  elev: ${pass.maxEl}°
+    Ends at:  ${formatDate(pass.endUTC).time}  ${
       pass.endAzCompass
-    }/${Math.floor(pass.endAz)}°  elevation: ${pass.endEl}°
+    }/${Math.floor(pass.endAz)}°  elev: ${pass.endEl}°
     
     Size in the sky: ${generateMagnitudeBar(pass.mag)}
     Magnitude: ${pass.mag}
-    Total duration: ${Math.floor(pass.duration / 60)}:${Math.floor(
-      pass.duration & 60
-    )} minutes
+    Total duration: ${formatPassDuration(pass.duration)}
     `;
 
     return acc + "\n\n" + message;

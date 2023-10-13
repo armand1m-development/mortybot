@@ -16,7 +16,7 @@ export const fetchIssPasses = async ({
 }: FetchIssPassesParams) => {
   const issSatCode = 25544;
   const numberOfDays = 3;
-  const secondsOfVisibility = 600;
+  const secondsOfVisibility = 550;
 
   const response = await fetch(
     `${baseUrl}/rest/v1/satellite/visualpasses/${issSatCode}/${latitude}/${longitude}/0/${numberOfDays}/${secondsOfVisibility}/&apiKey=${token}`
