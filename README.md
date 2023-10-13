@@ -102,9 +102,9 @@ The command names are in both english and portuguese as a homage to the
 brazilian software industry where one can be encouraged to implement production
 code with references and function names like `getTretas(fromThisPessoa)`.
 
-- [ ] `/treta`: register the treta message
-- [ ] `/tretas`: lists all treta messages
-- [ ] `/days_without_treta`: will tell us how long we managed to stay without a
+- [x] `/treta`: register the treta message
+- [x] `/tretas`: lists all treta messages
+- [x] `/days_without_treta`: will tell us how long we managed to stay without a
       treta
 
 ### Message Auto Deletion
@@ -125,11 +125,11 @@ code with references and function names like `getTretas(fromThisPessoa)`.
 
 ### Hashtags
 
-- [ ] `/join_hashtag <hashtag>`: user joins to the selected channel and will be
+- [x] `/join_hashtag <hashtag>`: user joins to the selected channel and will be
       mentioned every time that hashted is used. Example: `/join_hashtag #games`
-- [ ] `/leave_hashtag #subject`: user leave the channel and will be not
+- [x] `/leave_hashtag #subject`: user leave the channel and will be not
       mentioned anymore.
-- [ ] Listens to hashtags in the chat and mentions people registered to those
+- [x] Listens to hashtags in the chat and mentions people registered to those
       hashtags when they appear. Example: People registered to the `#games`
       hashtag will be mentioned when the following message is sent:
       `new drop! <url> #games`
@@ -183,6 +183,20 @@ restaurant or bar around a location.
 - [x] `/suggest <keyword>`: will suggest you the best places around a 2km radius
       from the location provided by the replied message. Send a location to the
       channel, and reply to it using this command to get suggestions.
+
+### Galileo
+
+Tracking visual passes from satellites, meteor showers, and receive timely
+celestial event alerts. Explore the universe! 🌌🛰️🔭
+
+- [x] `/iss <geo position>`: It will return visual passes of ISS for the next 3
+      days in the location provided.
+- [ ] `/watch_iss <geo position>`: It will return visual passes of ISS for the
+      next week (monday-sunday) every monday 1:00PM
+- [ ] `/watch_sky <geo position>`: It will return visual events in the sky for
+      the next week (monday-sunday) every monday 1:00PM
+- [ ] `/sat_pass <sat_code> <geo position>`: It will return visual passes of the
+      provided satallite for the next 3 days in the location provided.
 
 ## Developing
 

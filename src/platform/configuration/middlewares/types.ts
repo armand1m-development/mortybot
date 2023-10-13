@@ -4,6 +4,7 @@ export interface Configuration {
   exchangeApiToken: string;
   openWeatherMapApiToken: string;
   googleMapsApiToken: string;
+  n2yoApiToken: string;
 }
 
 export interface ConfigurationContext {
