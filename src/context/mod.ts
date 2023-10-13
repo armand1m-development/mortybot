@@ -11,17 +11,17 @@ import { LocationsApiContext } from "/src/skills/horeca/middlewares/createLocati
 import { FilterSessionData } from "/src/skills/filters/sessionData/types.ts";
 import { GoodbyeCounterSessionData } from "/src/skills/goodbye/sessionData/types.ts";
 import { HashtagChannelSessionData } from "/src/skills/hashtags/sessionData/types.ts";
+import { N2yoApiContext } from "/src/skills/galileo/middleware/createN2yoMiddleware/types.ts";
 
-export type SessionData =
-  & FilterSessionData
-  & GoodbyeCounterSessionData
-  & HashtagChannelSessionData;
+export type SessionData = FilterSessionData &
+  GoodbyeCounterSessionData &
+  HashtagChannelSessionData;
 
-export type BotContext =
-  & FileFlavor<Context>
-  & CurrencyApiContext
-  & WeatherApiContext
-  & RodosolApiContext
-  & ConfigurationContext
-  & LocationsApiContext
-  & SessionFlavor<SessionData>;
+export type BotContext = FileFlavor<Context> &
+  CurrencyApiContext &
+  WeatherApiContext &
+  RodosolApiContext &
+  N2yoApiContext &
+  ConfigurationContext &
+  LocationsApiContext &
+  SessionFlavor<SessionData>;
