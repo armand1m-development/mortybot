@@ -24,7 +24,7 @@ export const hashtagMentionListener: Middleware<
           const { user } = await ctx.getChatMember(userId);
           const mention = createMemberMention(user, false);
           return mention;
-        })
+        }),
     );
 
     const mentionChunks = getChunks(mentions);
