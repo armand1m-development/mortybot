@@ -23,5 +23,5 @@ export type N2yoVisualPasses = {
     transactionscount: number;
     passescount: number;
   };
-  passes: IssPass[];
+  passes: IssPass[] | undefined;
 };

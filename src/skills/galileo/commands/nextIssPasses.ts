@@ -9,7 +9,7 @@ export const nextIssPasses: CommandMiddleware<BotContext> = async (ctx) => {
 
   if (!latitude || !longitude) {
     ctx.reply(
-      "You should provide a valid postion. Example: `/iss -20.316839,-40.309921`"
+      "You should provide a valid postion. Example: `/iss -20.316839,-40.309921`",
     );
     return;
   }

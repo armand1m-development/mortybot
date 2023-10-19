@@ -19,16 +19,16 @@ export const fetchIssPasses = async ({
   const secondsOfVisibility = 550;
 
   const response = await fetch(
-    `${baseUrl}/rest/v1/satellite/visualpasses/${issSatCode}/${latitude}/${longitude}/0/${numberOfDays}/${secondsOfVisibility}/&apiKey=${token}`
+    `${baseUrl}/rest/v1/satellite/visualpasses/${issSatCode}/${latitude}/${longitude}/0/${numberOfDays}/${secondsOfVisibility}/&apiKey=${token}`,
   );
 
   if (!response.ok) {
     const body = await response.text();
     logger().error(
-      `Failed to find iss passes for the specified query. Response body in debug.`
+      `Failed to find iss passes for the specified query. Response body in debug.`,
     );
     logger().debug(
-      `Request params: ${JSON.stringify({ latitude, longitude }, null, 2)}`
+      `Request params: ${JSON.stringify({ latitude, longitude }, null, 2)}`,
     );
     logger().debug(`Response Body: ${body}`);
 

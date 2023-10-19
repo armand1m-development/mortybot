@@ -7,7 +7,7 @@ processes = []
 
 [env]
   DATA_PATH="./data"
-  MESSAGE_TIMEOUT_ENABLED=true
+  MESSAGE_TIMEOUT_ENABLED="true"
   MESSAGE_TIMEOUT_IN_MINUTES=2
   DEBUG="*"
 
