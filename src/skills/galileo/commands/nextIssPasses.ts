@@ -9,16 +9,12 @@ export const nextIssPasses: CommandMiddleware<BotContext> = async (ctx) => {
 
   if (!latitude || !longitude) {
     ctx.reply(
-      "You should provide a valid postion. Example: `/iss -20.316839,-40.309921`",
+      "You should provide a valid position. Example: `/iss -20.316839,-40.309921`",
     );
     return;
   }
 
-  const { passes, info } = await ctx.n2yoApi.fetchIssPasses(position);
-
-  if (info.passescount === 0) {
-    ctx.reply("Iss will not pass visible in your sky for the next 3 days :(");
-  }
+  const { passes } = await ctx.n2yoApi.fetchIssPasses(position);
 
   ctx.reply(formatIssPassMessage(passes));
 };
