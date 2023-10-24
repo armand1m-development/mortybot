@@ -14,10 +14,11 @@ export const cmdListFilters: CommandMiddleware<BotContext> = async (ctx) => {
   const chunkedEntries = getChunks(entries, 100);
 
   for (const entrySet of chunkedEntries) {
-    const lines = entrySet.map(([filterTrigger, filter]) => {
-      return `- ${filterTrigger} (${filter.active ? "active" : "stopped"})`;
-    });
+    const message = entrySet
+      .filter(([, filter]) => filter.active)
+      .map(([filterTrigger]) => `- ${filterTrigger}`)
+      .join("\n");
 
-    await ctx.reply(lines.join("\n"));
+    await ctx.reply(message);
   }
 };

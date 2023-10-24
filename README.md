@@ -50,7 +50,9 @@ Commands:
 Message Filters are listeners that will send a pre-defined message when someone
 in the group sends a message contains a piece of text.
 
-- [x] `/filters`: list all filters that exist currently
+- [x] `/filters`: list all filters that are active. stopped filters will be
+      hidden from the search. will send batches of 100 filters in each message
+      to bypass 4096 char limit from telegram.
 - [x] `/add_filter <filter>`: adds a new filter listener based on the replied
       message. This will add an "exact" filter: it will only reply to a message
       that is exactly the same as the filter.
