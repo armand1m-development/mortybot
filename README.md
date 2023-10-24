@@ -133,6 +133,8 @@ code with references and function names like `getTretas(fromThisPessoa)`.
       hashtags when they appear. Example: People registered to the `#games`
       hashtag will be mentioned when the following message is sent:
       `new drop! <url> #games`
+- [x] `/hashtags`, `/list_hashtags`: Lists all hashtags existing in the group
+      along with their participants.
 
 ### Annoying user listener
 
