@@ -3,6 +3,7 @@ import { SkillListener } from "/src/platform/skillModules/types/SkillListener.ts
 import { hashtagMentionListener } from "./listeners/hashtagMention.ts";
 import { cmdJoin } from "./commands/cmdJoin.ts";
 import { cmdLeave } from "./commands/cmdLeave.ts";
+import { cmdListHashtags } from "./commands/cmdList.ts";
 import { getInitialHashtagChannelSessionData } from "./sessionData/getInitialTagChannelSessionData.ts";
 import { SessionData } from "../../context/mod.ts";
 
@@ -22,6 +23,13 @@ export const commands: SkillModule["commands"] = [
     aliases: [],
     description: "Leave a hashtag channel. Example: /leave_hashtag #games",
     handler: cmdLeave,
+  },
+  {
+    command: "list_hashtags",
+    aliases: ["hashtags"],
+    description:
+      "List all hashtags in the group. Usage: /list_hashtags or /hashtags",
+    handler: cmdListHashtags,
   },
 ];
 
