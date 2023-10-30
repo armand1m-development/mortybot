@@ -1,3 +1,4 @@
+import { GeoPosition } from "./types.ts";
 import { N2yoVisualPasses } from "../httpClients/types.ts";
 
 const formatDate = (date: number) => {
@@ -42,9 +43,12 @@ const formatPassDuration = (duration: number) => {
 
 const sateliteEmoji = "\uD83D\uDEF0\uFE0F";
 
-export const formatIssPassMessage = (passes: N2yoVisualPasses["passes"]) => {
+export const formatIssPassMessage = (
+  position: GeoPosition,
+  passes: N2yoVisualPasses["passes"],
+) => {
   if (passes === undefined || passes.length == 0) {
-    return "There are no passes for this location in the horizon for the upcoming 3 days.";
+    return `There are no passes for this location (lat: ${position.latitude}, long: ${position.longitude}) in the horizon for the upcoming 3 days.`;
   }
 
   const fullMessage = passes.reduce((acc, pass) => {

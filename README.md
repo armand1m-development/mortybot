@@ -195,6 +195,9 @@ celestial event alerts. Explore the universe! 🌌🛰️🔭
 
 - [x] `/iss <geo position>`: It will return visual passes of ISS for the next 3
       days in the location provided.
+- [x] reply to location message with `/iss`: It will return visual passes of ISS
+      for the next 3 days using the location provided in the reply. Supports
+      real time location.
 - [ ] `/watch_iss <geo position>`: It will return visual passes of ISS for the
       next week (monday-sunday) every monday 1:00PM
 - [ ] `/watch_sky <geo position>`: It will return visual events in the sky for
