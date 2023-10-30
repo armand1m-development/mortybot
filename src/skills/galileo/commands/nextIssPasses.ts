@@ -1,20 +1,24 @@
 import { CommandMiddleware } from "grammy/composer.ts";
 import { BotContext } from "/src/context/mod.ts";
-import { parsePosition } from "../utilities/parsePosition.ts";
+import { GeoPosition } from "../utilities/types.ts";
 import { formatIssPassMessage } from "../utilities/formatIssPassMessage.ts";
+import { fetchPositionFromContext } from "../utilities/fetchPositionFromContext.ts";
 
 export const nextIssPasses: CommandMiddleware<BotContext> = async (ctx) => {
-  const position = parsePosition(ctx.match);
-  const { latitude, longitude } = position;
+  let position: GeoPosition;
 
-  if (!latitude || !longitude) {
-    ctx.reply(
-      "You should provide a valid position. Example: `/iss -20.316839,-40.309921`",
-    );
+  try {
+    position = fetchPositionFromContext(ctx);
+  } catch (err) {
+    ctx.reply(err.message);
     return;
   }
 
-  const { passes } = await ctx.n2yoApi.fetchIssPasses(position);
+  const response = await ctx.n2yoApi.fetchIssPasses(position);
 
-  ctx.reply(formatIssPassMessage(passes));
+  if (ctx.message?.text.includes("debug")) {
+    ctx.reply(JSON.stringify(response, null, 2));
+  }
+
+  ctx.reply(formatIssPassMessage(position, response.passes));
 };

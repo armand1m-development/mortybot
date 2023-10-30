@@ -1,6 +1,6 @@
 import { getLogger } from "std/log/mod.ts";
-import { GeoPosition } from "../commands/types.ts";
 import { OmitToken } from "/src/types/OmitToken.ts";
+import { GeoPosition } from "../utilities/types.ts";
 import { N2yoVisualPasses } from "./types.ts";
 
 const logger = () => getLogger();
