@@ -18,5 +18,12 @@
     "dev": "deno run --allow-net --allow-env --allow-read --allow-write --watch ./main.ts",
     "test:coverage": "deno test --allow-none --coverage=coverage",
     "generate:skills": "deno run --allow-write --allow-read ./generators/generateSkillsFile.ts"
+  },
+  "compilerOptions": {
+    "lib": [
+      "deno.window",
+      "dom",
+      "dom.iterable"
+    ]
   }
 }

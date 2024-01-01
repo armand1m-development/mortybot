@@ -12,11 +12,13 @@ import { FilterSessionData } from "/src/skills/filters/sessionData/types.ts";
 import { GoodbyeCounterSessionData } from "/src/skills/goodbye/sessionData/types.ts";
 import { HashtagChannelSessionData } from "/src/skills/hashtags/sessionData/types.ts";
 import { N2yoApiContext } from "/src/skills/galileo/middleware/createN2yoMiddleware/types.ts";
+import { ExpanderSessionData } from "/src/skills/expanders/sessionData/types.ts";
 
 export type SessionData =
   & FilterSessionData
   & GoodbyeCounterSessionData
-  & HashtagChannelSessionData;
+  & HashtagChannelSessionData
+  & ExpanderSessionData;
 
 export type BotContext =
   & FileFlavor<Context>
