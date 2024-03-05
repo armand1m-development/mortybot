@@ -1,4 +1,4 @@
-import { match, P } from "ts-pattern";
+import { match } from "ts-pattern";
 import { InlineQueryResult } from "grammy/types.ts";
 import { Filter } from "../sessionData/types.ts";
 
