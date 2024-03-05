@@ -28,12 +28,17 @@ export const searchListener: InlineQueryMiddleware<BotContext> = async (
 
   const regex = /^(\w+)\s*(.*)$/;
   const match = ctx.inlineQuery.query.match(regex);
+  const filters = [...ctx.session.filters.values()];
 
   if (match === null) {
-    return;
+    const answer = filters
+      .map(mapFilterToInlineQueryResult)
+      .slice(0, maxResults);
+
+    return ctx.answerInlineQuery(answer, answerOptions);
   }
 
-  const [, prefix, query] = match;
+  let [, prefix, query] = match;
 
   if (prefix === "muminst") {
     if (query.trim() === "") {
@@ -54,12 +59,12 @@ export const searchListener: InlineQueryMiddleware<BotContext> = async (
         }
       })
       .map((audio) => mapAudioToInlineQueryResult(audio))
-      .slice(0, maxResults / 2);
+      .slice(0, maxResults);
 
     return ctx.answerInlineQuery(audios, answerOptions);
   }
 
-  const filters = [...ctx.session.filters.values()];
+  query = prefix;
 
   if (query.trim() === "") {
     const answer = filters
