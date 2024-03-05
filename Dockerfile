@@ -1,5 +1,5 @@
 # Dockerfile
-ARG DENO_VERSION=1.31.1
+ARG DENO_VERSION=1.41.1
 ARG BIN_IMAGE=denoland/deno:bin-${DENO_VERSION}
 FROM ${BIN_IMAGE} AS bin
 
@@ -21,7 +21,6 @@ COPY --from=bin /deno /bin/deno
 
 WORKDIR /app
 COPY . .
-
 
 RUN deno cache \
   --lock=deno.lock \
