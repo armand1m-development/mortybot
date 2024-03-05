@@ -26,6 +26,7 @@ const bot = await createBot({
   openWeatherMapApiToken: Deno.env.get("OPENWEATHERMAP_API_TOKEN")!,
   googleMapsApiToken: Deno.env.get("GOOGLEMAPS_API_TOKEN")!,
   n2yoApiToken: Deno.env.get("N2YO_API_TOKEN")!,
+  inlineQuerySourceChatId: Deno.env.get("INLINE_QUERY_SOURCE_CHAT_ID")!,
 });
 
 const runner = run(bot);

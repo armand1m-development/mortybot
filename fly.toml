@@ -11,6 +11,7 @@ primary_region = "ams"
   MESSAGE_TIMEOUT_ENABLED="true"
   MESSAGE_TIMEOUT_IN_MINUTES=2
   DEBUG="*"
+  INLINE_QUERY_SOURCE_CHAT_ID=-1001651043611
 
 [mounts]
   source="mortybot_data"

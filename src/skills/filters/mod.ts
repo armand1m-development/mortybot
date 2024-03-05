@@ -77,7 +77,7 @@ export const listeners: SkillModule["listeners"] = [
 
 export const inlineQueryListeners: SkillModule["inlineQueryListeners"] = [
   {
-    pattern: /^filters\s*(.*)$/,
+    pattern: /^.*$/,
     handler: filterSearchListener,
   },
 ];

@@ -1,6 +1,7 @@
 import { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
 import { cmdReport } from "./commands/cmdReport.ts";
 import { cmdSetTitle } from "./commands/cmdSetTitle.ts";
+import { cmdGetChatId } from "./commands/cmdGetChatId.ts";
 
 export const name: SkillModule["name"] = "chat";
 export const initializers: SkillModule["initializers"] = [];
@@ -18,6 +19,13 @@ export const commands: SkillModule["commands"] = [
     aliases: ["admin"],
     description: "Pings the group admin about the replied message.",
     handler: cmdReport,
+    chatType: ["group", "supergroup"],
+  },
+  {
+    command: "chat_id",
+    aliases: ["id"],
+    description: "Gets the chat id.",
+    handler: cmdGetChatId,
     chatType: ["group", "supergroup"],
   },
 ];

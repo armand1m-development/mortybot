@@ -23,7 +23,7 @@ export const createBot = async (configuration: Configuration) => {
   );
 
   const getSessionKey = (ctx: Context) => {
-    return ctx.chat?.id.toString() ?? ctx.inlineQuery?.from.id.toString();
+    return ctx.chat?.id.toString() ?? configuration.inlineQuerySourceChatId;
   };
 
   const migrationLoader = await setupSkillMigrationLoader(skills);

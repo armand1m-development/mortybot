@@ -5,6 +5,7 @@ export interface Configuration {
   openWeatherMapApiToken: string;
   googleMapsApiToken: string;
   n2yoApiToken: string;
+  inlineQuerySourceChatId: string;
 }
 
 export interface ConfigurationContext {

@@ -8,61 +8,60 @@ interface FuseResult<T> {
   item: T;
   refIndex: number;
 }
+interface FuseOptions {
+  isCaseSensitive?: boolean;
+  includeScore?: boolean;
+  shouldSort?: boolean;
+  includeMatches?: boolean;
+  findAllMatches?: boolean;
+  minMatchCharLength?: number;
+  location?: number;
+  threshold?: number;
+  distance?: number;
+  useExtendedSearch?: boolean;
+  ignoreLocation?: boolean;
+  ignoreFieldNorm?: boolean;
+  fieldNormWeight?: number;
+  keys: string[];
+}
 
-export const filterSearchListener: InlineQueryMiddleware<BotContext> = (
+export const filterSearchListener: InlineQueryMiddleware<BotContext> = async (
   ctx,
 ) => {
-  const options = {
+  const options: FuseOptions = {
     isCaseSensitive: false,
-    // includeScore: false,
-    // shouldSort: true,
-    // includeMatches: false,
-    // findAllMatches: false,
-    // minMatchCharLength: 1,
-    // location: 0,
-    // threshold: 0.6,
-    // distance: 100,
-    // useExtendedSearch: false,
-    // ignoreLocation: false,
-    // ignoreFieldNorm: false,
-    // fieldNormWeight: 1,
     keys: [
       "filterTrigger",
       "message.caption",
     ],
   };
 
+  const query = ctx.inlineQuery.query;
+
+  const chatMember = await ctx.api.getChatMember(
+    ctx.configuration.inlineQuerySourceChatId,
+    ctx.update.inline_query.from.id,
+  );
+
   const filters = [...ctx.session.filters.values()];
-  const regex = /^(\w+)\s*(.*)$/;
-  const match = ctx.inlineQuery.query.match(regex);
+  const allowedStatuses = ["creator", "administrator", "member"];
 
-  if (match === null) {
-    return;
+  const answerOptions = { cache_time: 1, is_personal: true };
+  if (!allowedStatuses.includes(chatMember.status)) {
+    return ctx.answerInlineQuery([], answerOptions);
   }
-
-  const [, _commandPrefix, query] = match;
 
   if (query.trim() === "") {
     const allFilters = filters.map(mapFilterToInlineQueryResult);
-    console.log({
-      allFilters,
-    });
-    return ctx.answerInlineQuery(allFilters);
+    return ctx.answerInlineQuery(allFilters, answerOptions);
   }
 
   const fuse = new Fuse(filters, options);
-
   const result = fuse.search(query) as FuseResult<Filter>[];
 
   const answer = result.map(({ item }) => {
     return mapFilterToInlineQueryResult(item);
   });
 
-  console.log({
-    filters,
-    query,
-    answer,
-  });
-
-  return ctx.answerInlineQuery(answer);
+  return ctx.answerInlineQuery(answer, answerOptions);
 };

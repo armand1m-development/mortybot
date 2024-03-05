@@ -1,5 +1,19 @@
 {
-  "version": "2",
+  "version": "3",
+  "packages": {
+    "specifiers": {
+      "npm:ts-pattern": "npm:ts-pattern@4.2.2"
+    },
+    "npm": {
+      "ts-pattern@4.2.2": {
+        "integrity": "sha512-qzJMo2pbkUJWusRH5o8xR+xogn6RmvViyUgwBFTtRENLse470clCGjHDf6haWGZ1AOmk8XkEohUoBW8Uut6Scg==",
+        "dependencies": {}
+      }
+    }
+  },
+  "redirects": {
+    "https://lib.deno.dev/x/grammy@v1/mod.ts": "https://deno.land/x/grammy@v1.15.3/mod.ts"
+  },
   "remote": {
     "https://cdn.skypack.dev/-/debug@v4.3.4-o4liVvMlOnQWbLSYZMXw/dist=es2019,mode=imports/optimized/debug.js": "671100993996e39b501301a87000607916d4d2d9f8fc8e9c5200ae5ba64a1389",
     "https://cdn.skypack.dev/-/ms@v2.1.2-giBDZ1IA5lmQ3ZXaa87V/dist=es2019,mode=imports/optimized/ms.js": "fd88e2d51900437011f1ad232f3393ce97db1b87a7844b3c58dd6d65562c1276",
@@ -378,16 +392,5 @@
     "https://esm.sh/v112/linkedom@0.14.22/types/esm/xml/document.d.ts": "6ba70daf6c217340e7d49cd4789f68563a11d4e4116019454ebc57960a38cc5e",
     "https://esm.sh/v112/nth-check@2.1.1/deno/nth-check.mjs": "578605fbca980a0de2c944b8f13f1580811895671d2cfe727c1ee300e00dfa88",
     "https://esm.sh/v112/uhyphen@0.1.0/deno/uhyphen.mjs": "0081648ad1b106b2ef79fe907319fe9ef92088e01be2b416b38786e314c9919e"
-  },
-  "npm": {
-    "specifiers": {
-      "ts-pattern": "ts-pattern@4.2.2"
-    },
-    "packages": {
-      "ts-pattern@4.2.2": {
-        "integrity": "sha512-qzJMo2pbkUJWusRH5o8xR+xogn6RmvViyUgwBFTtRENLse470clCGjHDf6haWGZ1AOmk8XkEohUoBW8Uut6Scg==",
-        "dependencies": {}
-      }
-    }
   }
 }

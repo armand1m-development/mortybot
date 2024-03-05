@@ -29,7 +29,6 @@ export const mapFilterToInlineQueryResult = (
         id: crypto.randomUUID(),
         audio_file_id: audio.fileId,
         title: filter.filterTrigger,
-        description: caption,
         caption_entities: captionEntities,
         caption: caption,
         input_message_content: {
@@ -56,14 +55,12 @@ export const mapFilterToInlineQueryResult = (
     )
     .with(
       { voice: P.not(undefined) },
-      ({ voice, caption, captionEntities }): InlineQueryResult => ({
+      ({ voice, caption }): InlineQueryResult => ({
         type: "voice",
         id: crypto.randomUUID(),
         voice_file_id: voice.fileId,
         title: filter.filterTrigger,
-        description: caption,
-        caption_entities: captionEntities,
-        caption: caption,
+        caption,
         input_message_content: {
           message_text: filter.message.caption ?? filter.filterTrigger,
           entities: filter.message.captionEntities,
