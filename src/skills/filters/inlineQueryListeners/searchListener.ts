@@ -26,17 +26,24 @@ export const searchListener: InlineQueryMiddleware<BotContext> = async (
     return ctx.answerInlineQuery([], answerOptions);
   }
 
-  const { query } = ctx.inlineQuery;
-  const filters = [...ctx.session.filters.values()];
+  const regex = /^(\w+)\s*(.*)$/;
+  const match = ctx.inlineQuery.query.match(regex);
 
-  if (query.trim() === "") {
-    const answer = filters
-      .map(mapFilterToInlineQueryResult)
-      .slice(0, maxResults / 2);
+  if (match === null) {
+    return;
+  }
 
-    console.log({
-      audios: ctx.session.audioDatabase,
-    });
+  const [, prefix, query] = match;
+
+  if (prefix === "muminst") {
+    if (query.trim() === "") {
+      const audios = (ctx.session.audioDatabase ?? [])
+        .map((audio) => mapAudioToInlineQueryResult(audio))
+        .slice(0, maxResults);
+
+      return ctx.answerInlineQuery(audios, answerOptions);
+    }
+
     const audios = (ctx.session.audioDatabase ?? [])
       .filter((audio) => {
         try {
@@ -49,7 +56,17 @@ export const searchListener: InlineQueryMiddleware<BotContext> = async (
       .map((audio) => mapAudioToInlineQueryResult(audio))
       .slice(0, maxResults / 2);
 
-    return ctx.answerInlineQuery([...answer, ...audios], answerOptions);
+    return ctx.answerInlineQuery(audios, answerOptions);
+  }
+
+  const filters = [...ctx.session.filters.values()];
+
+  if (query.trim() === "") {
+    const answer = filters
+      .map(mapFilterToInlineQueryResult)
+      .slice(0, maxResults);
+
+    return ctx.answerInlineQuery(answer, answerOptions);
   }
 
   const answer = filters
@@ -59,10 +76,5 @@ export const searchListener: InlineQueryMiddleware<BotContext> = async (
     .map((filter) => mapFilterToInlineQueryResult(filter))
     .slice(0, maxResults / 2);
 
-  const audios = (ctx.session.audioDatabase ?? [])
-    .filter((audio) => audio.name.toLowerCase().includes(query.toLowerCase()))
-    .map((audio) => mapAudioToInlineQueryResult(audio))
-    .slice(0, maxResults / 2);
-
-  return ctx.answerInlineQuery([...answer, ...audios], answerOptions);
+  return ctx.answerInlineQuery(answer, answerOptions);
 };
