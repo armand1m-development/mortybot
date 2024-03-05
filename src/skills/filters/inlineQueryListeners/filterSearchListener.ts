@@ -57,6 +57,10 @@ export const filterSearchListener: InlineQueryMiddleware<BotContext> = async (
       0,
       maxResults,
     );
+
+    console.log({
+      allFilters,
+    });
     return ctx.answerInlineQuery(allFilters, answerOptions);
   }
 
@@ -67,5 +71,8 @@ export const filterSearchListener: InlineQueryMiddleware<BotContext> = async (
     return mapFilterToInlineQueryResult(item);
   }).slice(0, maxResults);
 
+  console.log({
+    answer,
+  });
   return ctx.answerInlineQuery(answer, answerOptions);
 };
