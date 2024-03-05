@@ -1,44 +1,35 @@
-import Fuse from "fuse";
 import { InlineQueryMiddleware } from "grammy/composer.ts";
 import { BotContext } from "/src/context/mod.ts";
 import { mapFilterToInlineQueryResult } from "../utilities/mapFilterToInlineQueryResult.ts";
-import { Filter } from "../sessionData/types.ts";
+// import Fuse from "fuse";
+// import { Filter } from "../sessionData/types.ts";
 
-interface FuseResult<T> {
-  item: T;
-  refIndex: number;
-}
-interface FuseOptions {
-  isCaseSensitive?: boolean;
-  includeScore?: boolean;
-  shouldSort?: boolean;
-  includeMatches?: boolean;
-  findAllMatches?: boolean;
-  minMatchCharLength?: number;
-  location?: number;
-  threshold?: number;
-  distance?: number;
-  useExtendedSearch?: boolean;
-  ignoreLocation?: boolean;
-  ignoreFieldNorm?: boolean;
-  fieldNormWeight?: number;
-  keys: string[];
-}
+// interface FuseResult<T> {
+//   item: T;
+//   refIndex: number;
+// }
+// interface FuseOptions {
+//   isCaseSensitive?: boolean;
+//   includeScore?: boolean;
+//   shouldSort?: boolean;
+//   includeMatches?: boolean;
+//   findAllMatches?: boolean;
+//   minMatchCharLength?: number;
+//   location?: number;
+//   threshold?: number;
+//   distance?: number;
+//   useExtendedSearch?: boolean;
+//   ignoreLocation?: boolean;
+//   ignoreFieldNorm?: boolean;
+//   fieldNormWeight?: number;
+//   keys: string[];
+// }
 
 const maxResults = 20;
 
 export const filterSearchListener: InlineQueryMiddleware<BotContext> = async (
   ctx,
 ) => {
-  const options: FuseOptions = {
-    isCaseSensitive: false,
-    threshold: 0.6,
-    distance: 9,
-    keys: [
-      "filterTrigger",
-    ],
-  };
-
   const { query } = ctx.inlineQuery;
 
   const chatMember = await ctx.api.getChatMember(
@@ -62,11 +53,25 @@ export const filterSearchListener: InlineQueryMiddleware<BotContext> = async (
     return ctx.answerInlineQuery(allFilters, answerOptions);
   }
 
-  const fuse = new Fuse(filters, options);
-  const result = fuse.search(query, { limit: 5 }) as FuseResult<Filter>[];
+  // const options: FuseOptions = {
+  //   isCaseSensitive: false,
+  //   threshold: 0.6,
+  //   distance: 9,
+  //   keys: [
+  //     "filterTrigger",
+  //   ],
+  // };
+  // const fuse = new Fuse(filters, options);
+  // const result = fuse.search(query, { limit: 5 }) as FuseResult<Filter>[];
+  // const answer = result
+  //   .map(({ item }) => mapFilterToInlineQueryResult(item))
+  //   .slice(0, maxResults);
 
-  const answer = result
-    .map(({ item }) => mapFilterToInlineQueryResult(item))
+  const answer = filters
+    .filter((filter) =>
+      filter.filterTrigger.toLowerCase().includes(query.toLowerCase())
+    )
+    .map((filter) => mapFilterToInlineQueryResult(filter))
     .slice(0, maxResults);
 
   return ctx.answerInlineQuery(answer, answerOptions);
