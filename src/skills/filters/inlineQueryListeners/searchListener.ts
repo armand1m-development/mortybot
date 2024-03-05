@@ -34,8 +34,18 @@ export const searchListener: InlineQueryMiddleware<BotContext> = async (
       .map(mapFilterToInlineQueryResult)
       .slice(0, maxResults / 2);
 
+    console.log({
+      audios: ctx.session.audioDatabase,
+    });
     const audios = (ctx.session.audioDatabase ?? [])
-      .filter((audio) => audio.name.toLowerCase().includes(query.toLowerCase()))
+      .filter((audio) => {
+        try {
+          return `${audio.name}`.toLowerCase().includes(query.toLowerCase());
+        } catch (e) {
+          console.error(`broken audio: ${JSON.stringify(audio)}`);
+          throw e;
+        }
+      })
       .map((audio) => mapAudioToInlineQueryResult(audio))
       .slice(0, maxResults / 2);
 
