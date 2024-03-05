@@ -25,6 +25,7 @@ interface FuseOptions {
   keys: string[];
 }
 
+const maxResults = 20;
 export const filterSearchListener: InlineQueryMiddleware<BotContext> = async (
   ctx,
 ) => {
@@ -52,7 +53,10 @@ export const filterSearchListener: InlineQueryMiddleware<BotContext> = async (
   }
 
   if (query.trim() === "") {
-    const allFilters = filters.map(mapFilterToInlineQueryResult);
+    const allFilters = filters.map(mapFilterToInlineQueryResult).slice(
+      0,
+      maxResults,
+    );
     return ctx.answerInlineQuery(allFilters, answerOptions);
   }
 
@@ -61,7 +65,7 @@ export const filterSearchListener: InlineQueryMiddleware<BotContext> = async (
 
   const answer = result.map(({ item }) => {
     return mapFilterToInlineQueryResult(item);
-  });
+  }).slice(0, maxResults);
 
   return ctx.answerInlineQuery(answer, answerOptions);
 };
