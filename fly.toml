@@ -6,6 +6,17 @@ kill_timeout = 5
 processes = []
 primary_region = "ams"
 
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  [http_service.concurrency]
+    type = "requests"
+    soft_limit = 200
+    hard_limit = 250
+
 [env]
   DATA_PATH="./data"
   MESSAGE_TIMEOUT_ENABLED="true"
