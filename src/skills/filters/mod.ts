@@ -9,7 +9,7 @@ import { cmdStopFilter } from "./commands/cmdStopFilter.ts";
 import { cmdActivateFilter } from "./commands/cmdActivateFilter.ts";
 import { cmdDeleteFilter } from "./commands/cmdDeleteFilter.ts";
 import { createDownloadsFolder } from "./initializers/createDownloadsFolder.ts";
-import { filterSearchListener } from "./inlineQueryListeners/filterSearchListener.ts";
+import { searchListener } from "./inlineQueryListeners/searchListener.ts";
 
 export const name: SkillModule["name"] = "filters";
 export const initializers: SkillModule["initializers"] = [
@@ -78,6 +78,6 @@ export const listeners: SkillModule["listeners"] = [
 export const inlineQueryListeners: SkillModule["inlineQueryListeners"] = [
   {
     pattern: /^.*$/,
-    handler: filterSearchListener,
+    handler: searchListener,
   },
 ];

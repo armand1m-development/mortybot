@@ -1,9 +1,11 @@
 import { createBot } from "/src/bot.ts";
 import { run } from "grammy_runner/mod.ts";
+import { serveDir } from "std/http/file_server.ts";
 import * as log from "std/log/mod.ts";
 import * as dotenv from "std/dotenv/mod.ts";
+import * as path from "std/path/mod.ts";
 
-await log.setup({
+log.setup({
   handlers: {
     console: new log.handlers.ConsoleHandler("DEBUG"),
   },
@@ -19,7 +21,7 @@ await dotenv.load({
   export: true,
 });
 
-const bot = await createBot({
+const { bot, configuration } = await createBot({
   dataPath: Deno.env.get("DATA_PATH")!,
   botToken: Deno.env.get("BOT_TOKEN")!,
   exchangeApiToken: Deno.env.get("EXCHANGE_API_TOKEN")!,
@@ -29,10 +31,33 @@ const bot = await createBot({
   inlineQuerySourceChatId: Deno.env.get("INLINE_QUERY_SOURCE_CHAT_ID")!,
 });
 
-const runner = run(bot);
+const botInstance = run(bot);
 
-// Stopping the bot when the Deno process
-// is about to be terminated
-const stopRunner = () => runner.isRunning() && runner.stop();
-Deno.addSignalListener("SIGINT", stopRunner);
-Deno.addSignalListener("SIGTERM", stopRunner);
+const serverAbortController = new AbortController();
+const staticServerInstance = Deno.serve({
+  port: 3000,
+  signal: serverAbortController.signal,
+}, (req: Request) => {
+  const pathname = new URL(req.url).pathname;
+
+  if (pathname.startsWith("/audio")) {
+    return serveDir(req, {
+      fsRoot: path.join(configuration.dataPath, "audio"),
+      urlRoot: "audio",
+      showIndex: false,
+    });
+  }
+
+  return new Response("404: Not Found", {
+    status: 404,
+  });
+});
+
+const stopServers = () => {
+  botInstance.isRunning() && botInstance.stop();
+  serverAbortController.abort("shutdown");
+  staticServerInstance.finished.then(() => console.log("server has shutdown"));
+};
+
+Deno.addSignalListener("SIGINT", stopServers);
+Deno.addSignalListener("SIGTERM", stopServers);

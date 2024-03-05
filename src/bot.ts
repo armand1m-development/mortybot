@@ -58,5 +58,8 @@ export const createBot = async (configuration: Configuration) => {
 
   injectGlobalErrorHandler(bot);
 
-  return bot;
+  return {
+    bot,
+    configuration,
+  };
 };

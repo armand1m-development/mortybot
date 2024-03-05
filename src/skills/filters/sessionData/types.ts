@@ -39,6 +39,16 @@ export interface Filter {
   };
 }
 
+export interface Audio {
+  id: string;
+  name: string;
+  file_hash: string;
+  file_name: string;
+  extension: string;
+  tag_names: string[];
+}
+
 export interface FilterSessionData {
   filters: Map<string, Filter>;
+  audioDatabase?: Audio[];
 }
