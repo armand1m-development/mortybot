@@ -35,7 +35,6 @@ export const filterSearchListener: InlineQueryMiddleware<BotContext> = async (
     distance: 9,
     keys: [
       "filterTrigger",
-      "message.caption",
     ],
   };
 
