@@ -31,7 +31,8 @@ export const filterSearchListener: InlineQueryMiddleware<BotContext> = async (
 ) => {
   const options: FuseOptions = {
     isCaseSensitive: false,
-    distance: 5,
+    threshold: 0.6,
+    distance: 9,
     keys: [
       "filterTrigger",
       "message.caption",
