@@ -79,8 +79,7 @@ export const setupSkillModulesLoader = async (
 
   const loadSkillInlineQueryListeners = (skill: SkillModule) => {
     logger().debug(`Loading skill "${skill.name}" listeners..`);
-    skill.inlineQueryListeners.forEach(({ pattern, handler }) => {
-      console.log({ pattern });
+    skill.inlineQueryListeners.forEach(({ handler }) => {
       bot.on("inline_query", handler);
     });
   };

@@ -205,6 +205,34 @@ celestial event alerts. Explore the universe! 🌌🛰️🔭
 - [ ] `/sat_pass <sat_code> <geo position>`: It will return visual passes of the
       provided satallite for the next 3 days in the location provided.
 
+### Image
+
+Mortybot has several image features in mind as well, with some already in
+production.
+
+#### MEME Templating
+
+- [x] `/create_meme_template <meme-template-json>`: Defines a meme template in
+      the chat session database. This can be later used with the `/meme` command
+      to generate memes on the go.
+- [x] `/get_meme_template <template-name>`: Gets the stored JSON definition for
+      a MEME template.
+- [x] `/toggle_meme_template_debug`: Toggles a debug mode where the meme
+      template slots have a red stroke border to help understand how text is
+      been placed.
+- [x] `/meme <template-name> <parameters>`: Will fetch a template based on its
+      name and fill the text slots defined on it with the given parameters.
+      Params are defined just like URL Query Parameters.
+  - Example:
+    `/meme runningaway balloon=enjoying to code&pinkmonster=work&char=me`
+
+#### EXIF filtering
+
+- [ ] `/enable_exif_filter`: Enables an image EXIF filter in the chat, where
+      Mortybot will download a sent picture, delete the original one, strip the
+      EXIF out of it, and then send it again.
+- [ ] `/disable_exif_filter`: Disables the EXIF filter in the chat.
+
 ## Developing
 
 Make sure you have Git and Deno 1.31+ available in your local environment.
