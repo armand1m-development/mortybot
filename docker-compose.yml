@@ -1,0 +1,9 @@
+version: '3'
+services:
+  mortybot:
+    build: . 
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+    
