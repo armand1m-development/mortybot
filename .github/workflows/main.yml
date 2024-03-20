@@ -15,10 +15,10 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Setup Deno v1.x
+      - name: Setup Deno v1.38.5
         uses: denoland/setup-deno@v1
         with:
-          deno-version: v1.x
+          deno-version: v1.38.5
 
       - name: Cache dependencies 
         run: deno cache deno.json

@@ -36,8 +36,8 @@ export const setupSkillMigrationLoader = async (
           ...migrations,
           ...skill.migrations,
         };
-      } catch (e) {
-        logger().error(e);
+      } catch (error) {
+        logger().error(error);
       }
     }
 
