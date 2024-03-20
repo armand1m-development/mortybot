@@ -2,16 +2,16 @@ name: PR Tests
 on: [pull_request]
 jobs:
   build:
-    name: Build, lint, test and release on Deno 1.31.1 
+    name: Build, lint, test and release on Deno 1.38.5 
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
 
-      - name: Setup Deno v1.31.1
+      - name: Setup Deno v1.38.5
         uses: denoland/setup-deno@v1
         with:
-          deno-version: v1.31.1
+          deno-version: v1.38.5
 
       - name: Cache dependencies 
         run: deno cache deno.json
