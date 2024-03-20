@@ -3,6 +3,7 @@ import { BotContext } from "/src/context/mod.ts";
 import { getLogger } from "std/log/mod.ts";
 import { MemeTemplateEntry } from "../sessionData/types.ts";
 
+// deno-lint-ignore no-explicit-any
 function isValidMemeTemplateEntry(obj: any): obj is MemeTemplateEntry {
   return (
     typeof obj === "object" &&
