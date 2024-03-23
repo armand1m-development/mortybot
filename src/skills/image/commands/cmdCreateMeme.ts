@@ -34,7 +34,7 @@ const splitStringIntoChunks = (
     }
   }
 
-  if (currentChunk.trim() !== "") {
+  if (currentChunk.trim() != "") {
     chunks.push(currentChunk.trim());
   }
 
@@ -64,7 +64,7 @@ export const cmdCreateMeme: CommandMiddleware<BotContext> = async (ctx) => {
 
   if (!commandInput) {
     return ctx.reply(
-      'Invalid input. Please use the following format: `/meme templateId "text1" "text2" ...`',
+      'Invalid input. Please use the following format: `/meme templateId top=first text&bottom=second text&balloon=third` and so on',
     );
   }
 
@@ -82,7 +82,7 @@ export const cmdCreateMeme: CommandMiddleware<BotContext> = async (ctx) => {
 
   if (Object.values(commandInput.texts).length !== uniqueParams.size) {
     return ctx.reply(
-      `You provided an incorrect number of texts for this template. Please provide ${template.params.length} texts for this template.`,
+      `You provided an incorrect number of params for this template. Please provide the following params fo.`,
     );
   }
 
@@ -114,7 +114,7 @@ export const cmdCreateMeme: CommandMiddleware<BotContext> = async (ctx) => {
       textParam.fontParams.fontSize,
     );
 
-    charSize = fontSize / 2;
+    charSize = fontSize / 1.7;
     chunks = splitStringIntoChunks(paramValue, charSize, textWidth);
 
     const svgOverlay = textParam.fontParams.centralize
