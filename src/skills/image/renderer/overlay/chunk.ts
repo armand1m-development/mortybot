@@ -10,7 +10,7 @@ export const splitStringIntoChunks = (
 
   for (let i = 0; i < words.length; i++) {
     const word = words[i];
-    const wordWidth = word.length * characterSize;
+    const wordWidth = (word.length + 0.6) * characterSize;
 
     if (currentWidth + wordWidth <= availableWidth) {
       currentChunk += word + " ";

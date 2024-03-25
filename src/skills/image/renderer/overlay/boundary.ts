@@ -13,7 +13,7 @@ export const getBoundedChunks = (
   const firstCharSize = fontSize / 2;
   const firstChunks = splitStringIntoChunks(text, firstCharSize, boxWidth);
   const dynamicFontSize = calculateFontSize(firstChunks.length, fontSize);
-  const charSize = dynamicFontSize / 1.7;
+  const charSize = dynamicFontSize / 2;
   const chunks = splitStringIntoChunks(text, charSize, boxWidth);
 
   return {

@@ -1,10 +1,8 @@
-export const DECREASE_RATIO = 1.5;
-export const BASE_FONT_SIZE = 50;
-
+export const DECREASE_RATIO = 2;
 export const calculateFontSize = (
   chunkLength: number,
-  baseFontSize = BASE_FONT_SIZE,
+  chosenFontSize: number,
 ): number => {
   const decreaseFactor = chunkLength ^ DECREASE_RATIO;
-  return baseFontSize - chunkLength * decreaseFactor;
+  return chosenFontSize - (chunkLength * decreaseFactor);
 };

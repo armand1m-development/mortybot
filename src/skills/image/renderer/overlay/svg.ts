@@ -9,6 +9,19 @@ export interface SvgOverlayProps {
   debug?: boolean;
 }
 
+interface TextSpanProps {
+  chunks: string[];
+  centralize: boolean;
+  textWidth: number;
+}
+
+const renderTextSpans = ({ chunks, textWidth, centralize }: TextSpanProps) => {
+  const spanX = centralize ? textWidth / 2 : 0;
+  return chunks
+    .map((chunk) => `<tspan x="${spanX}" dy="1em">${chunk}</tspan>`)
+    .join("");
+};
+
 export const createSvgOverlay = ({
   chunks,
   textHeight,
@@ -19,10 +32,10 @@ export const createSvgOverlay = ({
 }: SvgOverlayProps) => {
   const debugRect = `
     <rect
-      width="${textWidth}"
-      height="${textHeight}"
       x="0"
       y="0"
+      width="${textWidth}"
+      height="${textHeight}"
       fill="transparent"
       stroke="red"
       stroke-width="4"
@@ -33,60 +46,50 @@ export const createSvgOverlay = ({
     textParams.fontParams;
 
   const strokeParams = `
-    stroke-width="1"
     stroke="${strokeColor}"
+    stroke-width="1"
+  `;
+
+  const fontParams = `
+    fill="${color}"
+    font-size="${dynamicFontSize}"
+    font-family="${fontFamily}"
+  `;
+  const alignCenterParams = `
+    x="50%"
+    text-anchor="middle"
+    dominant-baseline="middle"
+    alignment-baseline="middle"
+  `;
+
+  const alignLeftParams = `
+    width="${textWidth}"
   `;
 
   const injectDebugRect = debug ? debugRect : "";
   const injectStrokeParams = strokeColor ? strokeParams : "";
+  const injectAlignment = centralize ? alignCenterParams : alignLeftParams;
 
-  if (optional && chunks.length === 0) {
-    return `
-      <svg width="${textWidth}" height="${textHeight}">
-        ${injectDebugRect}
-      </svg>
-    `;
-  }
-
-  if (centralize) {
-    const spanX = textWidth / 2;
-
-    return `
-      <svg width="${textWidth}" height="${textHeight}">
-        ${injectDebugRect}
-        <text
-          x="50%"
-          font-family="${fontFamily}"
-          font-size="${dynamicFontSize}"
-          fill="${color}"
-          dominant-baseline="middle"
-          text-anchor="middle"
-          alignment-baseline="middle"
-          ${injectStrokeParams}
-        >
-          ${
-      chunks.map((chunk) => `<tspan x="${spanX}" dy="1em">${chunk}</tspan>`)
-        .join("")
-    }
-        </text>
-      </svg>
-    `;
-  }
-
-  return `
+  const wrapper = (content: string) => `
     <svg width="${textWidth}" height="${textHeight}">
-      ${injectDebugRect}
-      <text
-        width="${textWidth}"
-        font-family="${fontFamily}"
-        font-size="${dynamicFontSize}"
-        fill="${color}"
-        ${injectStrokeParams}
-      >
-        ${
-    chunks.map((chunk) => `<tspan x="0" dy="1em">${chunk}</tspan>`).join("")
-  }
-      </text>
+      ${content}
     </svg>
   `;
+
+  const isNoop = optional && chunks.length === 0;
+
+  if (isNoop) {
+    return wrapper(injectDebugRect);
+  }
+
+  return wrapper(`
+    ${injectDebugRect}
+    <text
+      ${fontParams}
+      ${injectAlignment}
+      ${injectStrokeParams}
+    >
+      ${renderTextSpans({ chunks, centralize, textWidth })}
+    </text>
+  `);
 };

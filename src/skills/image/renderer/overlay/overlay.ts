@@ -29,12 +29,11 @@ export const createOverlayContext = (
 
     const hasHorizontalOverflow = x + width > metadata.width!;
     const clippedWidth = metadata.width! - x;
-
     const textWidth = hasHorizontalOverflow ? clippedWidth : width;
 
     const { chunks, dynamicFontSize } = getBoundedChunks({
       text: text?.toString() ?? "",
-      boxWidth: width,
+      boxWidth: textWidth,
       fontSize: fontParams.fontSize,
     });
 
