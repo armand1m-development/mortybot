@@ -18,6 +18,7 @@ export interface MemeTemplateFontParams {
   fontFamily: string;
   color: string;
   centralize: boolean;
+  optional?: boolean;
   strokeColor?: string;
 }
 
