@@ -20,6 +20,8 @@ export const cmdCountPerOwner: CommandMiddleware<BotContext> = async (
     entries.map(async (filter) => {
       const { user } = chatMemberMap[filter.ownerId] ??
         await ctx.getChatMember(filter.ownerId);
+
+      filtersPerUser[user.id] ??= [];
       filtersPerUser[user.id].push(filter);
     }),
   );
