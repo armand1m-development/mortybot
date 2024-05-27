@@ -12,17 +12,19 @@ export const cmdCountPerOwner: CommandMiddleware<BotContext> = async (
   const filters = Object.fromEntries(ctx.session.filters);
   const entries = Object.values(filters);
 
-  const chatMemberMap: Record<number, ChatMember> = {};
+  const chatMemberMap: Record<string, ChatMember> = {};
 
   const filtersPerUser: Record<number, Filter[]> = {};
 
   await Promise.all(
     entries.map(async (filter) => {
-      const { user } = chatMemberMap[filter.ownerId] ??
+      const chatMember = chatMemberMap[filter.ownerId] ??
         await ctx.getChatMember(filter.ownerId);
 
-      filtersPerUser[user.id] ??= [];
-      filtersPerUser[user.id].push(filter);
+      chatMemberMap[filter.ownerId] = chatMember;
+
+      filtersPerUser[chatMember.user.id] ??= [];
+      filtersPerUser[chatMember.user.id].push(filter);
     }),
   );
 
@@ -40,17 +42,20 @@ export const cmdCountPerOwner: CommandMiddleware<BotContext> = async (
 
 ${
       sortedEntries.map(([userId, filters]) => {
-        const chatMember = chatMemberMap[Number(userId)];
+        const chatMember = chatMemberMap[userId];
         if (!chatMember) {
-          return ` - UID ${userId}: ${filters.length} filters`;
+          return ` - UID ${userId}: ${filters.length}`;
         }
 
         const { user } = chatMember;
         const mention = createMemberMention(user, false);
-        return ` - ${mention}: ${filters.length} filters`;
+        return ` - ${mention}: ${filters.length}`;
       }).join("\n")
     }`;
-    await ctx.reply(message);
+
+    await ctx.reply(message, {
+      parse_mode: "Markdown",
+    });
   }
 
   await ctx.reply("There are no filters defined for this group currently.");
