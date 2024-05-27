@@ -40,7 +40,12 @@ export const cmdCountPerOwner: CommandMiddleware<BotContext> = async (
 
 ${
       sortedEntries.map(([userId, filters]) => {
-        const { user } = chatMemberMap[Number(userId)];
+        const chatMember = chatMemberMap[Number(userId)];
+        if (!chatMember) {
+          return ` - UID ${userId}: ${filters.length} filters`;
+        }
+
+        const { user } = chatMember;
         const mention = createMemberMention(user, false);
         return ` - ${mention}: ${filters.length} filters`;
       }).join("\n")
