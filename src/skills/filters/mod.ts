@@ -8,6 +8,7 @@ import { cmdListFilterOwners } from "./commands/cmdListFilterOwners.ts";
 import { cmdStopFilter } from "./commands/cmdStopFilter.ts";
 import { cmdActivateFilter } from "./commands/cmdActivateFilter.ts";
 import { cmdDeleteFilter } from "./commands/cmdDeleteFilter.ts";
+import { cmdCountPerOwner } from "./commands/cmdCountPerOwner.ts";
 import { createDownloadsFolder } from "./initializers/createDownloadsFolder.ts";
 import { searchListener } from "./inlineQueryListeners/searchListener.ts";
 
@@ -64,7 +65,7 @@ export const commands: SkillModule["commands"] = [
     command: "filterownercount",
     aliases: [],
     description: "Count of filters per owner",
-    handler: cmdDeleteFilter,
+    handler: cmdCountPerOwner,
   },
 ];
 
