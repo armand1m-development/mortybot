@@ -60,6 +60,12 @@ export const commands: SkillModule["commands"] = [
     description: "Deletes a filter permanently",
     handler: cmdDeleteFilter,
   },
+  {
+    command: "filterownercount",
+    aliases: [],
+    description: "Count of filters per owner",
+    handler: cmdDeleteFilter,
+  },
 ];
 
 export const sessionDataInitializers: SkillModule["sessionDataInitializers"] = [
