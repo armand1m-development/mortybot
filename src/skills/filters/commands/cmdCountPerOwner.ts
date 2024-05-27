@@ -56,6 +56,7 @@ ${
     await ctx.reply(message, {
       parse_mode: "Markdown",
     });
+    return;
   }
 
   await ctx.reply("There are no filters defined for this group currently.");
