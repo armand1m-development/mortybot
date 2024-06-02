@@ -12,11 +12,13 @@
     "@grammyjs/types": "https://esm.sh/@grammyjs/types@2.12.1",
     "ts-pattern": "https://deno.land/x/fuzzy_octo_guacamole@v3.0.0/mod.ts",
     "sharp": "npm:sharp@0.33.2",
-    "querystring": "https://deno.land/x/querystring@v1.0.2/mod.js"
+    "querystring": "https://deno.land/x/querystring@v1.0.2/mod.js",
+    "oak": "https://deno.land/x/oak@v16.0.0/mod.ts"
   },
   "tasks": {
     "start": "deno run --allow-net --allow-env --allow-read --allow-write --allow-ffi ./main.ts",
     "dev": "deno run --allow-net --allow-env --allow-read --allow-write --allow-ffi --watch ./main.ts",
+    "watch": "denon run --allow-net --allow-env --allow-read --allow-write --allow-ffi ./main.ts",
     "test:coverage": "deno test --allow-none --coverage=coverage",
     "generate:skills": "deno run --allow-write --allow-read ./generators/generateSkillsFile.ts"
   }
