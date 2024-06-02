@@ -1,4 +1,5 @@
 import { getLogger } from "std/log/mod.ts";
+import { run } from "grammy_runner/mod.ts";
 import { resolve } from "std/path/posix.ts";
 import { Bot, Context, enhanceStorage, session } from "grammy/mod.ts";
 import { sequentialize } from "grammy_runner/mod.ts";
@@ -58,8 +59,13 @@ export const createBot = async (configuration: Configuration) => {
 
   injectGlobalErrorHandler(bot);
 
+  const start = () => {
+    return run(bot);
+  };
+
   return {
     bot,
+    start,
     configuration,
   };
 };

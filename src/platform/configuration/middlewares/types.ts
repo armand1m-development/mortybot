@@ -6,6 +6,7 @@ export interface Configuration {
   googleMapsApiToken: string;
   n2yoApiToken: string;
   inlineQuerySourceChatId: string;
+  mainMemeTemplateChatSessionPath: string;
 }
 
 export interface ConfigurationContext {

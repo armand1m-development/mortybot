@@ -17,7 +17,6 @@
   },
   "tasks": {
     "start": "deno run --allow-net --allow-env --allow-read --allow-write --allow-ffi ./main.ts",
-    "dev": "deno run --allow-net --allow-env --allow-read --allow-write --allow-ffi --watch ./main.ts",
     "watch": "denon run --allow-net --allow-env --allow-read --allow-write --allow-ffi ./main.ts",
     "test:coverage": "deno test --allow-none --coverage=coverage",
     "generate:skills": "deno run --allow-write --allow-read ./generators/generateSkillsFile.ts"

@@ -1,24 +1,9 @@
-import { resolve } from "std/path/posix.ts";
 import { getLogger } from "std/log/mod.ts";
 import { Migrations } from "grammy/mod.ts";
 import type { Skill } from "/src/skills/skills.ts";
-import { SkillModule } from "./types/SkillModule.ts";
+import { loadSkill } from "./loadSkill.ts";
 
 const logger = () => getLogger();
-
-const loadSkill = async (skillName: Skill) => {
-  const skillModule = await import(
-    resolve(Deno.cwd(), `./src/skills/${skillName}/mod.ts`)
-  ) as SkillModule;
-
-  if (!skillModule) {
-    throw new Error(
-      `Failed to load skill module named "${skillName}". Make sure it matches the schema needed.`,
-    );
-  }
-
-  return skillModule;
-};
 
 export const setupSkillMigrationLoader = async (
   skills: readonly Skill[],

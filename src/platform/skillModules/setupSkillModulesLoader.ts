@@ -1,26 +1,12 @@
-import { resolve } from "std/path/posix.ts";
 import { getLogger } from "std/log/mod.ts";
 import { Bot } from "grammy/mod.ts";
 import { BotCommand } from "grammy/types.ts";
 import { BotContext, SessionData } from "/src/context/mod.ts";
 import type { Skill } from "/src/skills/skills.ts";
 import { SkillModule } from "./types/SkillModule.ts";
+import { loadSkill } from "./loadSkill.ts";
 
 const logger = () => getLogger();
-
-const loadSkill = async (skillName: Skill) => {
-  const skillModule = await import(
-    resolve(Deno.cwd(), `./src/skills/${skillName}/mod.ts`)
-  ) as SkillModule;
-
-  if (!skillModule) {
-    throw new Error(
-      `Failed to load skill module named "${skillName}". Make sure it matches the schema needed.`,
-    );
-  }
-
-  return skillModule;
-};
 
 export const setupSkillModulesLoader = async (
   skills: readonly Skill[],
@@ -126,10 +112,56 @@ export const setupSkillModulesLoader = async (
       }
     }));
 
-    const skillLoadingReport = result.map((result, index) => ({
-      skill: loadedSkills[index],
-      result,
-    }));
+    const skillLoadingReport = result.map((result, index) => {
+      const skill = loadedSkills[index];
+      const resumedSkill: any = { ...skill };
+      resumedSkill.commands = skill.commands.map((command) =>
+        `${command.command}: ${command.description}`
+      );
+
+      Object.entries(resumedSkill).forEach(([key, value]) => {
+        if (value === undefined || value === null) {
+          delete resumedSkill[key];
+        }
+
+        if (value instanceof Array && value.length === 0) {
+          delete resumedSkill[key];
+        }
+
+        if (value instanceof Array && value.length > 0) {
+          resumedSkill[key] = value.map((v: any) => {
+            if (v instanceof Function) {
+              return v.name ?? v.toString();
+            }
+
+            return v;
+          });
+        }
+
+        if (value instanceof Function) {
+          resumedSkill[key] = value.name ?? value.toString();
+        }
+
+        if (key === "migrations") {
+          resumedSkill[key] = Object.values(value as Object).map((
+            migration: any,
+          ) => migration.name);
+        }
+
+        if (key === "inlineQueryListeners") {
+          resumedSkill[key] = (value as Array<any>).map((
+            { pattern, handler },
+          ) =>
+            `${pattern.toString()}: ${handler?.name ?? handler?.toString()}`
+          );
+        }
+      });
+
+      return ({
+        skill: resumedSkill,
+        result,
+      });
+    });
 
     logger().debug("Skill loading report:");
     logger().debug(JSON.stringify(skillLoadingReport, null, 2));
