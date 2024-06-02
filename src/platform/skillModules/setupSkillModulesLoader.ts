@@ -114,7 +114,7 @@ export const setupSkillModulesLoader = async (
 
     const skillLoadingReport = result.map((result, index) => {
       const skill = loadedSkills[index];
-      const resumedSkill: any = { ...skill };
+      const resumedSkill: Record<string, unknown> = { ...skill };
       resumedSkill.commands = skill.commands.map((command) =>
         `${command.command}: ${command.description}`
       );
@@ -129,7 +129,7 @@ export const setupSkillModulesLoader = async (
         }
 
         if (value instanceof Array && value.length > 0) {
-          resumedSkill[key] = value.map((v: any) => {
+          resumedSkill[key] = value.map((v: unknown) => {
             if (v instanceof Function) {
               return v.name ?? v.toString();
             }
@@ -143,17 +143,18 @@ export const setupSkillModulesLoader = async (
         }
 
         if (key === "migrations") {
-          resumedSkill[key] = Object.values(value as Object).map((
-            migration: any,
+          resumedSkill[key] = Object.values(value as object).map((
+            migration: { name: string },
           ) => migration.name);
         }
 
         if (key === "inlineQueryListeners") {
-          resumedSkill[key] = (value as Array<any>).map((
-            { pattern, handler },
-          ) =>
-            `${pattern.toString()}: ${handler?.name ?? handler?.toString()}`
-          );
+          resumedSkill[key] = (value as SkillModule["inlineQueryListeners"])
+            .map((
+              { pattern, handler },
+            ) =>
+              `${pattern.toString()}: ${handler?.name ?? handler?.toString()}`
+            );
         }
       });
 

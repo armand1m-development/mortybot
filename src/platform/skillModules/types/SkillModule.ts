@@ -23,5 +23,5 @@ export interface SkillModule {
   initializers: (() => Promise<void> | void)[];
   inlineQueryListeners: SkillInlineQueryListener[];
   migrations: Migrations;
-  router: Router<Record<string, any>>;
+  router: Router<Record<string, unknown>>;
 }
