@@ -1,4 +1,4 @@
-FROM denoland/deno:1.38.5
+FROM denoland/deno:1.44.0
 
 ENV DENO_DIR /app/
 RUN apt update
@@ -10,7 +10,6 @@ COPY . .
 
 RUN deno cache \
   --lock=deno.lock \
-  --lock-write \
   main.ts
 
 RUN deno task generate:skills
