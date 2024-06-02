@@ -58,7 +58,10 @@ export const createApi = async (configuration: Configuration) => {
   });
 
   const start = () => {
-    return app.listen({ port: 8000, signal: abortController.signal });
+    return app.listen({
+      port: configuration.apiPort,
+      signal: abortController.signal,
+    });
   };
 
   return { app, start, abortController };

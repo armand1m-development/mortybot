@@ -22,6 +22,7 @@ primary_region = "ams"
   MAIN_MEME_TEMPLATE_CHAT_SESSION_PATH="-1001651043611"
   MESSAGE_TIMEOUT_ENABLED="true"
   MESSAGE_TIMEOUT_IN_MINUTES="2"
+  API_PORT="3000"
 
 [mounts]
   source="mortybot_data"

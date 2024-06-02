@@ -7,6 +7,7 @@ export interface Configuration {
   n2yoApiToken: string;
   inlineQuerySourceChatId: string;
   mainMemeTemplateChatSessionPath: string;
+  apiPort: number;
 }
 
 export interface ConfigurationContext {
