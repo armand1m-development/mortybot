@@ -27,3 +27,13 @@ export function reviver(_key: string, value: unknown) {
   }
   return value;
 }
+
+export function reviverToObject(key: string, value: unknown) {
+  const map = reviver(key, value);
+
+  if (map instanceof Map) {
+    return Object.fromEntries(map.entries());
+  }
+
+  return value;
+}

@@ -5,6 +5,7 @@ import { cmdCreateMemeTemplate } from "./commands/cmdCreateMemeTemplate.ts";
 import { getInitialMemeTemplateSessionData } from "./sessionData/getInitialMemeTemplateSessionData.ts";
 import { cmdGetMemeTemplate } from "./commands/cmdGetMemeTemplate.ts";
 import { cmdToggleMemeTemplateDebug } from "./commands/cmdToggleMemeTemplateDebug.ts";
+import { createRouter } from "./router/mod.ts";
 
 export const name: SkillModule["name"] = "image";
 export const initializers: SkillModule["initializers"] = [];
@@ -55,3 +56,5 @@ export const migrations: SkillModule["migrations"] = {
     };
   },
 };
+
+export const router: SkillModule["router"] = createRouter();
