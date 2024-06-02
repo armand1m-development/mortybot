@@ -23,6 +23,7 @@ primary_region = "ams"
   MESSAGE_TIMEOUT_ENABLED="true"
   MESSAGE_TIMEOUT_IN_MINUTES="2"
   API_PORT="3000"
+  NODE_DEBUG=sharp
 
 [mounts]
   source="mortybot_data"
