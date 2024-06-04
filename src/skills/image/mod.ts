@@ -49,7 +49,9 @@ export const listeners: SkillModule["listeners"] = [];
 export const inlineQueryListeners: SkillModule["inlineQueryListeners"] = [];
 
 export const migrations: SkillModule["migrations"] = {
-  2: function addMemeTemplatesToSessionData(old: SessionData): SessionData {
+  1717523737806: function addMemeTemplatesToSessionData(
+    old: SessionData,
+  ): SessionData {
     return {
       ...old,
       memeTemplates: old.memeTemplates ?? new Map(),
