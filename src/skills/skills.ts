@@ -9,6 +9,7 @@ export const skills = [
   "image",
   "goodbye",
   "weather",
+  "text",
   "hashtags",
   "currency",
 ] as const;
