@@ -78,7 +78,8 @@ export const cmdFunText: CommandMiddleware<BotContext> = async (ctx) => {
 
   const result = text.split("").map((char) => table[char] ?? char).join("");
 
-  await ctx.reply(result, {
-    reply_to_message_id: ctx.message?.message_id,
-  });
+  await Promise.allSettled([
+    ctx.deleteMessage(),
+    ctx.reply(result),
+  ]);
 };

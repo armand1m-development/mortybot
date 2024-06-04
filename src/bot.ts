@@ -7,13 +7,13 @@ import { hydrateFiles } from "grammy_files/mod.ts";
 import { FileAdapter } from "grammy_storages/file/src/mod.ts";
 import { BotContext } from "/src/context/mod.ts";
 import { replacer, reviver } from "/src/utilities/jsonParsing.ts";
-import { Configuration } from "./platform/configuration/middlewares/types.ts";
-import { createConfigurationMiddleware } from "./platform/configuration/middlewares/createConfigurationMiddleware.ts";
-import { injectGlobalErrorHandler } from "./platform/errorHandling/globalErrorHandler.ts";
-import { setupSkillModulesLoader } from "./platform/skillModules/setupSkillModulesLoader.ts";
+import { Configuration } from "/src/platform/configuration/middlewares/types.ts";
+import { createConfigurationMiddleware } from "/src/platform/configuration/middlewares/createConfigurationMiddleware.ts";
+import { injectGlobalErrorHandler } from "/src/platform/errorHandling/globalErrorHandler.ts";
+import { setupSkillModulesLoader } from "/src/platform/skillModules/setupSkillModulesLoader.ts";
 
-import { skills } from "./skills/skills.ts";
-import { setupSkillMigrationLoader } from "./platform/skillModules/setupSkillMigrationLoader.ts";
+import { skills } from "/src/skills/skills.ts";
+import { setupSkillMigrationLoader } from "/src/platform/skillModules/setupSkillMigrationLoader.ts";
 
 export const createBot = async (configuration: Configuration) => {
   const bot = new Bot<BotContext>(configuration.botToken);

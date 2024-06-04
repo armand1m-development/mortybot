@@ -1,11 +1,11 @@
 import * as log from "std/log/mod.ts";
 import { Application, Router, serve } from "oak";
-import { replacer, reviverToObject } from "./utilities/jsonParsing.ts";
+import { replacer, reviverToObject } from "/src/utilities/jsonParsing.ts";
 import { bold, yellow } from "std/fmt/colors.ts";
 import { serveDir } from "std/http/file_server.ts";
-import { Configuration } from "./platform/configuration/middlewares/types.ts";
+import { Configuration } from "/src/platform/configuration/middlewares/types.ts";
 import * as path from "std/path/mod.ts";
-import { skills } from "./skills/skills.ts";
+import { skills } from "/src/skills/skills.ts";
 import { setupSkillRouteLoader } from "/src/platform/skillModules/setupSkillRouteLoader.ts";
 
 export type ApplicationContext = {
