@@ -1,5 +1,6 @@
 import { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
 import { SkillListener } from "/src/platform/skillModules/types/SkillListener.ts";
+import { SessionData } from "/src/context/mod.ts";
 import { createAddFilterCommand } from "./commands/createAddFilterCommand.ts";
 import { getInitialFilterSessionData } from "./sessionData/getInitialFilterSessionData.ts";
 import { filterListener } from "./listeners/filterListener.ts";
@@ -11,6 +12,7 @@ import { cmdDeleteFilter } from "./commands/cmdDeleteFilter.ts";
 import { cmdCountPerOwner } from "./commands/cmdCountPerOwner.ts";
 import { createDownloadsFolder } from "./initializers/createDownloadsFolder.ts";
 import { searchListener } from "./inlineQueryListeners/searchListener.ts";
+import { cmdToggleCaseSensitiveFilters } from "./commands/cmdToggleCaseSensitiveFilters.ts";
 
 export const name: SkillModule["name"] = "filters";
 export const initializers: SkillModule["initializers"] = [
@@ -67,6 +69,12 @@ export const commands: SkillModule["commands"] = [
     description: "Count of filters per owner",
     handler: cmdCountPerOwner,
   },
+  {
+    command: "toggle_case_sensitive_filters",
+    aliases: [],
+    description: "Toggles case sensitiviness for filters in this chat.",
+    handler: cmdToggleCaseSensitiveFilters,
+  },
 ];
 
 export const sessionDataInitializers: SkillModule["sessionDataInitializers"] = [
@@ -88,3 +96,13 @@ export const inlineQueryListeners: SkillModule["inlineQueryListeners"] = [
     handler: searchListener,
   },
 ];
+
+export const migrations: SkillModule["migrations"] = {
+  1717523761990: function addFilterSettings(old: SessionData): SessionData {
+    const newSessionData: SessionData = { ...old };
+    newSessionData.filterSettings = old?.filterSettings ?? {};
+    newSessionData.filterSettings.caseSensitive =
+      old?.filterSettings?.caseSensitive || true;
+    return newSessionData;
+  },
+};

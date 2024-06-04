@@ -7,6 +7,21 @@ export const replyFilter = async (
   filter: string,
   ctx: Filter<BotContext, "message:text">,
 ) => {
+  if (!ctx.session.filterSettings.caseSensitive) {
+    const preparedText = filter.toLowerCase();
+    const filterEntries: [string, SessionFilter][] = [
+      ...ctx.session.filters.entries(),
+    ].map(
+      ([trigger, filter]) => {
+        return [trigger.toLowerCase(), filter];
+      },
+    );
+    const lowercaseFilters = new Map(filterEntries);
+    const filterMessage = lowercaseFilters.get(preparedText)!;
+    const reply = getReplyMethod(filterMessage, ctx);
+    return reply();
+  }
+
   const filterMessage = ctx.session.filters.get(filter)!;
   const reply = getReplyMethod(filterMessage, ctx);
 

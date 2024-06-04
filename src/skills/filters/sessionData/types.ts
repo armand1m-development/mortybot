@@ -48,7 +48,12 @@ export interface Audio {
   tag_names: string[];
 }
 
+export interface FilterSettings {
+  caseSensitive: boolean;
+}
+
 export interface FilterSessionData {
   filters: Map<string, Filter>;
   audioDatabase?: Audio[];
+  filterSettings: FilterSettings;
 }

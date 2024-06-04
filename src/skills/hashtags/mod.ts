@@ -49,7 +49,9 @@ export const listeners: SkillModule["listeners"] = [
 export const inlineQueryListeners: SkillModule["listeners"] = [];
 
 export const migrations: SkillModule["migrations"] = {
-  1: function addHashtagChannelsToSession(old: SessionData): SessionData {
+  1717523297859: function addHashtagChannelsToSession(
+    old: SessionData,
+  ): SessionData {
     return {
       ...old,
       hashtagChannels: old.hashtagChannels ?? new Map(),
