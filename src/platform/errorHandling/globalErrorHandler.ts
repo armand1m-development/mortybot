@@ -1,3 +1,4 @@
+import * as Sentry from "sentry";
 import { getLogger } from "std/log/mod.ts";
 import { Bot, GrammyError, HttpError } from "grammy/mod.ts";
 import { BotContext } from "/src/context/mod.ts";
@@ -16,5 +17,6 @@ export const injectGlobalErrorHandler = (bot: Bot<BotContext>) => {
     } else {
       logger().error("Unknown error:", error);
     }
+    Sentry.captureException(err);
   });
 };
