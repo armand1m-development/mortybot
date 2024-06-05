@@ -15,10 +15,15 @@ export const filterListener: Middleware<Filter<BotContext, "message:text">> =
     const text = ctx.msg.text;
 
     if (isExactMatch(text, ctx.session)) {
-      return replyFilter(text, ctx);
+      await replyFilter(text, ctx);
+      return { handled: true };
     }
 
     const { matches } = hasLoudMatches(text, ctx.session);
+
+    if (matches.size === 0) {
+      return { handled: false };
+    }
 
     getLogger().debug({
       user: ctx.msg.from,
@@ -29,4 +34,6 @@ export const filterListener: Middleware<Filter<BotContext, "message:text">> =
     for (const match of matches) {
       await replyFilter(match, ctx);
     }
+
+    return { handled: true };
   };

@@ -95,7 +95,10 @@ export const hugListener: Middleware<Filter<BotContext, "message:text">> =
   async (ctx) => {
     if (ctx.msg.text === "#hug") {
       await ctx.reply("A hug for you []");
+      return { handled: true };
     }
+
+    return { handled: false };
   };
 
 const skillModule: SkillModule = {

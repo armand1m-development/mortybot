@@ -10,6 +10,8 @@ export const hashtagMentionListener: Middleware<
 > = async (ctx) => {
   const hashtags = parseHashtags(ctx.msg.text).slice(0, 4);
 
+  const result = { handled: false };
+
   for (const hashtag of hashtags) {
     const hashtagChannel = ctx.session.hashtagChannels.get(hashtag);
 
@@ -29,15 +31,20 @@ export const hashtagMentionListener: Middleware<
 
     const mentionChunks = getChunks(mentions);
 
+    if (mentionChunks.length > 0) {
+      result.handled = true;
+    }
+
     for (const mentionChunk of mentionChunks) {
       const message = `
 ${hashtag}: ${mentionChunk.join(",")}
 `;
-
       await ctx.reply(message, {
         parse_mode: "Markdown",
         reply_to_message_id: ctx.msg.message_id,
       });
     }
   }
+
+  return result;
 };

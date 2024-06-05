@@ -89,39 +89,39 @@ export const setupSkillModulesLoader = async (
       const wrappedHandler: Middleware<Filter<BotContext, any>> = async (
         ctx,
       ) => {
-        // deno-lint-ignore ban-types
-        const handlerName = (handler as Function).name ?? handler.toString();
-        // @ts-ignore: the type is not guaranteed in this case, and it is fine.
-        const text = ctx?.msg?.text;
-
-        Sentry.metrics.increment(`listener_invocation`, 1, {
-          tags: {
-            event,
-            skill: skill.name,
-            handlerName,
-            chatType,
-            text,
-          },
-        });
-
         const begin = performance.now();
-
         // @ts-ignore: the type is guaranteed in this case.
-        const result = await handler(ctx);
-
+        const result: { handled: boolean } = await handler(ctx);
         const end = performance.now();
         const time = end - begin;
 
-        Sentry.metrics.distribution(`listener_duration`, time, {
-          tags: {
-            event,
-            handlerName,
-            chatType,
-            skill: skill.name,
-            text,
-          },
-          unit: "millisecond",
-        });
+        if (result.handled) {
+          // deno-lint-ignore ban-types
+          const handlerName = (handler as Function).name ?? handler.toString();
+          // @ts-ignore: the type is not guaranteed in this case, and it is fine.
+          const text = ctx?.msg?.text;
+
+          Sentry.metrics.increment(`listener_invocation`, 1, {
+            tags: {
+              event,
+              skill: skill.name,
+              handlerName,
+              chatType,
+              text,
+            },
+          });
+
+          Sentry.metrics.distribution(`listener_duration`, time, {
+            tags: {
+              event,
+              handlerName,
+              chatType,
+              skill: skill.name,
+              text,
+            },
+            unit: "millisecond",
+          });
+        }
 
         return result;
       };
