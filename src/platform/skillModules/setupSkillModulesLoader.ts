@@ -101,7 +101,7 @@ export const setupSkillModulesLoader = async (
           // @ts-ignore: the type is not guaranteed in this case, and it is fine.
           const text = ctx?.msg?.text;
 
-          Sentry.metrics.increment(`listener_invocation`, 1, {
+          Sentry.metrics.increment(`handled_listener_invocation`, 1, {
             tags: {
               event,
               skill: skill.name,
@@ -111,7 +111,7 @@ export const setupSkillModulesLoader = async (
             },
           });
 
-          Sentry.metrics.distribution(`listener_duration`, time, {
+          Sentry.metrics.distribution(`handled_listener_duration`, time, {
             tags: {
               event,
               handlerName,
