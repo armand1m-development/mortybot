@@ -42,17 +42,48 @@ export const cmdCreateMeme: CommandMiddleware<BotContext> = async (ctx) => {
   }
 
   const uniqueParams = new Set(template.params.map((param) => param.name));
+  const isAvatarParamOnly = uniqueParams.size === 1 &&
+    uniqueParams.has("avatar");
 
-  if (Object.values(commandInput.texts).length !== uniqueParams.size) {
+  if (
+    Object.values(commandInput.texts).length !== uniqueParams.size &&
+    !isAvatarParamOnly
+  ) {
     return ctx.reply(
       `You provided an incorrect number of params for this template. Please provide the following params fo.`,
     );
   }
 
+  const getAvatarBuffer = async () => {
+    const replyMessage = ctx.msg.reply_to_message;
+    const userId = replyMessage?.from?.id;
+
+    if (userId !== undefined) {
+      const userAvatar = await ctx.api.getUserProfilePhotos(userId);
+
+      if (userAvatar.total_count === 0) {
+        return null;
+      }
+
+      const photoSizes = userAvatar.photos[0];
+      const highestResAvatar = photoSizes[photoSizes.length - 1];
+      const file = await ctx.api.getFile(highestResAvatar.file_id);
+      const url = file.getUrl();
+      const avatarResponse = await fetch(url);
+      const avatarBuffer = await avatarResponse.arrayBuffer();
+
+      return avatarBuffer;
+    }
+
+    return null;
+  };
+
+  const avatarBuffer: ArrayBuffer | null = await getAvatarBuffer();
   const response = await fetch(template.url);
   const imageBuffer = await response.arrayBuffer();
   const image = await renderer({
     buffer: imageBuffer,
+    avatarBuffer,
     params: template.params,
     texts: commandInput.texts,
     debug,
