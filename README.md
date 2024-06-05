@@ -138,15 +138,6 @@ code with references and function names like `getTretas(fromThisPessoa)`.
 - [x] `/hashtags`, `/list_hashtags`: Lists all hashtags existing in the group
       along with their participants.
 
-### Annoying user listener
-
-Sometimes you have that annoying friend in the chat and you want to annoy him a
-bit. This is a feature inspired in that. This feature will check when that
-annoying user is talking too much and will start dealing with him. Take it as a
-self protection mechanism.
-
-- [ ] `/set_annoying_user <mention>`: Sets the annoying user
-
 ### Command Usage Stats
 
 - [ ] `/usage_stats`: will render a report with monthly usage of commands and a
@@ -163,6 +154,9 @@ Nice utilities for democratizing the chat.
 
 - [x] `/set_title <title>`: will set the chat title. Anyone can use it. MortyBot
       must be added as an admin.
+- [x] `/get_chat_id`: will reply with the chat id number in the chat.
+- [x] `/report`, `/admin`: when used replying a message, it will report the user
+      to all admins of the chat.
 
 ### Rodosol Now
 
@@ -211,6 +205,11 @@ Mortybot has several image features in mind as well, with some already in
 production.
 
 #### MEME Templating
+
+Meme templates can be created at https://mortybotui.fly.dev
+
+The UI will generate a `/create_meme_template` command you can paste in the
+chat. Then you just use the `/meme <template-name> <params>` method as needed.
 
 - [x] `/create_meme_template <meme-template-json>`: Defines a meme template in
       the chat session database. This can be later used with the `/meme` command

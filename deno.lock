@@ -311,6 +311,7 @@
   },
   "redirects": {
     "https://deno.land/x/oak/mod.ts": "https://deno.land/x/oak@v16.0.0/mod.ts",
+    "https://deno.land/x/sentry/index.mjs": "https://deno.land/x/sentry@8.7.0/index.mjs",
     "https://esm.sh/@grammyjs/types@v2": "https://esm.sh/@grammyjs/types@2.0.0",
     "https://lib.deno.dev/x/grammy@1.x/mod.ts": "https://deno.land/x/grammy@v1.24.0/mod.ts",
     "https://lib.deno.dev/x/grammy@v1/mod.ts": "https://deno.land/x/grammy@v1.24.0/mod.ts"
@@ -623,6 +624,7 @@
     "https://deno.land/x/querystring@v1.0.2/src/query-string.js": "de744fb6c0ec2dfacce29d21023993c8699c06453989c7fbaf2a36188f2b5e40",
     "https://deno.land/x/querystring@v1.0.2/src/split-on-first.js": "1531650605c4e4bdac56a4e25ba2f84d3e304c8e23dbb598edb13f1f28e9ecc0",
     "https://deno.land/x/querystring@v1.0.2/src/strict-uri-encode.js": "a49626f63fa5fad785075ffc0d618cac2dc339edbc8c149683e3b36e6b0658ee",
+    "https://deno.land/x/sentry@8.7.0/index.mjs": "1fdc42150d763651e31a88f5d6495756be91600ee1722f18fbf5936e848f8018",
     "https://esm.sh/@grammyjs/types@2.0.0": "0b9373174c4bccaafd120d358cfcdd3aa822955400277858bac69b4da2ec80ff",
     "https://esm.sh/linkedom@0.14.22": "d571e79bd54a41b7917a949b0a6f770a4bde43f8a01006b47ebe995266ce05df",
     "https://esm.sh/v135/@grammyjs/types@2.0.0/denonext/types.mjs": "7ee61bd0c55a152ea1ffaf3fbe63fce6c103ae836265b23290284d6ba0e3bc5b",

@@ -1,4 +1,7 @@
+import * as Sentry from "sentry";
 import { getLogger } from "std/log/mod.ts";
+import { Middleware } from "grammy/composer.ts";
+import { Filter } from "grammy/filter.ts";
 import { Bot } from "grammy/mod.ts";
 import { BotCommand } from "grammy/types.ts";
 import { BotContext, SessionData } from "/src/context/mod.ts";
@@ -47,7 +50,34 @@ export const setupSkillModulesLoader = async (
       }" for skill "${skill.name}"`;
 
       logger().info(logMessage);
-      bot.command([command, ...aliases], handler);
+
+      bot.command([command, ...aliases], async (ctx) => {
+        Sentry.metrics.increment(`command_invocation`, 1, {
+          tags: {
+            skill: skill.name,
+            command,
+            match: ctx.match,
+          },
+        });
+
+        const begin = performance.now();
+
+        // @ts-ignore: the type is guaranteed in this case.
+        const result = await handler(ctx);
+
+        const end = performance.now();
+        const time = end - begin;
+
+        Sentry.metrics.distribution(`command_duration`, time, {
+          tags: {
+            skill: skill.name,
+            command,
+          },
+          unit: "millisecond",
+        });
+
+        return result;
+      });
     });
   };
 
@@ -55,10 +85,51 @@ export const setupSkillModulesLoader = async (
     logger().debug(`Loading skill "${skill.name}" listeners..`);
 
     for (const { event, handler, chatType } of skill.listeners) {
-      if (chatType != undefined) {
-        bot.chatType(chatType).fork().on(event, handler);
+      // deno-lint-ignore no-explicit-any
+      const wrappedHandler: Middleware<Filter<BotContext, any>> = async (
+        ctx,
+      ) => {
+        // deno-lint-ignore ban-types
+        const handlerName = (handler as Function).name ?? handler.toString();
+        // @ts-ignore: the type is not guaranteed in this case, and it is fine.
+        const text = ctx?.msg?.text;
+
+        Sentry.metrics.increment(`listener_invocation`, 1, {
+          tags: {
+            event,
+            skill: skill.name,
+            handlerName,
+            chatType,
+            text,
+          },
+        });
+
+        const begin = performance.now();
+
+        // @ts-ignore: the type is guaranteed in this case.
+        const result = await handler(ctx);
+
+        const end = performance.now();
+        const time = end - begin;
+
+        Sentry.metrics.distribution(`listener_duration`, time, {
+          tags: {
+            event,
+            handlerName,
+            chatType,
+            skill: skill.name,
+            text,
+          },
+          unit: "millisecond",
+        });
+
+        return result;
+      };
+
+      if (chatType !== undefined) {
+        bot.chatType(chatType).fork().on(event, wrappedHandler);
       } else {
-        bot.fork().on(event, handler);
+        bot.fork().on(event, wrappedHandler);
       }
     }
   };
@@ -73,7 +144,23 @@ export const setupSkillModulesLoader = async (
   const runSkillInitializers = (skill: SkillModule) => {
     logger().debug(`Running skill "${skill.name}" initializers..`);
     return Promise.allSettled(
-      skill.initializers.map((initializer) => initializer()),
+      skill.initializers.map(async (initializer) => {
+        const begin = performance.now();
+
+        const result = await initializer();
+
+        const end = performance.now();
+        const time = end - begin;
+
+        Sentry.metrics.distribution(`skill_initializer_duration`, time, {
+          tags: {
+            skill: skill.name,
+          },
+          unit: "millisecond",
+        });
+
+        return result;
+      }),
     );
   };
 
@@ -94,10 +181,13 @@ export const setupSkillModulesLoader = async (
 
   const loadSkills = async () => {
     let commands: BotCommand[] = [];
+    const beginAll = performance.now();
 
     const result = await Promise.allSettled(loadedSkills.map(async (skill) => {
       try {
         logger().debug(`Loading skill "${skill.name}"`);
+
+        const begin = performance.now();
 
         await runSkillInitializers(skill);
 
@@ -107,14 +197,33 @@ export const setupSkillModulesLoader = async (
         loadSkillInlineQueryListeners(skill);
 
         commands = [...commands, ...compileSkillCommandsToDocs(skill)];
+
+        const end = performance.now();
+        const time = end - begin;
+
+        Sentry.metrics.distribution(`skill_loading_duration`, time, {
+          tags: {
+            skill: skill.name,
+          },
+          unit: "millisecond",
+        });
       } catch (e) {
         logger().error(e);
       }
     }));
 
+    const endAll = performance.now();
+    const time = endAll - beginAll;
+
+    Sentry.metrics.distribution(`all_skill_loading_duration`, time, {
+      tags: {},
+      unit: "millisecond",
+    });
+
     const skillLoadingReport = result.map((result, index) => {
       const skill = loadedSkills[index];
       const resumedSkill: Record<string, unknown> = { ...skill };
+
       resumedSkill.commands = skill.commands.map((command) =>
         `${command.command}: ${command.description}`
       );

@@ -12,7 +12,7 @@ export const setupSkillRouteLoader = async (
   const loadedSkills = await Promise.all(skills.map(loadSkill));
 
   loadedSkills.forEach((skill) => {
-    if (skill.router !== undefined) {
+    if (skill.router !== undefined && skill.router !== null) {
       logger().debug(
         `Loading skill "${skill.name}" routes at /${skill.name}..`,
       );

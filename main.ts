@@ -3,6 +3,7 @@ import { bold } from "std/fmt/colors.ts";
 import { loadEnvironment } from "./src/environment.ts";
 import { createBot } from "./src/bot.ts";
 import { createApi } from "./src/api.ts";
+import { startTracing } from "./src/tracing.ts";
 
 log.setup({
   handlers: {
@@ -18,6 +19,9 @@ log.setup({
 
 const logger = log.getLogger();
 const configuration = await loadEnvironment();
+
+logger.debug(bold("Starting tracing..."));
+startTracing(configuration);
 
 const bot = await createBot(configuration);
 logger.debug(bold("Starting bot instance..."));

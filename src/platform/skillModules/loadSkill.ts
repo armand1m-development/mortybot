@@ -5,7 +5,7 @@ import { SkillModule } from "./types/SkillModule.ts";
 export const loadSkill = async (skillName: Skill) => {
   const skillModule = await import(
     resolve(Deno.cwd(), `./src/skills/${skillName}/mod.ts`)
-  ) as SkillModule;
+  );
 
   if (!skillModule) {
     throw new Error(
@@ -13,5 +13,9 @@ export const loadSkill = async (skillName: Skill) => {
     );
   }
 
-  return skillModule;
+  if (skillModule.default) {
+    return skillModule.default as SkillModule;
+  }
+
+  return skillModule as SkillModule;
 };

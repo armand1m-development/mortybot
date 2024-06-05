@@ -11,9 +11,14 @@ export const loadEnvironment = async (): Promise<Configuration> => {
     export: true,
   });
 
+  const environment = Deno.env.get("ENVIRONMENT")! === "production"
+    ? "production"
+    : "development";
+
   return {
     dataPath: Deno.env.get("DATA_PATH")!,
     botToken: Deno.env.get("BOT_TOKEN")!,
+    environment,
     exchangeApiToken: Deno.env.get("EXCHANGE_API_TOKEN")!,
     openWeatherMapApiToken: Deno.env.get("OPENWEATHERMAP_API_TOKEN")!,
     googleMapsApiToken: Deno.env.get("GOOGLEMAPS_API_TOKEN")!,
@@ -23,5 +28,6 @@ export const loadEnvironment = async (): Promise<Configuration> => {
       "MAIN_MEME_TEMPLATE_CHAT_SESSION_PATH",
     )!,
     apiPort: parseInt(Deno.env.get("API_PORT")!),
+    sentryDSN: Deno.env.get("SENTRY_DSN")!,
   };
 };

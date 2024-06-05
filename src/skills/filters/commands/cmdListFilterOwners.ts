@@ -1,5 +1,7 @@
 import { CommandMiddleware } from "grammy/composer.ts";
 import { BotContext } from "/src/context/mod.ts";
+import { getChunks } from "/src/utilities/array/getChunks.ts";
+import { createMemberMention } from "/src/utilities/createMemberMention.ts";
 
 export const cmdListFilterOwners: CommandMiddleware<BotContext> = async (
   ctx,
@@ -9,16 +11,29 @@ export const cmdListFilterOwners: CommandMiddleware<BotContext> = async (
 
   const lines = await Promise.all(
     entries.map(async ([filterTrigger, filter]) => {
-      const { user } = await ctx.getChatMember(filter.ownerId);
-      return `- ${filterTrigger} (owner: @${user.username}, ${
+      const userId = filter.ownerId;
+      const chatMember = await ctx.getChatMember(userId);
+
+      if (!chatMember) {
+        return ` - UID ${userId}: ${filters.length}`;
+      }
+
+      const { user } = chatMember;
+      const mention = createMemberMention(user, false);
+
+      return `- ${filterTrigger} (owner: ${mention}, ${
         filter.active ? "active" : "stopped"
       })`;
     }),
   );
 
-  const message = lines.length > 0
-    ? lines.join("\n")
-    : "There are no filters defined for this group currently.";
+  if (lines.length === 0) {
+    return ctx.reply("There are no filters defined for this group currently.");
+  }
 
-  await ctx.reply(message);
+  const chunkedEntries = getChunks(lines, 100);
+
+  for (const entrySet of chunkedEntries) {
+    await ctx.reply(entrySet.join("\n"));
+  }
 };

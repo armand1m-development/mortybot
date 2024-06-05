@@ -8,6 +8,8 @@ export interface Configuration {
   inlineQuerySourceChatId: string;
   mainMemeTemplateChatSessionPath: string;
   apiPort: number;
+  sentryDSN: string;
+  environment: "development" | "production";
 }
 
 export interface ConfigurationContext {
