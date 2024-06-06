@@ -146,9 +146,7 @@ export const setupSkillModulesLoader = async (
     return Promise.allSettled(
       skill.initializers.map(async (initializer) => {
         const begin = performance.now();
-
         const result = await initializer();
-
         const end = performance.now();
         const time = end - begin;
 
