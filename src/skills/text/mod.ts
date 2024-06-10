@@ -1,6 +1,15 @@
 import { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
-import { cmdFunText } from "./commands/cmdFunText.ts";
-import { cmdCrazyText } from "./commands/cmdCrazyText.ts";
+import { table as funTextTable } from "./commands/cmdFunText.ts";
+import { table as crazyTextTable } from "./commands/cmdCrazyText.ts";
+import {
+  reverseTable as teluguReverseTable,
+  table as teluguTextTable,
+} from "./commands/cmdTeluguText.ts";
+import { mustHaveTextMiddleware } from "./middlewares/mustHaveTextMiddleware.ts";
+import {
+  createMultipleTextCommand,
+  createTextCommand,
+} from "./utilities/createTextCommand.ts";
 
 const skillModule: SkillModule = {
   name: "text",
@@ -11,15 +20,29 @@ const skillModule: SkillModule = {
       command: "funtext",
       aliases: ["fun", "funtxt", "kawaii"],
       description: "Converts a text string into funny characters.",
-      handler: cmdFunText,
-      chatType: ["group", "supergroup"],
+      handler: createTextCommand(funTextTable),
+      middlewares: [mustHaveTextMiddleware],
     },
     {
       command: "crazytext",
       aliases: ["crazify", "crazytxt"],
       description: "Converts a text string into crazy characters.",
-      handler: cmdCrazyText,
-      chatType: ["group", "supergroup"],
+      handler: createMultipleTextCommand(crazyTextTable),
+      middlewares: [mustHaveTextMiddleware],
+    },
+    {
+      command: "telugutext",
+      aliases: ["telugu", "telugutxt"],
+      description: "Converts a text string into telugu characters.",
+      handler: createTextCommand(teluguTextTable),
+      middlewares: [mustHaveTextMiddleware],
+    },
+    {
+      command: "decodetelugutext",
+      aliases: ["decodetelugu"],
+      description: "Decodes telugu characters.",
+      handler: createTextCommand(teluguReverseTable),
+      middlewares: [mustHaveTextMiddleware],
     },
   ],
   sessionDataInitializers: [],

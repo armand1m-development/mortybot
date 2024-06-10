@@ -1,8 +1,4 @@
-import { CommandMiddleware } from "grammy/composer.ts";
-import { BotContext } from "/src/context/mod.ts";
-import { getRandomValue } from "/src/utilities/array/random.ts";
-
-const table: Record<string, string[] | undefined> = {
+export const table: Record<string, string[] | undefined> = {
   "&": "⅋".split(""),
   "%": ["⅍", "℀", "℁", "℆", "℅"],
   "0": ["０", "Ѳ", "ʘ"],
@@ -633,28 +629,4 @@ const table: Record<string, string[] | undefined> = {
     "𝕫",
     "ᶻ",
   ],
-};
-
-export const cmdCrazyText: CommandMiddleware<BotContext> = async (ctx) => {
-  const text = ctx.match;
-
-  if (!text) {
-    await ctx.reply(
-      "Missing text. Usage: `/crazytxt text goes here`",
-    );
-    return;
-  }
-
-  const result = text
-    .split("")
-    .map((char) => {
-      const charTable = table[char];
-      return Array.isArray(charTable) ? getRandomValue(charTable) : char;
-    })
-    .join("");
-
-  await Promise.allSettled([
-    ctx.deleteMessage(),
-    ctx.reply(result),
-  ]);
 };

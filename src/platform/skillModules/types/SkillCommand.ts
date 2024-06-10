@@ -7,5 +7,6 @@ export interface SkillCommand {
   aliases: string[];
   description: string;
   handler: CommandMiddleware<BotContext>;
+  middlewares?: CommandMiddleware<BotContext>[];
   chatType?: Chat["type"][];
 }

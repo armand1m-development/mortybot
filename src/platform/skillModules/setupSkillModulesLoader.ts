@@ -44,40 +44,44 @@ export const setupSkillModulesLoader = async (
 
   const loadSkillCommands = (skill: SkillModule) => {
     logger().debug(`Loading skill "${skill.name}" commands..`);
-    skill.commands.forEach(({ command, aliases, handler }) => {
+    skill.commands.forEach(({ command, aliases, handler, middlewares }) => {
       const logMessage = `Loading command "/${command}" with aliases "${
         aliases.join(", ")
       }" for skill "${skill.name}"`;
 
       logger().info(logMessage);
 
-      bot.command([command, ...aliases], async (ctx) => {
-        Sentry.metrics.increment(`command_invocation`, 1, {
-          tags: {
-            skill: skill.name,
-            command,
-            match: ctx.match,
-          },
-        });
+      bot.command(
+        [command, ...aliases],
+        ...(middlewares ?? []),
+        async (ctx) => {
+          Sentry.metrics.increment(`command_invocation`, 1, {
+            tags: {
+              skill: skill.name,
+              command,
+              match: ctx.match,
+            },
+          });
 
-        const begin = performance.now();
+          const begin = performance.now();
 
-        // @ts-ignore: the type is guaranteed in this case.
-        const result = await handler(ctx);
+          // @ts-ignore: the type is guaranteed in this case.
+          const result = await handler(ctx);
 
-        const end = performance.now();
-        const time = end - begin;
+          const end = performance.now();
+          const time = end - begin;
 
-        Sentry.metrics.distribution(`command_duration`, time, {
-          tags: {
-            skill: skill.name,
-            command,
-          },
-          unit: "millisecond",
-        });
+          Sentry.metrics.distribution(`command_duration`, time, {
+            tags: {
+              skill: skill.name,
+              command,
+            },
+            unit: "millisecond",
+          });
 
-        return result;
-      });
+          return result;
+        },
+      );
     });
   };
 

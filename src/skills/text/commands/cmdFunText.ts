@@ -1,7 +1,4 @@
-import { CommandMiddleware } from "grammy/composer.ts";
-import { BotContext } from "/src/context/mod.ts";
-
-const table: Record<string, string> = {
+export const table: Record<string, string> = {
   "0": "𝟢",
   "1": "𝟣",
   "2": "𝟤",
@@ -64,22 +61,4 @@ const table: Record<string, string> = {
   "X": "𝒳",
   "Y": "𝒴",
   "Z": "𝒵",
-};
-
-export const cmdFunText: CommandMiddleware<BotContext> = async (ctx) => {
-  const text = ctx.match;
-
-  if (!text) {
-    await ctx.reply(
-      "Missing text. Usage: `/funtext text goes here`",
-    );
-    return;
-  }
-
-  const result = text.split("").map((char) => table[char] ?? char).join("");
-
-  await Promise.allSettled([
-    ctx.deleteMessage(),
-    ctx.reply(result),
-  ]);
 };
