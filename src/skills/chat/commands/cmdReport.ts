@@ -1,4 +1,3 @@
-import { getLogger } from "std/log/mod.ts";
 import { CommandMiddleware } from "grammy/composer.ts";
 import { BotContext } from "/src/context/mod.ts";
 import { createMemberMention } from "../../../utilities/createMemberMention.ts";

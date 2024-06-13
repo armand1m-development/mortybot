@@ -5,7 +5,7 @@ import { createOverlayContext } from "./overlay/overlay.ts";
 
 export interface RendererProps {
   /** Buffer containing JPEG, PNG, WebP, AVIF, GIF, SVG, TIFF or raw pixel image data. */
-  buffer: ArrayBuffer;
+  imageBuffer: ArrayBuffer;
   avatarBuffer: ArrayBuffer | null;
   params: MemeTemplateParam[];
   texts: ParsedQuery<string>;
@@ -13,9 +13,9 @@ export interface RendererProps {
 }
 
 export const renderer = async (
-  { buffer, avatarBuffer, params, texts, debug = false }: RendererProps,
+  { imageBuffer, avatarBuffer, params, texts, debug = false }: RendererProps,
 ) => {
-  const sharpInstance = sharp(buffer, {});
+  const sharpInstance = sharp(imageBuffer, {});
   const metadata = await sharpInstance.metadata();
   const { intoOverlay } = createOverlayContext({ metadata, texts, debug });
   const overlays = params.map(intoOverlay);

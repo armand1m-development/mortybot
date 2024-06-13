@@ -14,7 +14,7 @@ export const readFileHash = async () => {
   return hash;
 };
 
-export const generateSkillsFile = async (force: boolean = false) => {
+export const generateSkillsFile = async (force = false) => {
   const skills = [];
 
   for await (const dirEntry of Deno.readDir(skillsDirectoryPath)) {
