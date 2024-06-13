@@ -3,7 +3,7 @@ import { BotContext } from "/src/context/mod.ts";
 import { InputFile } from "grammy/mod.ts";
 
 export const cmdGetFile: CommandMiddleware<BotContext> = async (ctx) => {
-  const replyMessage = ctx.msg.reply_to_message;
+  const replyMessage = ctx.msg.reply_to_message!;
 
   const getFileBuffer = async () => {
     const fileId = replyMessage?.sticker?.file_id ??
@@ -14,7 +14,6 @@ export const cmdGetFile: CommandMiddleware<BotContext> = async (ctx) => {
       const url = file.getUrl();
       const response = await fetch(url);
       const buffer = await response.arrayBuffer();
-
       return { buffer, url };
     }
 

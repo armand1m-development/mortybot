@@ -7,20 +7,24 @@ import { BotCommand } from "grammy/types.ts";
 import { BotContext, SessionData } from "/src/context/mod.ts";
 import type { Skill } from "/src/skills/skills.ts";
 import { SkillModule } from "./types/SkillModule.ts";
-import { loadSkill } from "./loadSkill.ts";
+import { loadSkillModule } from "./loadSkill.ts";
 
 const logger = () => getLogger();
+
+const isFulfilled = <T>(
+  input: PromiseSettledResult<T>,
+): input is PromiseFulfilledResult<T> => input.status === "fulfilled";
 
 export const setupSkillModulesLoader = async (
   skills: readonly Skill[],
   bot: Bot<BotContext>,
 ) => {
-  const loadedSkills = await Promise.all(skills.map(loadSkill));
+  const loadedSkillModules = await Promise.all(skills.map(loadSkillModule));
 
   const createSessionData = () => {
     let initialSessionData: Partial<SessionData> = {};
 
-    loadedSkills.forEach((skill) => {
+    loadedSkillModules.forEach((skill) => {
       logger().debug(`Running "${skill.name}" session initializers..`);
       skill.sessionDataInitializers.forEach((initializer) => {
         initialSessionData = {
@@ -45,11 +49,17 @@ export const setupSkillModulesLoader = async (
   const loadSkillCommands = (skill: SkillModule) => {
     logger().debug(`Loading skill "${skill.name}" commands..`);
     skill.commands.forEach(({ command, aliases, handler, middlewares }) => {
-      const logMessage = `Loading command "/${command}" with aliases "${
-        aliases.join(", ")
-      }" for skill "${skill.name}"`;
+      if (aliases.length === 0) {
+        const logMessage =
+          `Loading command "/${command}" for skill "${skill.name}"`;
+        logger().info(logMessage);
+      } else {
+        const logMessage = `Loading command "/${command}" with aliases "${
+          aliases.join(", ")
+        }" for skill "${skill.name}"`;
 
-      logger().info(logMessage);
+        logger().info(logMessage);
+      }
 
       bot.command(
         [command, ...aliases],
@@ -181,49 +191,11 @@ export const setupSkillModulesLoader = async (
     return commands;
   };
 
-  const loadSkills = async () => {
-    let commands: BotCommand[] = [];
-    const beginAll = performance.now();
-
-    const result = await Promise.allSettled(loadedSkills.map(async (skill) => {
-      try {
-        logger().debug(`Loading skill "${skill.name}"`);
-
-        const begin = performance.now();
-
-        await runSkillInitializers(skill);
-
-        loadSkillMiddlewares(skill);
-        loadSkillCommands(skill);
-        loadSkillListeners(skill);
-        loadSkillInlineQueryListeners(skill);
-
-        commands = [...commands, ...compileSkillCommandsToDocs(skill)];
-
-        const end = performance.now();
-        const time = end - begin;
-
-        Sentry.metrics.distribution(`skill_loading_duration`, time, {
-          tags: {
-            skill: skill.name,
-          },
-          unit: "millisecond",
-        });
-      } catch (e) {
-        logger().error(e);
-      }
-    }));
-
-    const endAll = performance.now();
-    const time = endAll - beginAll;
-
-    Sentry.metrics.distribution(`all_skill_loading_duration`, time, {
-      tags: {},
-      unit: "millisecond",
-    });
-
+  const printSkillLoadingReport = (
+    result: PromiseSettledResult<BotCommand[] | undefined>[],
+  ) => {
     const skillLoadingReport = result.map((result, index) => {
-      const skill = loadedSkills[index];
+      const skill = loadedSkillModules[index];
       const resumedSkill: Record<string, unknown> = { ...skill };
 
       resumedSkill.commands = skill.commands.map((command) =>
@@ -240,12 +212,12 @@ export const setupSkillModulesLoader = async (
         }
 
         if (value instanceof Array && value.length > 0) {
-          resumedSkill[key] = value.map((v: unknown) => {
-            if (v instanceof Function) {
-              return v.name ?? v.toString();
+          resumedSkill[key] = value.map((valueItem: unknown) => {
+            if (valueItem instanceof Function) {
+              return valueItem.name ?? valueItem.toString();
             }
 
-            return v;
+            return valueItem;
           });
         }
 
@@ -264,7 +236,9 @@ export const setupSkillModulesLoader = async (
             .map((
               { pattern, handler },
             ) =>
-              `${pattern.toString()}: ${handler?.name ?? handler?.toString()}`
+              `${pattern.toString()}: ${
+                // deno-lint-ignore no-explicit-any
+                (handler as any)?.name ?? handler?.toString()}`
             );
         }
       });
@@ -277,9 +251,65 @@ export const setupSkillModulesLoader = async (
 
     logger().debug("Skill loading report:");
     logger().debug(JSON.stringify(skillLoadingReport, null, 2));
+  };
 
-    logger().debug("Setting bot command docs.");
-    logger().debug(JSON.stringify(commands, null, 2));
+  const loadSkill = async (skill: SkillModule) => {
+    try {
+      logger().debug(`Loading skill "${skill.name}"`);
+
+      const begin = performance.now();
+
+      await runSkillInitializers(skill);
+
+      loadSkillMiddlewares(skill);
+      loadSkillCommands(skill);
+      loadSkillListeners(skill);
+      loadSkillInlineQueryListeners(skill);
+
+      const end = performance.now();
+      const time = end - begin;
+
+      Sentry.metrics.distribution(`skill_loading_duration`, time, {
+        tags: {
+          skill: skill.name,
+        },
+        unit: "millisecond",
+      });
+
+      return compileSkillCommandsToDocs(skill);
+    } catch (err) {
+      logger().error(err);
+      return [];
+    }
+  };
+
+  const loadSkills = async () => {
+    const beginAll = performance.now();
+
+    const skillLoaderResults = await Promise.allSettled(
+      loadedSkillModules.flatMap(loadSkill),
+    );
+
+    const endAll = performance.now();
+    const time = endAll - beginAll;
+
+    Sentry.metrics.distribution(`all_skill_loading_duration`, time, {
+      tags: {},
+      unit: "millisecond",
+    });
+
+    if (Deno.env.get("PRINT_SKILL_LOADING_REPORT") === "true") {
+      printSkillLoadingReport(skillLoaderResults);
+    }
+
+    const commands = skillLoaderResults.flatMap((result) => {
+      return isFulfilled(result) ? result.value : [];
+    });
+
+    if (Deno.env.get("PRINT_BOT_COMMAND_DOCS_REPORT") === "true") {
+      logger().debug("Setting bot command docs.");
+      logger().debug(JSON.stringify(commands, null, 2));
+    }
 
     await bot.api.setMyCommands(commands);
   };

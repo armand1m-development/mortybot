@@ -1,6 +1,6 @@
 import { Router } from "oak";
 import type { Skill } from "/src/skills/skills.ts";
-import { loadSkill } from "./loadSkill.ts";
+import { loadSkillModule } from "./loadSkill.ts";
 import { getLogger } from "std/log/mod.ts";
 
 const logger = () => getLogger();
@@ -9,7 +9,7 @@ export const setupSkillRouteLoader = async (
   skills: readonly Skill[],
   mainRouter: Router,
 ) => {
-  const loadedSkills = await Promise.all(skills.map(loadSkill));
+  const loadedSkills = await Promise.all(skills.map(loadSkillModule));
 
   loadedSkills.forEach((skill) => {
     if (skill.router !== undefined && skill.router !== null) {

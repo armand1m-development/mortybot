@@ -1,12 +1,7 @@
-import * as log from "std/log/mod.ts";
 import * as dotenv from "std/dotenv/mod.ts";
 import { Configuration } from "/src/platform/configuration/middlewares/types.ts";
 
 export const loadEnvironment = async (): Promise<Configuration> => {
-  const logger = log.getLogger();
-
-  logger.debug("Loading environment..");
-
   await dotenv.load({
     export: true,
   });

@@ -32,9 +32,12 @@ the loading lifecycles and they enable multiple features in the bot:
 
 Lets start with the most basic example: a new skill with a single command.
 
+- Start the watch server: `deno task watch`
 - Create a folder with the name of your skill and add the following code to
-  `mod.ts`
-- Run `deno task generate:skills`
+  `mod.ts` _(rename the `skillModule.name` property to reflect your skill name)_
+- The server regenerated the `skills/skills.ts` file on startup based on the
+  disk content.
+  - _You can always force it using `deno task generate:skills`_
 - Your command should be registered and working.
 - You should be able to see the command on telegram as well as in the server
   logs.
@@ -45,7 +48,7 @@ import { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
 import { BotContext } from "/src/context/mod.ts";
 
 const cmdExample: CommandMiddleware<BotContext> = async (ctx) => {
-  await ctx.reply("Hello world");
+  await ctx.reply("This is a very simple example of a very simple command.");
 };
 
 const skillModule: SkillModule = {
@@ -58,7 +61,6 @@ const skillModule: SkillModule = {
       aliases: ["samp", "eg", "example"],
       description: "This is a very simple example of a very simple command.",
       handler: cmdExample,
-      chatType: ["group", "supergroup"],
     },
   ],
   sessionDataInitializers: [],

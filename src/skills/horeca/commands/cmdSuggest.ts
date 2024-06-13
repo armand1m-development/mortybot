@@ -5,19 +5,8 @@ import { BotContext } from "/src/context/mod.ts";
 
 export const cmdSuggest: CommandMiddleware<BotContext> = async (ctx) => {
   const keyword = ctx.match;
-
-  if (!keyword) {
-    return ctx.reply(
-      "Include a keyword after the command. Example: `/suggest craft beers`",
-    );
-  }
-
   const repliedMessage = (ctx.msg ?? ctx.update.message).reply_to_message;
-  const repliedMessageLocation = repliedMessage?.location;
-
-  if (!repliedMessageLocation) {
-    return ctx.reply("Reply to a location message to get suggestions.");
-  }
+  const repliedMessageLocation = repliedMessage?.location!;
 
   await ctx.api.sendChatAction(ctx.chat.id, "typing");
 

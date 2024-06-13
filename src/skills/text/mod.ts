@@ -5,7 +5,7 @@ import {
   reverseTable as teluguReverseTable,
   table as teluguTextTable,
 } from "./commands/cmdTeluguText.ts";
-import { mustHaveTextMiddleware } from "./middlewares/mustHaveTextMiddleware.ts";
+import { mustHaveTextMiddleware } from "/src/utilities/middlewares/mustHaveTextMiddleware.ts";
 import {
   createMultipleTextCommand,
   createTextCommand,

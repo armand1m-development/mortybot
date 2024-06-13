@@ -41,16 +41,7 @@ async (ctx) => {
     "./downloads",
   );
 
-  const repliedMessage = (ctx.msg ?? ctx.update.message).reply_to_message;
-
-  if (!repliedMessage) {
-    getLogger().error("Failed to find reply_to_message");
-    getLogger().debug({
-      ctxMsg: ctx.msg,
-      ctxUpdateMessage: ctx.update.message,
-    });
-    return ctx.reply("You should run this command when replying to a message.");
-  }
+  const repliedMessage = (ctx.msg ?? ctx.update.message).reply_to_message!;
 
   const downloadFile = async (fileId: string, mimeType?: string) => {
     try {

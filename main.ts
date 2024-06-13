@@ -1,9 +1,5 @@
 import * as log from "std/log/mod.ts";
 import { bold } from "std/fmt/colors.ts";
-import { loadEnvironment } from "./src/environment.ts";
-import { createBot } from "./src/bot.ts";
-import { createApi } from "./src/api.ts";
-import { startTracing } from "./src/tracing.ts";
 
 log.setup({
   handlers: {
@@ -18,6 +14,17 @@ log.setup({
 });
 
 const logger = log.getLogger();
+logger.debug(bold("Generating new skills file..."));
+
+import { generateSkillsFile } from "./generators/generateSkillsFile.ts";
+await generateSkillsFile();
+
+import { loadEnvironment } from "./src/environment.ts";
+import { createBot } from "./src/bot.ts";
+import { createApi } from "./src/api.ts";
+import { startTracing } from "./src/tracing.ts";
+
+logger.debug(bold("Loading environment..."));
 const configuration = await loadEnvironment();
 
 logger.debug(bold("Starting tracing..."));

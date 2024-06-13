@@ -3,6 +3,7 @@ import { cmdReport } from "./commands/cmdReport.ts";
 import { cmdSetTitle } from "./commands/cmdSetTitle.ts";
 import { cmdGetChatId } from "./commands/cmdGetChatId.ts";
 import { cmdGetFile } from "./commands/cmdGetFile.ts";
+import { mustHaveReplyMiddleware } from "/src/utilities/middlewares/mustHaveReplyMiddleware.ts";
 
 const skillModule: SkillModule = {
   name: "chat",
@@ -23,20 +24,20 @@ const skillModule: SkillModule = {
       description: "Pings the group admin about the replied message.",
       handler: cmdReport,
       chatType: ["group", "supergroup"],
+      middlewares: [mustHaveReplyMiddleware],
     },
     {
       command: "chat_id",
       aliases: ["id"],
       description: "Gets the chat id.",
       handler: cmdGetChatId,
-      chatType: ["group", "supergroup"],
     },
     {
       command: "get_file",
       aliases: ["get_sticker"],
       description: "Gets the file and url from a sticker, video note or gif.",
       handler: cmdGetFile,
-      chatType: ["group", "supergroup"],
+      middlewares: [mustHaveReplyMiddleware],
     },
   ],
   sessionDataInitializers: [],

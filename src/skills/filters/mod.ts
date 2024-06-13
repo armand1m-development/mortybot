@@ -13,6 +13,7 @@ import { cmdCountPerOwner } from "./commands/cmdCountPerOwner.ts";
 import { createDownloadsFolder } from "./initializers/createDownloadsFolder.ts";
 import { searchListener } from "./inlineQueryListeners/searchListener.ts";
 import { cmdToggleCaseSensitiveFilters } from "./commands/cmdToggleCaseSensitiveFilters.ts";
+import { mustHaveReplyMiddleware } from "/src/utilities/middlewares/mustHaveReplyMiddleware.ts";
 
 const skillModule: SkillModule = {
   name: "filters",
@@ -36,12 +37,14 @@ const skillModule: SkillModule = {
       aliases: ["filter"],
       description: "Adds a new filter",
       handler: createAddFilterCommand({ isLoud: false }),
+      middlewares: [mustHaveReplyMiddleware],
     },
     {
       command: "add_loud_filter",
       aliases: ["loud_filter"],
       description: "Adds a new loud filter.",
       handler: createAddFilterCommand({ isLoud: true }),
+      middlewares: [mustHaveReplyMiddleware],
     },
     {
       command: "stop_filter",
