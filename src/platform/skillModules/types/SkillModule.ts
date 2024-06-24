@@ -1,10 +1,11 @@
-import { Router } from "oak";
-import { Migrations } from "grammy/mod.ts";
-import { MiddlewareFn } from "grammy/composer.ts";
-import { BotContext } from "/src/context/mod.ts";
-import { SkillCommand } from "./SkillCommand.ts";
-import { SkillListener } from "./SkillListener.ts";
-import { SkillInlineQueryListener } from "./SkillInlineQueryListener.ts";
+import type { Router } from "oak";
+import type { Migrations } from "grammy/mod.ts";
+import type { MiddlewareFn } from "grammy/composer.ts";
+import type { Router as GrammyRouter } from "grammy_router/router.ts";
+import type { BotContext } from "/src/context/mod.ts";
+import type { SkillCommand } from "./SkillCommand.ts";
+import type { SkillListener } from "./SkillListener.ts";
+import type { SkillInlineQueryListener } from "./SkillInlineQueryListener.ts";
 
 export interface SkillModule {
   /**
@@ -86,4 +87,10 @@ export interface SkillModule {
    * When loaded, the routes will be available prefixed by the skill name in the route path.
    */
   router: Router<Record<string, unknown>> | null;
+  /**
+   * Bot Routers are a feature provided by a grammy plugin for routers.
+   * This feature can be used to direct users to specific behaviors and actions
+   * given a specific input and state.
+   */
+  botRouters?: GrammyRouter<BotContext>[] | null;
 }

@@ -1,5 +1,5 @@
-import { SessionData } from "/src/context/mod.ts";
-import { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
+import type { SessionData } from "/src/context/mod.ts";
+import type { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
 import { cmdCreateMeme } from "./commands/cmdCreateMeme.ts";
 import { cmdCreateMemeTemplate } from "./commands/cmdCreateMemeTemplate.ts";
 import { getInitialMemeTemplateSessionData } from "./sessionData/getInitialMemeTemplateSessionData.ts";

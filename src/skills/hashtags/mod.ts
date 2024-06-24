@@ -1,11 +1,11 @@
-import { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
-import { SkillListener } from "/src/platform/skillModules/types/SkillListener.ts";
+import type { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
+import type { SkillListener } from "/src/platform/skillModules/types/SkillListener.ts";
 import { hashtagMentionListener } from "./listeners/hashtagMention.ts";
 import { cmdJoin } from "./commands/cmdJoin.ts";
 import { cmdLeave } from "./commands/cmdLeave.ts";
 import { cmdListHashtags } from "./commands/cmdList.ts";
 import { getInitialHashtagChannelSessionData } from "./sessionData/getInitialTagChannelSessionData.ts";
-import { SessionData } from "../../context/mod.ts";
+import type { SessionData } from "../../context/mod.ts";
 
 const skillModule: SkillModule = {
   name: "hashtags",

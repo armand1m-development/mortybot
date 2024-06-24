@@ -1,7 +1,7 @@
-import { CommandMiddleware } from "grammy/composer.ts";
-import { BotContext } from "/src/context/mod.ts";
-import { ChatMember } from "grammy/types.ts";
-import { Filter } from "/src/skills/filters/sessionData/types.ts";
+import type { CommandMiddleware } from "grammy/composer.ts";
+import type { BotContext } from "/src/context/mod.ts";
+import type { ChatMember } from "grammy/types.ts";
+import type { Filter } from "/src/skills/filters/sessionData/types.ts";
 import { createMemberMention } from "/src/utilities/createMemberMention.ts";
 
 export const cmdCountPerOwner: CommandMiddleware<BotContext> = async (

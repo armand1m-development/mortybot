@@ -1,8 +1,8 @@
-import sharp from "sharp";
-import { ParsedQuery } from "querystring";
+import type sharp from "sharp";
+import type { ParsedQuery } from "querystring";
 import { getBoundedChunks } from "./boundary.ts";
 import { createSvgOverlay } from "./svg.ts";
-import { MemeTemplateParam } from "../../sessionData/types.ts";
+import type { MemeTemplateParam } from "../../sessionData/types.ts";
 
 export interface OverlayContextProps {
   metadata: sharp.Metadata;

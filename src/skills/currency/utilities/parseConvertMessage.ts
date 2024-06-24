@@ -1,4 +1,4 @@
-import { CurrencyCode } from "../httpClients/convertCurrencyValue.ts";
+import type { CurrencyCode } from "../httpClients/convertCurrencyValue.ts";
 
 // Message example: 150 EUR to BRL
 export const parseConvertMessage = (message: string) => {
@@ -11,7 +11,7 @@ export const parseConvertMessage = (message: string) => {
     };
   }
 
-  const amount = parseInt(match[1]);
+  const amount = Number.parseInt(match[1]);
   const fromCurrency = match[2].toUpperCase() as CurrencyCode;
   const toCurrency = match[3].toUpperCase() as CurrencyCode;
 

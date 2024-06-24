@@ -1,4 +1,4 @@
-import { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
+import type { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
 import { createCurrencyApiMiddleware } from "./middlewares/createCurrencyApiMiddleware/mod.ts";
 import { cmdConvert } from "./commands/cmdConvert.ts";
 import { cmdUSDtoBRL } from "./commands/cmdUSDtoBRL.ts";

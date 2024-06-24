@@ -1,6 +1,6 @@
-import { MiddlewareFn } from "grammy/composer.ts";
+import type { MiddlewareFn } from "grammy/composer.ts";
 
-import { BotContext } from "/src/context/mod.ts";
+import type { BotContext } from "/src/context/mod.ts";
 import { injectToken } from "/src/utilities/injectToken.ts";
 import { fetchIssPasses } from "../../httpClients/fetchIssPasses.ts";
 

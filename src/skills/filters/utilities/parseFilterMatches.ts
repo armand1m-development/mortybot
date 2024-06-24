@@ -1,5 +1,5 @@
 import { intersect } from "/src/utilities/set/intersect.ts";
-import { Filter, FilterSessionData } from "../sessionData/types.ts";
+import type { Filter, FilterSessionData } from "../sessionData/types.ts";
 
 export const isExactMatch = (
   text: string,

@@ -1,5 +1,5 @@
 import * as Sentry from "sentry";
-import { Configuration } from "/src/platform/configuration/middlewares/types.ts";
+import type { Configuration } from "/src/platform/configuration/middlewares/types.ts";
 
 export const startTracing = (configuration: Configuration) => {
   Sentry.init({

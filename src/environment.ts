@@ -1,5 +1,5 @@
 import * as dotenv from "std/dotenv/mod.ts";
-import { Configuration } from "/src/platform/configuration/middlewares/types.ts";
+import type { Configuration } from "/src/platform/configuration/middlewares/types.ts";
 
 export const loadEnvironment = async (): Promise<Configuration> => {
   await dotenv.load({
@@ -22,7 +22,7 @@ export const loadEnvironment = async (): Promise<Configuration> => {
     mainMemeTemplateChatSessionPath: Deno.env.get(
       "MAIN_MEME_TEMPLATE_CHAT_SESSION_PATH",
     )!,
-    apiPort: parseInt(Deno.env.get("API_PORT")!),
+    apiPort: Number.parseInt(Deno.env.get("API_PORT")!),
     sentryDSN: Deno.env.get("SENTRY_DSN")!,
   };
 };

@@ -1,4 +1,4 @@
-import { FetchNearbyLocationsFunction } from "../../httpClients/fetchNearbyLocations.ts";
+import type { FetchNearbyLocationsFunction } from "../../httpClients/fetchNearbyLocations.ts";
 
 export interface LocationsApiContext {
   locationsApi: {

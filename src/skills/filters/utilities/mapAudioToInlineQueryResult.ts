@@ -1,5 +1,5 @@
-import { InlineQueryResult } from "grammy/types.ts";
-import { Audio } from "../sessionData/types.ts";
+import type { InlineQueryResult } from "grammy/types.ts";
+import type { Audio } from "../sessionData/types.ts";
 
 export const mapAudioToInlineQueryResult = (
   audio: Audio,

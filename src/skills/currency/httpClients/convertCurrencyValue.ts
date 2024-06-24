@@ -1,5 +1,5 @@
 import { getLogger } from "std/log/mod.ts";
-import { OmitToken } from "/src/types/OmitToken.ts";
+import type { OmitToken } from "/src/types/OmitToken.ts";
 
 export type CurrencyCode = `${Uppercase<string>}`;
 

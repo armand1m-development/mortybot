@@ -1,6 +1,6 @@
 import { resolve } from "std/path/posix.ts";
 import type { Skill } from "/src/skills/skills.ts";
-import { SkillModule } from "./types/SkillModule.ts";
+import type { SkillModule } from "./types/SkillModule.ts";
 
 export const loadSkillModule = async (skillName: Skill) => {
   const skillModule = await import(

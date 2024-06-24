@@ -1,6 +1,6 @@
 import { getLogger } from "std/log/mod.ts";
-import { OmitToken } from "/src/types/OmitToken.ts";
-import { QueryWeatherResponse } from "./types/queryWeather.ts";
+import type { OmitToken } from "/src/types/OmitToken.ts";
+import type { QueryWeatherResponse } from "./types/queryWeather.ts";
 
 const logger = () => getLogger();
 

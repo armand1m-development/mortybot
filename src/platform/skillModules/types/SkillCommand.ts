@@ -1,6 +1,6 @@
-import { CommandMiddleware } from "grammy/composer.ts";
-import { Chat } from "grammy/types.ts";
-import { BotContext } from "/src/context/mod.ts";
+import type { CommandMiddleware } from "grammy/composer.ts";
+import type { Chat } from "grammy/types.ts";
+import type { BotContext } from "/src/context/mod.ts";
 
 export interface SkillCommand {
   command: string;

@@ -1,5 +1,5 @@
 import { assertEquals } from "std/testing/asserts.ts";
-import { FilterSessionData } from "../sessionData/types.ts";
+import type { FilterSessionData } from "../sessionData/types.ts";
 import { hasLoudMatches, isExactMatch } from "./parseFilterMatches.ts";
 
 Deno.test("should match exact filter", () => {

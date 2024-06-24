@@ -1,16 +1,17 @@
 import { getLogger } from "std/log/mod.ts";
 import { run } from "grammy_runner/mod.ts";
 import { resolve } from "std/path/posix.ts";
-import { Bot, Context, enhanceStorage, session } from "grammy/mod.ts";
+import { Bot, type Context, enhanceStorage, session } from "grammy/mod.ts";
 import { sequentialize } from "grammy_runner/mod.ts";
 import { hydrateFiles } from "grammy_files/mod.ts";
 import { FileAdapter } from "grammy_storages/file/src/mod.ts";
-import { BotContext } from "/src/context/mod.ts";
+import type { BotContext } from "/src/context/mod.ts";
 import { replacer, reviver } from "/src/utilities/jsonParsing.ts";
-import { Configuration } from "/src/platform/configuration/middlewares/types.ts";
+import type { Configuration } from "/src/platform/configuration/middlewares/types.ts";
 import { createConfigurationMiddleware } from "/src/platform/configuration/middlewares/createConfigurationMiddleware.ts";
 import { injectGlobalErrorHandler } from "/src/platform/errorHandling/globalErrorHandler.ts";
 import { setupSkillModulesLoader } from "/src/platform/skillModules/setupSkillModulesLoader.ts";
+import { autoRetry } from "grammy_auto_retry/mod.ts";
 
 import { skills } from "/src/skills/skills.ts";
 import { setupSkillMigrationLoader } from "/src/platform/skillModules/setupSkillMigrationLoader.ts";
@@ -31,6 +32,9 @@ export const createBot = async (configuration: Configuration) => {
   const migrations = migrationLoader.loadSkillMigrations();
 
   bot.api.config.use(hydrateFiles(bot.token));
+  bot.api.config.use(autoRetry({
+    maxRetryAttempts: 5,
+  }));
   bot.use(createConfigurationMiddleware(configuration));
   bot.use(sequentialize(getSessionKey));
   bot.use(session({

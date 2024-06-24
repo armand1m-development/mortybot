@@ -1,5 +1,5 @@
-import { CommandMiddleware } from "grammy/composer.ts";
-import { BotContext } from "/src/context/mod.ts";
+import type { CommandMiddleware } from "grammy/composer.ts";
+import type { BotContext } from "/src/context/mod.ts";
 import { InputFile } from "grammy/mod.ts";
 
 export const cmdGetFile: CommandMiddleware<BotContext> = async (ctx) => {

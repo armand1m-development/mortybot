@@ -1,5 +1,5 @@
-import { QueryForecastFunction } from "../../httpClients/queryForecast.ts";
-import { QueryWeatherFunction } from "../../httpClients/queryWeather.ts";
+import type { QueryForecastFunction } from "../../httpClients/queryForecast.ts";
+import type { QueryWeatherFunction } from "../../httpClients/queryWeather.ts";
 
 export interface WeatherApiContext {
   weatherApi: {

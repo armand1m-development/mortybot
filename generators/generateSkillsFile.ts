@@ -26,25 +26,30 @@ export const generateSkillsFile = async (force = false) => {
   const code = `// THIS FILE IS AUTO-GENERATED DURING STARTUP
 // RUN \`deno task generate:skills\` TO FORCE UPDATE
 export const skills = [
-  ${skills.map((skill) => `"${skill}"`).join(",\n  ")}
+  ${skills.map((skill) => `"${skill}"`).join(",\n  ") + ","}
 ] as const;
 
 export type Skill = typeof skills[number];
 `;
 
   const encoder = new TextEncoder();
-  const data = encoder.encode(code);
-
-  const fileHash = await readFileHash();
-  const newContentHashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const newFileContent = encoder.encode(code);
+  const newContentHashBuffer = await crypto.subtle.digest(
+    "SHA-256",
+    newFileContent,
+  );
   const newFileHash = encodeHex(newContentHashBuffer);
+  const currentFileHash = await readFileHash();
 
-  if (force || fileHash !== newFileHash) {
-    await Deno.writeFile(skillsFilePath, data);
-    log.getLogger().info(`wrote skills file at "${skillsFilePath}"`);
+  if (force || currentFileHash !== newFileHash) {
+    log.getLogger().warning(
+      `Generated skills/skills.ts file hash are different. Regenerating file."`,
+    );
+    await Deno.writeFile(skillsFilePath, newFileContent);
+    log.getLogger().info(`Wrote skills file at "${skillsFilePath}"`);
   } else {
     log.getLogger().info(
-      `no skill changes detected. skipping writing skills file.`,
+      `No skill changes detected. Skipping writing skills file.`,
     );
   }
 };

@@ -1,4 +1,4 @@
-import { FilterSessionData } from "./types.ts";
+import type { FilterSessionData } from "./types.ts";
 
 export const getInitialFilterSessionData = (): FilterSessionData => {
   return {

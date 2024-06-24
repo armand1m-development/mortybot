@@ -1,8 +1,8 @@
-import { CommandContext } from "grammy/context.ts";
+import type { CommandContext } from "grammy/context.ts";
 import { renderer } from "../renderer/mod.ts";
-import { MemeTemplateEntry } from "../sessionData/types.ts";
-import { CommandInput } from "../types/mod.ts";
-import { BotContext } from "/src/context/mod.ts";
+import type { MemeTemplateEntry } from "../sessionData/types.ts";
+import type { CommandInput } from "../types/mod.ts";
+import type { BotContext } from "/src/context/mod.ts";
 import { getUserAvatarBuffer } from "./getUserAvatarBuffer.ts";
 import { InputFile } from "grammy/mod.ts";
 

@@ -1,8 +1,8 @@
 import { Router } from "oak";
 import * as path from "std/path/mod.ts";
-import { MemeTemplateEntry } from "/src/skills/image/sessionData/types.ts";
+import type { MemeTemplateEntry } from "/src/skills/image/sessionData/types.ts";
 import { reviverToObject } from "/src/utilities/jsonParsing.ts";
-import { Configuration } from "/src/platform/configuration/middlewares/types.ts";
+import type { Configuration } from "/src/platform/configuration/middlewares/types.ts";
 
 async function readJsonFile(filePath: string) {
   const jsonContent = await Deno.readTextFile(filePath);

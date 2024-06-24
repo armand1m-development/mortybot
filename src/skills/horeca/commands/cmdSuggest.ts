@@ -1,7 +1,7 @@
-import { CommandMiddleware } from "grammy/composer.ts";
+import type { CommandMiddleware } from "grammy/composer.ts";
 import outdent from "outdent";
-import { Result } from "../httpClients/fetchNearbyLocations.ts";
-import { BotContext } from "/src/context/mod.ts";
+import type { Result } from "../httpClients/fetchNearbyLocations.ts";
+import type { BotContext } from "/src/context/mod.ts";
 
 export const cmdSuggest: CommandMiddleware<BotContext> = async (ctx) => {
   const keyword = ctx.match;

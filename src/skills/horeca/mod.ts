@@ -1,4 +1,4 @@
-import { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
+import type { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
 import { createLocationsApiMiddleware } from "./middlewares/createLocationsApiMiddleware/mod.ts";
 import { cmdSuggest } from "./commands/cmdSuggest.ts";
 import { mustHaveTextMiddleware } from "/src/utilities/middlewares/mustHaveTextMiddleware.ts";

@@ -1,4 +1,4 @@
-import { MessageEntity, User } from "grammy/types.ts";
+import type { MessageEntity, User } from "grammy/types.ts";
 
 export interface Filter {
   isLoud: boolean;

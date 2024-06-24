@@ -1,4 +1,4 @@
-import { MemeTemplateSessionData } from "./types.ts";
+import type { MemeTemplateSessionData } from "./types.ts";
 
 export const getInitialMemeTemplateSessionData =
   (): MemeTemplateSessionData => {

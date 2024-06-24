@@ -1,6 +1,6 @@
 import { nextIssPasses } from "./commands/nextIssPasses.ts";
 import { createN2yoMiddleware } from "./middleware/createN2yoMiddleware/mod.ts";
-import { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
+import type { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
 
 const skillModule: SkillModule = {
   name: "galileo",

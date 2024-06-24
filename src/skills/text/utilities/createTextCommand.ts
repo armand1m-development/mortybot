@@ -1,5 +1,5 @@
-import { CommandMiddleware } from "grammy/mod.ts";
-import { BotContext } from "/src/context/mod.ts";
+import type { CommandMiddleware } from "grammy/mod.ts";
+import type { BotContext } from "/src/context/mod.ts";
 import { multipleTextReplacer, textReplacer } from "./textReplacer.ts";
 import { deleteAndReply } from "./deleteAndReply.ts";
 

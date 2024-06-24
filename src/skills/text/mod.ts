@@ -1,4 +1,4 @@
-import { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
+import type { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
 import { table as funTextTable } from "./commands/cmdFunText.ts";
 import { table as crazyTextTable } from "./commands/cmdCrazyText.ts";
 import {

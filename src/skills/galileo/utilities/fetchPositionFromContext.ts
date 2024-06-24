@@ -1,6 +1,6 @@
-import { CommandContext } from "grammy/context.ts";
-import { BotContext } from "/src/context/mod.ts";
-import { GeoPosition } from "./types.ts";
+import type { CommandContext } from "grammy/context.ts";
+import type { BotContext } from "/src/context/mod.ts";
+import type { GeoPosition } from "./types.ts";
 
 export const parsePosition = (text: string): GeoPosition => {
   const [latitude, longitude] = text.split(",");

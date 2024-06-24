@@ -1,4 +1,4 @@
-import { Router } from "oak";
+import type { Router } from "oak";
 import type { Skill } from "/src/skills/skills.ts";
 import { loadSkillModule } from "./loadSkill.ts";
 import { getLogger } from "std/log/mod.ts";

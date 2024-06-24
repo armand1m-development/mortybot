@@ -1,4 +1,4 @@
-import { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
+import type { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
 import { createRodosolApiMiddleware } from "./middlewares/createRodosolApiMiddleware/mod.ts";
 import { cmdRodosolNow } from "./commands/cmdRodosolNow.ts";
 import { cmdTerceiraPonteNow } from "./commands/cmdTerceiraPonteNow.ts";

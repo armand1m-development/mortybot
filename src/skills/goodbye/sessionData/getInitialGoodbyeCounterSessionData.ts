@@ -1,4 +1,4 @@
-import { GoodbyeCounterSessionData } from "./types.ts";
+import type { GoodbyeCounterSessionData } from "./types.ts";
 
 export const getInitialGoodbyeCounterSessionData =
   (): GoodbyeCounterSessionData => {

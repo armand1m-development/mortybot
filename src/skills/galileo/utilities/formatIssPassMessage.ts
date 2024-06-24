@@ -1,5 +1,5 @@
-import { GeoPosition } from "./types.ts";
-import { N2yoVisualPasses } from "../httpClients/types.ts";
+import type { GeoPosition } from "./types.ts";
+import type { N2yoVisualPasses } from "../httpClients/types.ts";
 
 const formatDate = (date: number) => {
   const timestamp = new Date(date * 1000);

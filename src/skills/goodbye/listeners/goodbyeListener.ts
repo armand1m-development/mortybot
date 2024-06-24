@@ -1,7 +1,7 @@
-import { Middleware } from "grammy/composer.ts";
-import { Filter } from "grammy/filter.ts";
+import type { Middleware } from "grammy/composer.ts";
+import type { Filter } from "grammy/filter.ts";
 import { getLogger } from "std/log/mod.ts";
-import { BotContext } from "/src/context/mod.ts";
+import type { BotContext } from "/src/context/mod.ts";
 
 export const goodbyeListener: Middleware<
   Filter<BotContext, ":left_chat_member">

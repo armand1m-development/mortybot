@@ -1,7 +1,7 @@
 import { getLogger } from "std/log/mod.ts";
-import { CommandMiddleware } from "grammy/composer.ts";
+import type { CommandMiddleware } from "grammy/composer.ts";
 import { format, relative, resolve } from "std/path/posix.ts";
-import { BotContext } from "/src/context/mod.ts";
+import type { BotContext } from "/src/context/mod.ts";
 import { extensionsByType } from "std/media_types/mod.ts";
 import { downloadMessage } from "../utilities/downloadMessage.ts";
 

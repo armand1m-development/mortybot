@@ -1,5 +1,5 @@
-import { MiddlewareFn } from "grammy/composer.ts";
-import { BotContext } from "/src/context/mod.ts";
+import type { MiddlewareFn } from "grammy/composer.ts";
+import type { BotContext } from "/src/context/mod.ts";
 import { injectToken } from "/src/utilities/injectToken.ts";
 import { convertCurrencyValue } from "../../httpClients/convertCurrencyValue.ts";
 

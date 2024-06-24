@@ -1,7 +1,7 @@
-import { Middleware } from "grammy/composer.ts";
-import { Filter, FilterQuery } from "grammy/filter.ts";
-import { Chat } from "grammy/types.ts";
-import { BotContext } from "/src/context/mod.ts";
+import type { Middleware } from "grammy/composer.ts";
+import type { Filter, FilterQuery } from "grammy/filter.ts";
+import type { Chat } from "grammy/types.ts";
+import type { BotContext } from "/src/context/mod.ts";
 
 export interface SkillListener<Q extends FilterQuery> {
   event: Q | Q[];

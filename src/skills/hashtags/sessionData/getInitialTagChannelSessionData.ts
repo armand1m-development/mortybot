@@ -1,4 +1,4 @@
-import { HashtagChannelSessionData } from "./types.ts";
+import type { HashtagChannelSessionData } from "./types.ts";
 
 export const getInitialHashtagChannelSessionData =
   (): HashtagChannelSessionData => {

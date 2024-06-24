@@ -1,5 +1,5 @@
-import { CommandMiddleware } from "grammy/composer.ts";
-import { BotContext } from "/src/context/mod.ts";
+import type { CommandMiddleware } from "grammy/composer.ts";
+import type { BotContext } from "/src/context/mod.ts";
 import { createMemberMention } from "../../../utilities/createMemberMention.ts";
 
 export const cmdReport: CommandMiddleware<BotContext> = async (ctx) => {

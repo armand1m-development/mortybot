@@ -1,5 +1,5 @@
-import { CommandContext } from "grammy/context.ts";
-import { BotContext } from "/src/context/mod.ts";
+import type { CommandContext } from "grammy/context.ts";
+import type { BotContext } from "/src/context/mod.ts";
 
 export const getUserAvatarBuffer = async (ctx: CommandContext<BotContext>) => {
   const replyMessage = ctx.msg.reply_to_message;

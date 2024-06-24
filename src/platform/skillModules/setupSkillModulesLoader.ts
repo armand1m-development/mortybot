@@ -1,12 +1,12 @@
 import * as Sentry from "sentry";
 import { getLogger } from "std/log/mod.ts";
-import { Middleware } from "grammy/composer.ts";
-import { Filter } from "grammy/filter.ts";
-import { Bot } from "grammy/mod.ts";
-import { BotCommand } from "grammy/types.ts";
-import { BotContext, SessionData } from "/src/context/mod.ts";
+import type { Middleware } from "grammy/composer.ts";
+import type { Filter } from "grammy/filter.ts";
+import type { Bot } from "grammy/mod.ts";
+import type { BotCommand } from "grammy/types.ts";
+import type { BotContext, SessionData } from "/src/context/mod.ts";
 import type { Skill } from "/src/skills/skills.ts";
-import { SkillModule } from "./types/SkillModule.ts";
+import type { SkillModule } from "./types/SkillModule.ts";
 import { loadSkillModule } from "./loadSkill.ts";
 
 const logger = () => getLogger();

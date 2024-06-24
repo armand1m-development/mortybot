@@ -1,4 +1,4 @@
-import { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
+import type { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
 import { cmdForecast } from "./commands/cmdForecast.ts";
 import { cmdTemperature } from "./commands/cmdTemperature.ts";
 import { createWeatherApiMiddleware } from "./middlewares/createWeatherApiMiddleware/mod.ts";

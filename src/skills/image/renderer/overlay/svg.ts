@@ -1,4 +1,4 @@
-import { MemeTemplateParam } from "../../sessionData/types.ts";
+import type { MemeTemplateParam } from "../../sessionData/types.ts";
 
 export interface SvgOverlayProps {
   textWidth: number;

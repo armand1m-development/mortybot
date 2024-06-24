@@ -1,9 +1,10 @@
-import { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
+import type { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
 import { cmdReport } from "./commands/cmdReport.ts";
 import { cmdSetTitle } from "./commands/cmdSetTitle.ts";
 import { cmdGetChatId } from "./commands/cmdGetChatId.ts";
 import { cmdGetFile } from "./commands/cmdGetFile.ts";
 import { mustHaveReplyMiddleware } from "/src/utilities/middlewares/mustHaveReplyMiddleware.ts";
+import { cmdCreateCommandAlias } from "./commands/cmdCreateCommandAlias.ts";
 
 const skillModule: SkillModule = {
   name: "chat",
@@ -37,6 +38,13 @@ const skillModule: SkillModule = {
       aliases: ["get_sticker"],
       description: "Gets the file and url from a sticker, video note or gif.",
       handler: cmdGetFile,
+      middlewares: [mustHaveReplyMiddleware],
+    },
+    {
+      command: "create_command_alias",
+      aliases: ["cmd", "alias"],
+      description: "Gets the file and url from a sticker, video note or gif.",
+      handler: cmdCreateCommandAlias,
       middlewares: [mustHaveReplyMiddleware],
     },
   ],

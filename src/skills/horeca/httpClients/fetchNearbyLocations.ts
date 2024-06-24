@@ -1,4 +1,4 @@
-import { OmitToken } from "/src/types/OmitToken.ts";
+import type { OmitToken } from "/src/types/OmitToken.ts";
 
 export interface FetchNearbyLocationsParams {
   token: string;

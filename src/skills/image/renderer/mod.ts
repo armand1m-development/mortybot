@@ -1,6 +1,6 @@
 import sharp from "sharp";
-import { ParsedQuery } from "querystring";
-import { MemeTemplateParam } from "../sessionData/types.ts";
+import type { ParsedQuery } from "querystring";
+import type { MemeTemplateParam } from "../sessionData/types.ts";
 import { createOverlayContext } from "./overlay/overlay.ts";
 
 export interface RendererProps {

@@ -1,6 +1,6 @@
-import { Middleware } from "grammy/composer.ts";
-import { Filter } from "grammy/filter.ts";
-import { BotContext } from "/src/context/mod.ts";
+import type { Middleware } from "grammy/composer.ts";
+import type { Filter } from "grammy/filter.ts";
+import type { BotContext } from "/src/context/mod.ts";
 import { createMemberMention } from "/src/utilities/createMemberMention.ts";
 import { getChunks } from "/src/utilities/array/getChunks.ts";
 import { parseHashtags } from "../utilities/parseHashtags.ts";

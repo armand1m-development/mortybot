@@ -1,7 +1,7 @@
 import { getLogger } from "std/log/mod.ts";
-import { Middleware } from "grammy/composer.ts";
-import { Filter } from "grammy/filter.ts";
-import { BotContext } from "/src/context/mod.ts";
+import type { Middleware } from "grammy/composer.ts";
+import type { Filter } from "grammy/filter.ts";
+import type { BotContext } from "/src/context/mod.ts";
 import { replyFilter } from "../utilities/replyFilter.ts";
 import {
   hasLoudMatches,

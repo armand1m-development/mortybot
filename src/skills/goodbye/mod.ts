@@ -1,5 +1,5 @@
-import { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
-import { SkillListener } from "/src/platform/skillModules/types/SkillListener.ts";
+import type { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
+import type { SkillListener } from "/src/platform/skillModules/types/SkillListener.ts";
 import { getInitialGoodbyeCounterSessionData } from "./sessionData/getInitialGoodbyeCounterSessionData.ts";
 import { goodbyeListener } from "./listeners/goodbyeListener.ts";
 import { cmdLeavingRank } from "./commands/cmdLeavingRank.ts";

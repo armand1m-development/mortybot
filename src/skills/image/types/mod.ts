@@ -1,4 +1,4 @@
-import * as queryString from "querystring";
+import type * as queryString from "querystring";
 
 export interface CommandInput {
   templateId: string;

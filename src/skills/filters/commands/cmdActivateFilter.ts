@@ -1,5 +1,5 @@
-import { CommandMiddleware } from "grammy/composer.ts";
-import { BotContext } from "/src/context/mod.ts";
+import type { CommandMiddleware } from "grammy/composer.ts";
+import type { BotContext } from "/src/context/mod.ts";
 
 export const cmdActivateFilter: CommandMiddleware<BotContext> = (ctx) => {
   const trigger = ctx.match;

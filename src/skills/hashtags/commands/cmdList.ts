@@ -1,6 +1,6 @@
-import { CommandMiddleware } from "grammy/composer.ts";
+import type { CommandMiddleware } from "grammy/composer.ts";
 import { getChunks } from "/src/utilities/array/getChunks.ts";
-import { BotContext } from "/src/context/mod.ts";
+import type { BotContext } from "/src/context/mod.ts";
 
 export const cmdListHashtags: CommandMiddleware<BotContext> = async (ctx) => {
   const filters = Object.fromEntries(ctx.session.hashtagChannels);

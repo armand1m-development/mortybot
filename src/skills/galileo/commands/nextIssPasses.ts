@@ -1,6 +1,6 @@
-import { CommandMiddleware } from "grammy/composer.ts";
-import { BotContext } from "/src/context/mod.ts";
-import { GeoPosition } from "../utilities/types.ts";
+import type { CommandMiddleware } from "grammy/composer.ts";
+import type { BotContext } from "/src/context/mod.ts";
+import type { GeoPosition } from "../utilities/types.ts";
 import { formatIssPassMessage } from "../utilities/formatIssPassMessage.ts";
 import { fetchPositionFromContext } from "../utilities/fetchPositionFromContext.ts";
 

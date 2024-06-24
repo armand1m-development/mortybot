@@ -1,5 +1,5 @@
-import { BotContext } from "/src/context/mod.ts";
-import { CommandMiddleware } from "grammy/mod.ts";
+import type { BotContext } from "/src/context/mod.ts";
+import type { CommandMiddleware } from "grammy/mod.ts";
 
 export const mustHaveReplyMiddleware: CommandMiddleware<BotContext> = async (
   ctx,
