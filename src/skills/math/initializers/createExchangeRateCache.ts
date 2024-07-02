@@ -18,6 +18,8 @@ export const createExchangeRateCache = async (configuration: Configuration) => {
 
   // @ts-ignore: this works, but types are wrong
   createUnit(rate.base_code, { override: true });
+  // @ts-ignore: this works, but types are wrong
+  createUnit(rate.base_code.toLowerCase(), { override: true });
 
   Object
     .entries(rate.conversion_rates)
@@ -34,5 +36,7 @@ export const createExchangeRateCache = async (configuration: Configuration) => {
 
       // @ts-ignore: this works, but types are wrong
       createUnit(currency, definition, { override: true });
+      // @ts-ignore: this works, but types are wrong
+      createUnit(currency.toLowerCase(), definition, { override: true });
     });
 };

@@ -34,7 +34,7 @@ export const createExchangeRateCacheMiddleware = () => {
 
         const unitDefinition: UnitDefinition = {
           definition,
-          aliases: [currency],
+          aliases: [currency, currency.toLowerCase()],
         };
 
         return [currency, unitDefinition];
