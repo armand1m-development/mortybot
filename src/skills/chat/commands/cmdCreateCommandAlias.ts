@@ -1,10 +1,8 @@
 import type { CommandMiddleware } from "grammy/mod.ts";
 import type { BotContext } from "/src/context/mod.ts";
 
-export const cmdCreateCommandAlias: CommandMiddleware<BotContext> = async (
+export const cmdCreateCommandAlias: CommandMiddleware<BotContext> = (
   ctx,
 ) => {
-  const alias = ctx.match;
-
   return ctx.reply("Command alias creation still not implemented.");
 };
