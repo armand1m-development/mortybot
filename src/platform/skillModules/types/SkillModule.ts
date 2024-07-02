@@ -6,6 +6,7 @@ import type { BotContext } from "/src/context/mod.ts";
 import type { SkillCommand } from "./SkillCommand.ts";
 import type { SkillListener } from "./SkillListener.ts";
 import type { SkillInlineQueryListener } from "./SkillInlineQueryListener.ts";
+import { Configuration } from "./src/platform/configuration/middlewares/types.ts";
 
 export interface SkillModule {
   /**
@@ -44,8 +45,9 @@ export interface SkillModule {
    * These functions are usually used to set the initial state
    * of the session portion of the context relevant to this skill.
    */
-  // deno-lint-ignore no-explicit-any
-  sessionDataInitializers: (() => Record<string, any>)[];
+  sessionDataInitializers:
+    // deno-lint-ignore no-explicit-any
+    ((configuration: Configuration) => Record<string, any>)[];
   /**
    * Listeners are functions that are executed when a certain event happens.
    *
@@ -60,7 +62,7 @@ export interface SkillModule {
    *
    * You can do things like create folders, for example.
    */
-  initializers: (() => Promise<void> | void)[];
+  initializers: ((configuration: Configuration) => Promise<void> | void)[];
   /**
    * Inline Queries are a new feature supported by Telegram where you can send a query to the bot
    * without sending a message first, usually by typing `@botname query`.

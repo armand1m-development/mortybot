@@ -8,6 +8,7 @@ import type { BotContext, SessionData } from "/src/context/mod.ts";
 import type { Skill } from "/src/skills/skills.ts";
 import type { SkillModule } from "./types/SkillModule.ts";
 import { loadSkillModule } from "./loadSkill.ts";
+import { Configuration } from "../configuration/middlewares/types.ts";
 
 const logger = () => getLogger();
 
@@ -18,6 +19,7 @@ const isFulfilled = <T>(
 export const setupSkillModulesLoader = async (
   skills: readonly Skill[],
   bot: Bot<BotContext>,
+  configuration: Configuration,
 ) => {
   const loadedSkillModules = await Promise.all(skills.map(loadSkillModule));
 
@@ -29,7 +31,7 @@ export const setupSkillModulesLoader = async (
       skill.sessionDataInitializers.forEach((initializer) => {
         initialSessionData = {
           ...initialSessionData,
-          ...initializer(),
+          ...initializer(configuration),
         };
       });
     });
@@ -160,7 +162,7 @@ export const setupSkillModulesLoader = async (
     return Promise.allSettled(
       skill.initializers.map(async (initializer) => {
         const begin = performance.now();
-        const result = await initializer();
+        const result = await initializer(configuration);
         const end = performance.now();
         const time = end - begin;
 

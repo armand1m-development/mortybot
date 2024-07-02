@@ -4,6 +4,7 @@ import { cmdSetTitle } from "./commands/cmdSetTitle.ts";
 import { cmdGetChatId } from "./commands/cmdGetChatId.ts";
 import { cmdGetFile } from "./commands/cmdGetFile.ts";
 import { mustHaveReplyMiddleware } from "/src/utilities/middlewares/mustHaveReplyMiddleware.ts";
+import { mustHaveTextMiddleware } from "/src/utilities/middlewares/mustHaveTextMiddleware.ts";
 import { cmdCreateCommandAlias } from "./commands/cmdCreateCommandAlias.ts";
 
 const skillModule: SkillModule = {
@@ -18,6 +19,7 @@ const skillModule: SkillModule = {
         "Sets the chat title. Only works if the bot is a chat admin.",
       handler: cmdSetTitle,
       chatType: ["group", "supergroup"],
+      middlewares: [mustHaveTextMiddleware],
     },
     {
       command: "report",

@@ -22,6 +22,7 @@ export const createBot = async (configuration: Configuration) => {
   const { createSessionData, loadSkills } = await setupSkillModulesLoader(
     skills,
     bot,
+    configuration,
   );
 
   const getSessionKey = (ctx: Context) => {

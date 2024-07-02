@@ -6,6 +6,7 @@ export const skills = [
   "horeca",
   "chat",
   "espiritosanto",
+  "math",
   "image",
   "goodbye",
   "weather",
