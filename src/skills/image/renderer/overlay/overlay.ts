@@ -13,7 +13,7 @@ export interface OverlayContextProps {
 export const createOverlayContext = (
   { metadata, texts, debug }: OverlayContextProps,
 ) => {
-  const intoOverlay = (textParams: MemeTemplateParam) => {
+  const intoTextOverlay = (textParams: MemeTemplateParam) => {
     const { name, width, height, x, y, fontParams } = textParams;
 
     const text = texts[name];
@@ -56,6 +56,6 @@ export const createOverlayContext = (
   };
 
   return {
-    intoOverlay,
+    intoTextOverlay,
   };
 };

@@ -3,8 +3,10 @@ import { renderer } from "../renderer/mod.ts";
 import type { MemeTemplateEntry } from "../sessionData/types.ts";
 import type { CommandInput } from "../types/mod.ts";
 import type { BotContext } from "/src/context/mod.ts";
-import { getUserAvatarBuffer } from "./getUserAvatarBuffer.ts";
 import { InputFile } from "grammy/mod.ts";
+import { getUserAvatarBuffer } from "./getUserAvatarBuffer.ts";
+import { getReplyImageBuffer } from "./getReplyImageBuffer.ts";
+import { getStickerImageBuffer } from "./getStickerImageBuffer.ts";
 
 export interface RenderMemeProps {
   commandInput: CommandInput;
@@ -19,16 +21,16 @@ export const renderMeme = async ({
   debug,
   ctx,
 }: RenderMemeProps) => {
-  const uniqueParams = new Set(template.params.map((param) => param.name));
-  const isAvatarParamOnly = uniqueParams.size === 1 &&
-    uniqueParams.has("avatar");
+  const filteredParams = template.params.filter((param) =>
+    !["avatar", "sticker", "replyPhoto", "overlay"].includes(param.name)
+  );
+  const uniqueParams = new Set(filteredParams.map((param) => param.name));
 
   const hasMissingParams =
     Object.values(commandInput.texts).length !== uniqueParams.size;
 
   if (
-    hasMissingParams &&
-    !isAvatarParamOnly
+    hasMissingParams
   ) {
     const message =
       `You provided an incorrect number of params for this template. Please provide the following params: \n` +
@@ -37,13 +39,18 @@ export const renderMeme = async ({
     throw new Error(message);
   }
 
-  const avatarBuffer: ArrayBuffer | null = await getUserAvatarBuffer(ctx);
+  const stickerImageBuffer = await getStickerImageBuffer(ctx);
+  const replyImageBuffer = await getReplyImageBuffer(ctx);
+  const avatarBuffer = await getUserAvatarBuffer(ctx);
   const response = await fetch(template.url);
-  const imageBuffer = await response.arrayBuffer();
+  const templateImageBuffer = await response.arrayBuffer();
   const image = await renderer({
-    imageBuffer,
+    templateImageBuffer,
+    stickerImageBuffer,
+    replyImageBuffer,
     avatarBuffer,
     params: template.params,
+    filteredParams,
     texts: commandInput.texts,
     debug,
   });
