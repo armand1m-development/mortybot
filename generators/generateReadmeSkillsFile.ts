@@ -3,7 +3,6 @@ import * as log from "std/log/mod.ts";
 import { crypto } from "std/crypto/mod.ts";
 import { encodeHex } from "jsr:@std/encoding/hex";
 import { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
-import { assert } from "std/_util/asserts.ts";
 
 const readmeDirectoryPath = Deno.cwd();
 const readmeFilePath = resolve(readmeDirectoryPath, "SKILLS.md");
