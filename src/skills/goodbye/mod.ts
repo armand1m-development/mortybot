@@ -6,6 +6,8 @@ import { cmdLeavingRank } from "./commands/cmdLeavingRank.ts";
 
 const skillModule: SkillModule = {
   name: "goodbye",
+  description:
+    "Ranks the group members by the amount of times they left the group.",
   initializers: [],
   middlewares: [],
   commands: [

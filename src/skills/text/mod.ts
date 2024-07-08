@@ -13,6 +13,7 @@ import {
 
 const skillModule: SkillModule = {
   name: "text",
+  description: "Commands that convert text into funny characters.",
   initializers: [],
   middlewares: [],
   commands: [

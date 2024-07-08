@@ -7,6 +7,8 @@ import { createExchangeRateCacheMiddleware } from "./middlewares/createExchangeR
 
 const skillModule: SkillModule = {
   name: "math",
+  description:
+    "Commands to calculate math expressions, exchange rates, metrics and more.",
   initializers: [createExchangeRateCache],
   middlewares: [createExchangeRateCacheMiddleware],
   commands: [

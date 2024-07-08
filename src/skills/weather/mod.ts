@@ -6,6 +6,7 @@ import { mustHaveTextMiddleware } from "/src/utilities/middlewares/mustHaveTextM
 
 const skillModule: SkillModule = {
   name: "weather",
+  description: "Commands to get weather information.",
   initializers: [],
   middlewares: [createWeatherApiMiddleware],
   commands: [

@@ -17,6 +17,8 @@ import { mustHaveReplyMiddleware } from "/src/utilities/middlewares/mustHaveRepl
 
 const skillModule: SkillModule = {
   name: "filters",
+  description:
+    "Commands to filter messages and react with other messages to it.",
   initializers: [createDownloadsFolder],
   middlewares: [],
   commands: [

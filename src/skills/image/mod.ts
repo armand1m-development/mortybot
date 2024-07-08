@@ -9,6 +9,8 @@ import { createRouter } from "./router/mod.ts";
 
 const skillModule: SkillModule = {
   name: "image",
+  description:
+    "Commands to create meme templates, memes and other image-related tasks. See https://mortybotui.fly.dev to see the available meme templates and how to create more. Meme templates are defined per user or group.",
   initializers: [],
   middlewares: [],
   commands: [

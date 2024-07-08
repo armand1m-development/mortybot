@@ -22,6 +22,7 @@
     "start": "deno run --allow-net --allow-env --allow-read --allow-write --allow-ffi ./main.ts",
     "watch": "denon run --allow-net --allow-env --allow-read --allow-write --allow-ffi ./main.ts",
     "test:coverage": "deno test --allow-none --coverage=coverage",
-    "generate:skills": "deno run --allow-write --allow-read ./generators/generateSkillsFile.ts"
+    "generate:skills": "deno run --allow-write --allow-read ./generators/generateSkillsFile.ts",
+    "generate:skills:readme": "deno run --allow-write --allow-read --allow-ffi --allow-net --allow-env ./generators/generateReadmeSkillsFile.ts"
   }
 }

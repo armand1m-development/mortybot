@@ -6,7 +6,7 @@ import type { BotContext } from "/src/context/mod.ts";
 import type { SkillCommand } from "./SkillCommand.ts";
 import type { SkillListener } from "./SkillListener.ts";
 import type { SkillInlineQueryListener } from "./SkillInlineQueryListener.ts";
-import { Configuration } from "./src/platform/configuration/middlewares/types.ts";
+import type { Configuration } from "/src/platform/configuration/middlewares/types.ts";
 
 export interface SkillModule {
   /**
@@ -20,6 +20,10 @@ export interface SkillModule {
    * It is recommended to use a name that is unique and easy to remember, preferably lowercase.
    */
   name: string;
+  /**
+   * The description of the purpose and/or overall features supported by this skill.
+   */
+  description: string;
   /**
    * Middlewares are functions that are executed before the main command or listener.
    *

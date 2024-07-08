@@ -4,6 +4,8 @@ import type { SkillModule } from "/src/platform/skillModules/types/SkillModule.t
 
 const skillModule: SkillModule = {
   name: "galileo",
+  description:
+    "Commands to get information about the International Space Station location.",
   initializers: [],
   middlewares: [createN2yoMiddleware],
   commands: [

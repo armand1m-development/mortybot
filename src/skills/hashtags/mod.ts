@@ -9,6 +9,7 @@ import type { SessionData } from "../../context/mod.ts";
 
 const skillModule: SkillModule = {
   name: "hashtags",
+  description: "Commands to list, join and leave hashtag channels.",
   initializers: [],
   middlewares: [],
   commands: [

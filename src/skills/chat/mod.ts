@@ -9,6 +9,8 @@ import { cmdCreateCommandAlias } from "./commands/cmdCreateCommandAlias.ts";
 
 const skillModule: SkillModule = {
   name: "chat",
+  description:
+    "Commands to manage chat settings. Invoke admins, report messages, get the chat_id, set the chat title, get file urls and more.",
   initializers: [],
   middlewares: [],
   commands: [
@@ -45,7 +47,7 @@ const skillModule: SkillModule = {
     {
       command: "create_command_alias",
       aliases: ["cmd", "alias"],
-      description: "Gets the file and url from a sticker, video note or gif.",
+      description: "Create a command alias.",
       handler: cmdCreateCommandAlias,
       middlewares: [mustHaveReplyMiddleware],
     },

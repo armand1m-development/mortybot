@@ -6,6 +6,7 @@ import { cmdEURtoBRL } from "./commands/cmdEURtoBRL.ts";
 
 const skillModule: SkillModule = {
   name: "currency",
+  description: "Commands to convert currencies.",
   initializers: [],
   middlewares: [createCurrencyApiMiddleware],
   commands: [

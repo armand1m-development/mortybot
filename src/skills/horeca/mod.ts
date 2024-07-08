@@ -6,6 +6,7 @@ import { mustHaveLocationReplyMiddleware } from "/src/utilities/middlewares/must
 
 const skillModule: SkillModule = {
   name: "horeca",
+  description: "Commands to suggest bars or restaurants.",
   initializers: [],
   middlewares: [createLocationsApiMiddleware],
   commands: [
