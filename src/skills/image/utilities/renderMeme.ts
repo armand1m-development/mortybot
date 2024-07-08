@@ -15,6 +15,8 @@ export interface RenderMemeProps {
   ctx: CommandContext<BotContext>;
 }
 
+const specialParams = ["avatar", "sticker", "replyPhoto", "overlay"];
+
 export const renderMeme = async ({
   commandInput,
   template,
@@ -22,8 +24,9 @@ export const renderMeme = async ({
   ctx,
 }: RenderMemeProps) => {
   const filteredParams = template.params.filter((param) =>
-    !["avatar", "sticker", "replyPhoto", "overlay"].includes(param.name)
+    !specialParams.includes(param.name)
   );
+
   const uniqueParams = new Set(filteredParams.map((param) => param.name));
 
   const hasMissingParams =
