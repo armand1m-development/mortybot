@@ -8,6 +8,7 @@ export const skills = [
   "espiritosanto",
   "math",
   "image",
+  "squatradar",
   "goodbye",
   "weather",
   "text",
