@@ -2,7 +2,7 @@ export interface FetchNextEvents {
   city: string;
 }
 
-export const fetchNextEvents = async ({ city, country }: FetchNextEvents) => {
+export const fetchNextEvents = async ({ city }: FetchNextEvents) => {
   const endpoint = new URL(
     "https://radar.squat.net/api/1.2/search/events.json",
   );
