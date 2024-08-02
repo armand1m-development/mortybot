@@ -14,6 +14,7 @@ export const skills = [
   "text",
   "hashtags",
   "currency",
+  "taxincome",
 ] as const;
 
 export type Skill = typeof skills[number];

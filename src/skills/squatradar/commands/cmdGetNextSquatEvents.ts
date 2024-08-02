@@ -11,8 +11,9 @@ export const cmdGetNextSquatEvents: CommandMiddleware<BotContext> = async (
 
   const byCategory = Object.values(events.result).reduce(
     (acc, event) => {
-      const category =
-        event.category.length > 0 ? event.category[0].name : "nocategory";
+      const category = event.category.length > 0
+        ? event.category[0].name
+        : "nocategory";
 
       return {
         ...acc,

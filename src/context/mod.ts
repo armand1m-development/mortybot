@@ -15,17 +15,19 @@ import type { N2yoApiContext } from "/src/skills/galileo/middleware/createN2yoMi
 import type { MemeTemplateSessionData } from "/src/skills/image/sessionData/types.ts";
 import type { RadarSquatApiContext } from "/src/skills/squatradar/middlewares/createRadarSquatApiMiddleware/types.ts";
 
-export type SessionData = FilterSessionData &
-  GoodbyeCounterSessionData &
-  HashtagChannelSessionData &
-  MemeTemplateSessionData;
+export type SessionData =
+  & FilterSessionData
+  & GoodbyeCounterSessionData
+  & HashtagChannelSessionData
+  & MemeTemplateSessionData;
 
-export type BotContext = FileFlavor<Context> &
-  CurrencyApiContext &
-  WeatherApiContext &
-  RodosolApiContext &
-  N2yoApiContext &
-  ConfigurationContext &
-  LocationsApiContext &
-  RadarSquatApiContext &
-  SessionFlavor<SessionData>;
+export type BotContext =
+  & FileFlavor<Context>
+  & CurrencyApiContext
+  & WeatherApiContext
+  & RodosolApiContext
+  & N2yoApiContext
+  & ConfigurationContext
+  & LocationsApiContext
+  & RadarSquatApiContext
+  & SessionFlavor<SessionData>;
