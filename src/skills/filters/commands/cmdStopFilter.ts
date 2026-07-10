@@ -1,5 +1,6 @@
 import type { CommandMiddleware } from "grammy/composer.ts";
 import type { BotContext } from "/src/context/mod.ts";
+import { formatCommandRunner } from "../utilities/formatCommandRunner.ts";
 
 export const cmdStopFilter: CommandMiddleware<BotContext> = (ctx) => {
   const trigger = ctx.match;
@@ -23,5 +24,7 @@ export const cmdStopFilter: CommandMiddleware<BotContext> = (ctx) => {
     active: false,
   });
 
-  return ctx.reply(`Filter got deactivated.`);
+  return ctx.reply(
+    `Filter got deactivated. ${formatCommandRunner(ctx)}`,
+  );
 };

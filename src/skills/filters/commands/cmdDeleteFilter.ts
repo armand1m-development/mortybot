@@ -1,5 +1,6 @@
 import type { CommandMiddleware } from "grammy/composer.ts";
 import type { BotContext } from "/src/context/mod.ts";
+import { formatCommandRunner } from "../utilities/formatCommandRunner.ts";
 
 export const cmdDeleteFilter: CommandMiddleware<BotContext> = (ctx) => {
   const trigger = ctx.match;
@@ -20,5 +21,7 @@ export const cmdDeleteFilter: CommandMiddleware<BotContext> = (ctx) => {
 
   ctx.session.filters.delete(trigger);
 
-  return ctx.reply(`Filter got permanently deleted.`);
+  return ctx.reply(
+    `Filter got permanently deleted. ${formatCommandRunner(ctx)}`,
+  );
 };
