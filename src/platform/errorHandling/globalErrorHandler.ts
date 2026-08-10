@@ -1,6 +1,6 @@
 import * as Sentry from "sentry";
-import { getLogger } from "std/log/mod.ts";
-import { type Bot, GrammyError, HttpError } from "grammy/mod.ts";
+import { getLogger } from "@std/log";
+import { type Bot, GrammyError, HttpError } from "grammy";
 import type { BotContext } from "/src/context/mod.ts";
 
 const logger = () => getLogger();

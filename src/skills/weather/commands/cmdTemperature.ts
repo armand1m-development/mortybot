@@ -1,5 +1,5 @@
-import { getLogger } from "std/log/mod.ts";
-import type { CommandMiddleware } from "grammy/composer.ts";
+import { getLogger } from "@std/log";
+import type { CommandMiddleware } from "grammy";
 import type { BotContext } from "/src/context/mod.ts";
 
 export const cmdTemperature: CommandMiddleware<BotContext> = async (ctx) => {
@@ -7,12 +7,17 @@ export const cmdTemperature: CommandMiddleware<BotContext> = async (ctx) => {
 
   try {
     await ctx.api.sendChatAction(ctx.chat.id, "typing");
-    const { main: { temp, feels_like } } = await ctx.weatherApi.queryWeather({ query });
-    return ctx.reply(`Temperature in "${query}": ${temp}ºC | feels like ${feels_like}ºC`);
+    const { main: { temp, feels_like } } = await ctx.weatherApi.queryWeather({
+      query,
+      language: ctx.language,
+    });
+    return ctx.reply(ctx.t("weather.temperature", {
+      feelsLike: feels_like,
+      query,
+      temperature: temp,
+    }));
   } catch (error) {
     getLogger().error(error);
-    return ctx.reply(
-      `Failed to find weather data regarding your query. Try again.`,
-    );
+    return ctx.reply(ctx.t("weather.temperatureError"));
   }
 };

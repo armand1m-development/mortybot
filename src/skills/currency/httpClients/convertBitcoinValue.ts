@@ -1,4 +1,4 @@
-import { getLogger } from "std/log/mod.ts";
+import { getLogger } from "@std/log";
 
 const logger = () => getLogger();
 

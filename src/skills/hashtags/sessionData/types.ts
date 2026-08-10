@@ -1,4 +1,4 @@
-import type { User } from "grammy/types.ts";
+import type { User } from "grammy/types";
 
 export interface HashtagChannel {
   hashtag: string;

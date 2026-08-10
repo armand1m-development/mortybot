@@ -1,5 +1,5 @@
 import { match, P } from "ts-pattern";
-import type { Message } from "grammy/types.ts";
+import type { Message } from "grammy/types";
 import type { Filter } from "../sessionData/types.ts";
 
 type DownloadFileFunction = (

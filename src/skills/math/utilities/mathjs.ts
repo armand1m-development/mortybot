@@ -1,12 +1,10 @@
-// @deno-types="https://raw.githubusercontent.com/pammacdotnet/FFRepo/master/mathjs.d.ts"
-import { all, create } from "https://dev.jspm.io/mathjs";
-import type { UnitDefinition } from "https://raw.githubusercontent.com/pammacdotnet/FFRepo/master/mathjs.d.ts";
+import { all, create, type UnitDefinition } from "mathjs";
 
 const math = create(all, {});
-const limitedEvaluate = math.evaluate as math.MathJsStatic["evaluate"];
-const limitedParse = math.parse as math.MathJsStatic["parse"];
-const createUnit = math.createUnit as math.MathJsStatic["createUnit"];
-const format = math.format as math.MathJsStatic["format"];
+const limitedEvaluate = math.evaluate;
+const limitedParse = math.parse;
+const createUnit = math.createUnit;
+const format = math.format;
 
 math.import && math.import({
   "import": function () {
@@ -31,11 +29,5 @@ math.import && math.import({
   override: true,
 });
 
-export {
-  createUnit,
-  format,
-  limitedEvaluate,
-  limitedParse,
-  math,
-  UnitDefinition,
-};
+export { createUnit, format, limitedEvaluate, limitedParse, math };
+export type { UnitDefinition };

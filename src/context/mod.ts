@@ -1,8 +1,8 @@
 /**
  * TODO: Check if you can generate these types based on the skills defined
  */
-import type { Context, SessionFlavor } from "grammy/mod.ts";
-import type { FileFlavor } from "grammy_files/mod.ts";
+import type { Context, SessionFlavor } from "grammy";
+import type { FileFlavor } from "@grammyjs/files";
 import type { ConfigurationContext } from "/src/platform/configuration/middlewares/types.ts";
 import type { CurrencyApiContext } from "/src/skills/currency/middlewares/createCurrencyApiMiddleware/types.ts";
 import type { WeatherApiContext } from "/src/skills/weather/middlewares/createWeatherApiMiddleware/types.ts";
@@ -14,12 +14,14 @@ import type { HashtagChannelSessionData } from "/src/skills/hashtags/sessionData
 import type { N2yoApiContext } from "/src/skills/galileo/middleware/createN2yoMiddleware/types.ts";
 import type { MemeTemplateSessionData } from "/src/skills/image/sessionData/types.ts";
 import type { RadarSquatApiContext } from "/src/skills/squatradar/middlewares/createRadarSquatApiMiddleware/types.ts";
+import type { I18nContext, LanguageSessionData } from "/src/i18n/types.ts";
 
 export type SessionData =
   & FilterSessionData
   & GoodbyeCounterSessionData
   & HashtagChannelSessionData
-  & MemeTemplateSessionData;
+  & MemeTemplateSessionData
+  & LanguageSessionData;
 
 export type BotContext =
   & FileFlavor<Context>
@@ -30,4 +32,5 @@ export type BotContext =
   & ConfigurationContext
   & LocationsApiContext
   & RadarSquatApiContext
+  & I18nContext
   & SessionFlavor<SessionData>;

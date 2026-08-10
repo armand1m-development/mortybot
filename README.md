@@ -14,6 +14,15 @@ manage the data accordingly.
 
 ## Features
 
+## Skill: "language"
+
+Selects the language Mortybot uses in each chat.
+
+### Commands
+
+- [x] `/language` _[alias: idioma]_: Show or change the chat language. Supported
+      values are `PT` and `EN`.
+
 ## Skill: "galileo"
 
 Commands to get information about the International Space Station location.
@@ -72,8 +81,7 @@ chat_id, set the chat title, get file urls and more.
 
 ## Skill: "espiritosanto"
 
-Commands to get information about the cameras of the roads of Espírito Santo.
-_(deprecated since Rodosol is not supplying these anymore)_
+Commands to get live road camera images from Espírito Santo.
 
 ### Commands
 
@@ -191,7 +199,8 @@ Commands to get info on tax reports, income reports, etc.
 
 ## Developing
 
-Make sure you have Git and Deno 1.31+ available in your local environment.
+Make sure you have Git and Deno 2.9.4 available in your local environment. This
+is the runtime version pinned in `.tool-versions` and used by CI and Docker.
 
 ```sh
 # clone repository
@@ -203,7 +212,7 @@ cd ./mortybot
 # make sure you have deno installed
 which deno
 
-# make sure you're on 1.31+
+# make sure you're on the pinned LTS release
 deno --version
 ```
 
@@ -216,6 +225,7 @@ BOT_TOKEN=0000000000:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 EXCHANGE_API_TOKEN=AAAAAAAAAAAAAAAAAAAAAAAA
 OPENWEATHERMAP_API_TOKEN=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 DATA_PATH=./data
+API_PORT=3000
 MESSAGE_TIMEOUT_ENABLED=true
 MESSAGE_TIMEOUT_IN_MINUTES=2
 EOL
@@ -226,6 +236,28 @@ Now you should be able to run the bot:
 ```sh
 deno task dev
 ```
+
+Before opening a pull request, run the same verification used by CI:
+
+```sh
+deno task verify
+```
+
+### Localization
+
+User-facing translations live in `src/i18n/translations.yaml` and use ICU
+Message syntax for interpolation, plural/select rules, numbers, dates, and
+composing translated fragments. After changing the catalog, regenerate its
+TypeScript contract:
+
+```sh
+deno task generate:i18n
+```
+
+Use `ctx.t("translation.key", values)` in bot handlers. Translation keys,
+required values, and plural argument types are checked by TypeScript. The full
+`deno task verify` command also rejects stale generated types, missing locale
+keys, and incompatible arguments between English and Portuguese.
 
 ## Deploying
 
@@ -240,6 +272,7 @@ BOT_TOKEN=0000000000:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 EXCHANGE_API_TOKEN=AAAAAAAAAAAAAAAAAAAAAAAA
 OPENWEATHERMAP_API_TOKEN=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 DATA_PATH=./data
+API_PORT=3000
 MESSAGE_TIMEOUT_ENABLED=true
 MESSAGE_TIMEOUT_IN_MINUTES=2
 EOL

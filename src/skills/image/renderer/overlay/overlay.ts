@@ -1,12 +1,13 @@
-import type sharp from "sharp";
-import type { ParsedQuery } from "querystring";
+import type { Metadata, OverlayOptions } from "sharp";
+import { Buffer } from "node:buffer";
+import type { ParsedUrlQuery } from "querystring";
 import { getBoundedChunks } from "./boundary.ts";
 import { createSvgOverlay } from "./svg.ts";
 import type { MemeTemplateParam } from "../../sessionData/types.ts";
 
 export interface OverlayContextProps {
-  metadata: sharp.Metadata;
-  texts: ParsedQuery<string>;
+  metadata: Metadata;
+  texts: ParsedUrlQuery;
   debug?: boolean;
 }
 
@@ -46,8 +47,8 @@ export const createOverlayContext = (
       debug,
     });
 
-    const overlay: sharp.OverlayOptions = {
-      input: new TextEncoder().encode(svgOverlay),
+    const overlay: OverlayOptions = {
+      input: Buffer.from(svgOverlay),
       top: y,
       left: x,
     };

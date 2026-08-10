@@ -1,4 +1,4 @@
-import type { CommandMiddleware } from "grammy/composer.ts";
+import type { CommandMiddleware } from "grammy";
 import type { BotContext } from "/src/context/mod.ts";
 import { createMemberMention } from "../../../utilities/createMemberMention.ts";
 
@@ -8,21 +8,19 @@ export const cmdReport: CommandMiddleware<BotContext> = async (ctx) => {
   const reportedUser = repliedMessage.from;
 
   if (!reportAuthor) {
-    return ctx.reply(
-      "Failed to identify the reporting user. This should not happen normally.",
-    );
+    return ctx.reply(ctx.t("chat.report.reporterUnknown"));
   }
 
   if (!reportedUser) {
-    return ctx.reply(
-      "Failed to find the author of the replied message. This should not happen normally.",
-    );
+    return ctx.reply(ctx.t("chat.report.authorUnknown"));
   }
 
   const admins = await ctx.getChatAdministrators();
   const reportedUserMention = createMemberMention(reportedUser, false);
-  const groupMessage =
-    `Reported ${reportedUserMention} [${reportedUser.id}] to admins.`;
+  const groupMessage = ctx.t("chat.report.reported", {
+    user: reportedUserMention,
+    userId: reportedUser.id,
+  });
 
   const mentions = admins.map((admin) => createMemberMention(admin.user)).join(
     " ",

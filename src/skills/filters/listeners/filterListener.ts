@@ -1,6 +1,6 @@
-import { getLogger } from "std/log/mod.ts";
-import type { Middleware } from "grammy/composer.ts";
-import type { Filter } from "grammy/filter.ts";
+import { getLogger } from "@std/log";
+import type { Middleware } from "grammy";
+import type { Filter } from "grammy";
 import type { BotContext } from "/src/context/mod.ts";
 import { replyFilter } from "../utilities/replyFilter.ts";
 import {

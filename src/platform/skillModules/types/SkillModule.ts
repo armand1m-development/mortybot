@@ -1,7 +1,7 @@
 import type { Router } from "oak";
-import type { Migrations } from "grammy/mod.ts";
-import type { MiddlewareFn } from "grammy/composer.ts";
-import type { Router as GrammyRouter } from "grammy_router/router.ts";
+import type { Migrations } from "grammy";
+import type { MiddlewareFn } from "grammy";
+import type { Router as GrammyRouter } from "@grammyjs/router";
 import type { BotContext } from "/src/context/mod.ts";
 import type { SkillCommand } from "./SkillCommand.ts";
 import type { SkillListener } from "./SkillListener.ts";

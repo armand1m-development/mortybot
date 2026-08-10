@@ -5,7 +5,7 @@ import {
 } from "/src/skills/currency/httpClients/convertCurrencyValue.ts";
 import { injectToken } from "/src/utilities/injectToken.ts";
 import { Configuration } from "/src/platform/configuration/middlewares/types.ts";
-import { getLogger } from "std/log/mod.ts";
+import { getLogger } from "@std/log";
 
 export const createExchangeRateCache = async (configuration: Configuration) => {
   const fetchExchangeRateFn: FetchExchangeRateFunction = injectToken(

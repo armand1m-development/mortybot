@@ -1,5 +1,5 @@
 import sharp from "sharp";
-import type { ParsedQuery } from "querystring";
+import type { ParsedUrlQuery } from "querystring";
 import type { MemeTemplateParam } from "../sessionData/types.ts";
 import { createOverlayContext } from "./overlay/overlay.ts";
 
@@ -11,7 +11,7 @@ export interface RendererProps {
   avatarBuffer: ArrayBuffer | null;
   params: MemeTemplateParam[];
   filteredParams: MemeTemplateParam[];
-  texts: ParsedQuery<string>;
+  texts: ParsedUrlQuery;
   debug?: boolean;
 }
 

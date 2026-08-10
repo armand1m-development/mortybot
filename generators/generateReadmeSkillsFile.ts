@@ -1,7 +1,7 @@
-import { resolve } from "std/path/posix.ts";
-import * as log from "std/log/mod.ts";
-import { crypto } from "std/crypto/mod.ts";
-import { encodeHex } from "jsr:@std/encoding/hex";
+import { resolve } from "@std/path/posix";
+import * as log from "@std/log";
+import { crypto } from "@std/crypto";
+import { encodeHex } from "@std/encoding/hex";
 import { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
 
 const readmeDirectoryPath = Deno.cwd();
@@ -30,6 +30,7 @@ export const generateReadmeSkillsFile = async (force = false) => {
       skills.push(dirEntry.name);
     }
   }
+  skills.sort();
 
   const skillData = await Promise.allSettled<SkillModule>(
     skills.map(async (skill) => {
@@ -87,8 +88,8 @@ ${
   const currentFileHash = await readFileHash();
 
   if (force || currentFileHash !== newFileHash) {
-    log.getLogger().warning(
-      `Generated SKILLS.md file hash are different. Regenerating file."`,
+    log.getLogger().warn(
+      "Generated SKILLS.md file hashes differ. Regenerating file.",
     );
     await Deno.writeFile(readmeFilePath, newFileContent);
     log.getLogger().info(`Wrote skills readme file at "${readmeFilePath}"`);
@@ -100,5 +101,5 @@ ${
 };
 
 if (import.meta.main) {
-  await generateReadmeSkillsFile(true);
+  await generateReadmeSkillsFile();
 }

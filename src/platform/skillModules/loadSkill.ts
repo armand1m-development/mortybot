@@ -1,4 +1,4 @@
-import { resolve } from "std/path/posix.ts";
+import { resolve } from "@std/path/posix";
 import type { Skill } from "/src/skills/skills.ts";
 import type { SkillModule } from "./types/SkillModule.ts";
 

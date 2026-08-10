@@ -1,6 +1,6 @@
-import type { CommandMiddleware } from "grammy/composer.ts";
+import type { CommandMiddleware } from "grammy";
 import type { BotContext } from "/src/context/mod.ts";
-import type { ChatMember } from "grammy/types.ts";
+import type { ChatMember } from "grammy/types";
 import type { Filter } from "/src/skills/filters/sessionData/types.ts";
 import { createMemberMention } from "/src/utilities/createMemberMention.ts";
 
@@ -37,21 +37,24 @@ export const cmdCountPerOwner: CommandMiddleware<BotContext> = async (
   const hasEntries = sortedEntries.length > 0;
 
   if (hasEntries) {
-    const message = `
-**Filters per Owner**:
+    const entries = sortedEntries.map(([userId, filters]) => {
+      const chatMember = chatMemberMap[userId];
+      if (!chatMember) {
+        return ctx.t("filters.ownerCount.unknownOwner", {
+          count: filters.length,
+          ownerId: userId,
+        });
+      }
 
-${
-      sortedEntries.map(([userId, filters]) => {
-        const chatMember = chatMemberMap[userId];
-        if (!chatMember) {
-          return ` - UID ${userId}: ${filters.length}`;
-        }
+      const { user } = chatMember;
+      const mention = createMemberMention(user, false);
+      return ctx.t("filters.ownerCount.entry", {
+        count: filters.length,
+        owner: mention,
+      });
+    }).join("\n");
 
-        const { user } = chatMember;
-        const mention = createMemberMention(user, false);
-        return ` - ${mention}: ${filters.length}`;
-      }).join("\n")
-    }`;
+    const message = ctx.t("filters.ownerCount.heading", { entries });
 
     await ctx.reply(message, {
       parse_mode: "Markdown",
@@ -59,5 +62,5 @@ ${
     return;
   }
 
-  await ctx.reply("There are no filters defined for this group currently.");
+  await ctx.reply(ctx.t("filters.none"));
 };

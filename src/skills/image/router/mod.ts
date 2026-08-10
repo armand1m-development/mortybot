@@ -1,5 +1,5 @@
 import { Router } from "oak";
-import * as path from "std/path/mod.ts";
+import * as path from "@std/path";
 import type { MemeTemplateEntry } from "/src/skills/image/sessionData/types.ts";
 import { reviverToObject } from "/src/utilities/jsonParsing.ts";
 import type { Configuration } from "/src/platform/configuration/middlewares/types.ts";

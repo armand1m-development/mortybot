@@ -1,4 +1,4 @@
-import type { User } from "grammy/types.ts";
+import type { User } from "grammy/types";
 import { markdown } from "/src/utilities/formatMarkdown.ts";
 
 export const createMemberMention = (

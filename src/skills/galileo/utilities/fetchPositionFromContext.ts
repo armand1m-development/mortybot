@@ -1,6 +1,15 @@
-import type { CommandContext } from "grammy/context.ts";
+import type { CommandContext } from "grammy";
 import type { BotContext } from "/src/context/mod.ts";
 import type { GeoPosition } from "./types.ts";
+
+export type PositionInputErrorCode = "replyMustBeLocation" | "positionRequired";
+
+export class PositionInputError extends Error {
+  constructor(readonly code: PositionInputErrorCode) {
+    super(code);
+    this.name = "PositionInputError";
+  }
+}
 
 export const parsePosition = (text: string): GeoPosition => {
   const [latitude, longitude] = text.split(",");
@@ -18,7 +27,7 @@ export const fetchPositionFromContext = (
     const replyMessage = ctx.message.reply_to_message;
 
     if (!replyMessage.location) {
-      throw new Error("The reply message should be a location message.");
+      throw new PositionInputError("replyMustBeLocation");
     }
 
     const { latitude, longitude } = replyMessage.location;
@@ -33,9 +42,7 @@ export const fetchPositionFromContext = (
   const { latitude, longitude } = position;
 
   if (!latitude || !longitude) {
-    throw new Error(
-      "You should provide a valid position. Example: `/iss -20.316839,-40.309921`",
-    );
+    throw new PositionInputError("positionRequired");
   }
 
   return position;

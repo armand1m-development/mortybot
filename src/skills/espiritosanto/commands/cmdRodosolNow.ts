@@ -1,18 +1,19 @@
-import { getLogger } from "std/log/mod.ts";
-import type { CommandMiddleware } from "grammy/composer.ts";
+import { getLogger } from "@std/log";
+import type { CommandMiddleware } from "grammy";
 import type { BotContext } from "/src/context/mod.ts";
 
 export const cmdRodosolNow: CommandMiddleware<BotContext> = async (ctx) => {
   try {
     await ctx.api.sendChatAction(ctx.chat.id, "upload_photo");
 
-    const { rodosolRoadPicturesUrls } = await ctx.rodosolApi.fetchImages();
+    const rodosolRoadPicturesUrls = await ctx.rodosolApi
+      .fetchRodosolRoadImages();
 
     await Promise.allSettled(rodosolRoadPicturesUrls.map((url) => {
       return ctx.replyWithPhoto(url);
     }));
   } catch (error) {
     getLogger().error(error);
-    return ctx.reply("Failed to fetch rodosol camera pictures.");
+    return ctx.reply(ctx.t("rodosol.error"));
   }
 };

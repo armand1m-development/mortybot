@@ -1,4 +1,4 @@
-import { assertEquals } from "std/testing/asserts.ts";
+import { assertEquals } from "@std/assert";
 import type { FilterSessionData } from "../sessionData/types.ts";
 import { hasLoudMatches, isExactMatch } from "./parseFilterMatches.ts";
 

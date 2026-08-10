@@ -1,5 +1,5 @@
-import { getLogger } from "std/log/mod.ts";
-import type { CommandMiddleware } from "grammy/composer.ts";
+import { getLogger } from "@std/log";
+import type { CommandMiddleware } from "grammy";
 import { parseConvertMessage } from "../utilities/parseConvertMessage.ts";
 import type { BotContext } from "/src/context/mod.ts";
 
@@ -9,9 +9,7 @@ export const cmdConvert: CommandMiddleware<BotContext> = async (ctx) => {
   );
 
   if (parseError !== undefined) {
-    return ctx.reply(
-      "Failed to extract parameters from your text. Please send a message like `/convert 150 EUR to BRL`.",
-    );
+    return ctx.reply(ctx.t("currency.usage"));
   }
 
   try {
@@ -23,9 +21,13 @@ export const cmdConvert: CommandMiddleware<BotContext> = async (ctx) => {
       toCurrency,
     });
 
-    return ctx.reply(`${amount} ${fromCurrency}: ${convertedValue}`);
+    return ctx.reply(ctx.t("currency.result", {
+      amount,
+      currency: fromCurrency,
+      value: convertedValue,
+    }));
   } catch (error) {
     getLogger().error(error);
-    return ctx.reply("Failed to convert the value.");
+    return ctx.reply(ctx.t("currency.error"));
   }
 };

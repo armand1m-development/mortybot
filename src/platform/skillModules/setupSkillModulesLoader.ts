@@ -1,9 +1,9 @@
 import * as Sentry from "sentry";
-import { getLogger } from "std/log/mod.ts";
-import type { Middleware } from "grammy/composer.ts";
-import type { Filter } from "grammy/filter.ts";
-import type { Bot } from "grammy/mod.ts";
-import type { BotCommand } from "grammy/types.ts";
+import { getLogger } from "@std/log";
+import type { Middleware } from "grammy";
+import type { Filter } from "grammy";
+import type { Bot } from "grammy";
+import type { BotCommand } from "grammy/types";
 import type { BotContext, SessionData } from "/src/context/mod.ts";
 import type { Skill } from "/src/skills/skills.ts";
 import type { SkillModule } from "./types/SkillModule.ts";
@@ -67,8 +67,8 @@ export const setupSkillModulesLoader = async (
         [command, ...aliases],
         ...(middlewares ?? []),
         async (ctx) => {
-          Sentry.metrics.increment(`command_invocation`, 1, {
-            tags: {
+          Sentry.metrics.count(`command_invocation`, 1, {
+            attributes: {
               skill: skill.name,
               command,
               match: ctx.match,
@@ -84,7 +84,7 @@ export const setupSkillModulesLoader = async (
           const time = end - begin;
 
           Sentry.metrics.distribution(`command_duration`, time, {
-            tags: {
+            attributes: {
               skill: skill.name,
               command,
             },
@@ -117,8 +117,8 @@ export const setupSkillModulesLoader = async (
           // @ts-ignore: the type is not guaranteed in this case, and it is fine.
           const text = ctx?.msg?.text;
 
-          Sentry.metrics.increment(`handled_listener_invocation`, 1, {
-            tags: {
+          Sentry.metrics.count(`handled_listener_invocation`, 1, {
+            attributes: {
               event,
               skill: skill.name,
               handlerName,
@@ -128,7 +128,7 @@ export const setupSkillModulesLoader = async (
           });
 
           Sentry.metrics.distribution(`handled_listener_duration`, time, {
-            tags: {
+            attributes: {
               event,
               handlerName,
               chatType,
@@ -152,8 +152,8 @@ export const setupSkillModulesLoader = async (
 
   const loadSkillInlineQueryListeners = (skill: SkillModule) => {
     logger().debug(`Loading skill "${skill.name}" listeners..`);
-    skill.inlineQueryListeners.forEach(({ handler }) => {
-      bot.on("inline_query", handler);
+    skill.inlineQueryListeners.forEach(({ pattern, handler }) => {
+      bot.inlineQuery(pattern, handler);
     });
   };
 
@@ -167,7 +167,7 @@ export const setupSkillModulesLoader = async (
         const time = end - begin;
 
         Sentry.metrics.distribution(`skill_initializer_duration`, time, {
-          tags: {
+          attributes: {
             skill: skill.name,
           },
           unit: "millisecond",
@@ -272,7 +272,7 @@ export const setupSkillModulesLoader = async (
       const time = end - begin;
 
       Sentry.metrics.distribution(`skill_loading_duration`, time, {
-        tags: {
+        attributes: {
           skill: skill.name,
         },
         unit: "millisecond",
@@ -296,7 +296,6 @@ export const setupSkillModulesLoader = async (
     const time = endAll - beginAll;
 
     Sentry.metrics.distribution(`all_skill_loading_duration`, time, {
-      tags: {},
       unit: "millisecond",
     });
 

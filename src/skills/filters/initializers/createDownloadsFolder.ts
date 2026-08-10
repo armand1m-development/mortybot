@@ -1,5 +1,5 @@
-import { getLogger } from "std/log/mod.ts";
-import { resolve } from "std/path/posix.ts";
+import { getLogger } from "@std/log";
+import { resolve } from "@std/path/posix";
 
 const logger = () => getLogger();
 

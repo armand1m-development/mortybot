@@ -1,5 +1,5 @@
-import { getLogger } from "std/log/mod.ts";
-import type { Migrations } from "grammy/mod.ts";
+import { getLogger } from "@std/log";
+import type { Migrations } from "grammy";
 import type { Skill } from "/src/skills/skills.ts";
 import { loadSkillModule } from "./loadSkill.ts";
 
