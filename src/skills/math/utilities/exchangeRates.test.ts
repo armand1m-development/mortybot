@@ -1,9 +1,9 @@
 import { assertEquals } from "@std/assert";
+import type { ExchangeRateResponse } from "/src/skills/currency/httpClients/convertCurrencyValue.ts";
 import {
   EXCHANGE_RATE_CACHE_FALLBACK_TTL_MS,
   getExchangeRateCacheTtlMs,
-} from "./createExchangeRateCacheMiddleware.ts";
-import type { ExchangeRateResponse } from "/src/skills/currency/httpClients/convertCurrencyValue.ts";
+} from "./exchangeRates.ts";
 
 const createRate = (timeNextUpdateUnix: number): ExchangeRateResponse => ({
   result: "success",

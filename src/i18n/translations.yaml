@@ -38,7 +38,7 @@ en:
     locationReplyRequired: "The replied message must contain a location. Usage: reply to a location with {command}."
     textRequired: "Missing text. Usage: {command} text goes here"
   math:
-    invalidExpression: "The provided text is not a valid mathjs expression. See https://mathjs.org/ for more information."
+    invalidExpression: "The provided text is not a valid calculation expression."
   chat:
     aliasNotImplemented: "Command alias creation is not implemented yet."
     report:
@@ -167,7 +167,7 @@ pt:
     locationReplyRequired: "A mensagem respondida precisa conter uma localização. Uso: responda a uma localização com {command}."
     textRequired: "Texto ausente. Uso: {command} escreva o texto aqui"
   math:
-    invalidExpression: "O texto informado não é uma expressão mathjs válida. Consulte https://mathjs.org/ para mais informações."
+    invalidExpression: "O texto informado não é uma expressão de cálculo válida."
   chat:
     aliasNotImplemented: "A criação de aliases de comandos ainda não foi implementada."
     report:

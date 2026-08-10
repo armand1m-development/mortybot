@@ -25,7 +25,6 @@
     "grammy/types": "npm:grammy@1.45.1/types",
     "intl-messageformat": "npm:intl-messageformat@11.2.13",
     "linkedom": "npm:linkedom@0.18.13",
-    "mathjs": "npm:mathjs@15.2.0",
     "oak": "jsr:@oak/oak@17.2.0",
     "outdent": "npm:outdent@0.8.0",
     "playwright-core": "npm:playwright-core@1.62.1",

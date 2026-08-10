@@ -1,21 +1,34 @@
 import type { CommandMiddleware } from "grammy";
 import type { BotContext } from "/src/context/mod.ts";
-import { format, limitedEvaluate } from "../utilities/mathjs.ts";
+import { getLogger } from "@std/log";
+import {
+  CurrencyRatesRequiredError,
+  evaluateCalculation,
+  formatCalculationResult,
+} from "../utilities/calculator.ts";
+import { getExchangeRates } from "../utilities/exchangeRates.ts";
 
-export const cmdCalculate: CommandMiddleware<BotContext> = (ctx) => {
+export const cmdCalculate: CommandMiddleware<BotContext> = async (ctx) => {
   try {
-    const result = limitedEvaluate(ctx.match);
+    let result;
 
-    if (typeof result === "object") {
-      return ctx.reply(format(result, {
-        notation: "fixed",
-        precision: 2,
-      }));
+    try {
+      result = evaluateCalculation(ctx.match);
+    } catch (error) {
+      if (!(error instanceof CurrencyRatesRequiredError)) {
+        throw error;
+      }
+
+      const exchangeRates = await getExchangeRates(
+        ctx.configuration.exchangeApiToken,
+      );
+      result = evaluateCalculation(ctx.match, exchangeRates);
     }
 
-    return ctx.reply(result);
-  } catch (err: unknown) {
-    const error = err as Error;
-    return ctx.reply(error.message);
+    return ctx.reply(formatCalculationResult(result));
+  } catch (error) {
+    getLogger().error("Received an invalid calculation expression.");
+    getLogger().error(error);
+    return ctx.reply(ctx.t("math.invalidExpression"));
   }
 };
