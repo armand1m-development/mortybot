@@ -16,6 +16,10 @@ import { autoRetry } from "@grammyjs/auto-retry";
 import { skills } from "/src/skills/skills.ts";
 import { setupSkillMigrationLoader } from "/src/platform/skillModules/setupSkillMigrationLoader.ts";
 import { createI18nMiddleware } from "/src/i18n/createI18nMiddleware.ts";
+import { getSafeErrorSummary } from "/src/utilities/sanitizeLogText.ts";
+
+export const BOT_RUNNER_CONCURRENCY = 32;
+export const BOT_UPDATE_TIMEOUT_MS = 120_000;
 
 export const createBot = async (configuration: Configuration) => {
   const bot = new Bot<BotContext>(configuration.botToken);
@@ -67,7 +71,26 @@ export const createBot = async (configuration: Configuration) => {
   injectGlobalErrorHandler(bot);
 
   const start = () => {
-    return run(bot);
+    return run(bot, {
+      sink: {
+        concurrency: BOT_RUNNER_CONCURRENCY,
+        timeout: {
+          milliseconds: BOT_UPDATE_TIMEOUT_MS,
+          handler: (update, task) => {
+            getLogger().warn(
+              `Timed out while handling update ${update.update_id}.`,
+            );
+            task.catch((error) => {
+              getLogger().error(
+                `Timed-out update eventually failed: ${
+                  getSafeErrorSummary(error)
+                }`,
+              );
+            });
+          },
+        },
+      },
+    });
   };
 
   return {

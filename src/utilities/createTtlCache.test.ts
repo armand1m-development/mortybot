@@ -56,6 +56,30 @@ Deno.test("TTL cache retries after a failed load", async () => {
   assertEquals(loadCount, 2);
 });
 
+Deno.test("TTL cache can back off after a failed load", async () => {
+  let currentTime = 1_000;
+  let loadCount = 0;
+  const cache = createTtlCache<string>({
+    failureTtlMs: 100,
+    ttlMs: 1_000,
+    now: () => currentTime,
+  });
+  const load = () => {
+    loadCount++;
+    return loadCount === 1
+      ? Promise.reject(new Error("Exchange API unavailable"))
+      : Promise.resolve("USD");
+  };
+
+  await assertRejects(() => cache.get(load), Error, "API unavailable");
+  await assertRejects(() => cache.get(load), Error, "API unavailable");
+  assertEquals(loadCount, 1);
+
+  currentTime = 1_100;
+  assertEquals(await cache.get(load), "USD");
+  assertEquals(loadCount, 2);
+});
+
 Deno.test("TTL cache supports a value-derived duration", async () => {
   let currentTime = 1_000;
   const cache = createTtlCache<number>({

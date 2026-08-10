@@ -1,7 +1,9 @@
 import { getLogger } from "@std/log";
 import type { OmitToken } from "/src/types/OmitToken.ts";
+import { sanitizeLogText } from "/src/utilities/sanitizeLogText.ts";
 
 export type CurrencyCode = `${Uppercase<string>}`;
+export const EXCHANGE_RATE_REQUEST_TIMEOUT_MS = 10_000;
 
 const logger = () => getLogger();
 
@@ -37,7 +39,9 @@ const fetchExchangeRateApiCurrencyEndpoint = async ({
   const url =
     `https://v6.exchangerate-api.com/v6/${token}/pair/${fromCurrency}/${toCurrency}/${amount}`;
 
-  const response = await fetch(url);
+  const response = await fetch(url, {
+    signal: AbortSignal.timeout(EXCHANGE_RATE_REQUEST_TIMEOUT_MS),
+  });
 
   if (!response.ok) {
     const body = await response.text();
@@ -47,7 +51,7 @@ const fetchExchangeRateApiCurrencyEndpoint = async ({
         JSON.stringify({ amount, fromCurrency, toCurrency }, null, 2)
       }`,
     );
-    logger().debug(`Response Body: ${body}`);
+    logger().debug(`Response Body: ${sanitizeLogText(body)}`);
 
     throw new Error("Failed to fetch currency value.");
   }
@@ -95,14 +99,16 @@ export const fetchExchangeRate = async ({
 }) => {
   const url = `https://v6.exchangerate-api.com/v6/${token}/latest/USD`;
 
-  const response = await fetch(url);
+  const response = await fetch(url, {
+    signal: AbortSignal.timeout(EXCHANGE_RATE_REQUEST_TIMEOUT_MS),
+  });
 
   if (!response.ok) {
     const body = await response.text();
     logger().error(
       `Failed to fetch latest exchange rate. Response body in debug.`,
     );
-    logger().debug(`Response Body: ${body}`);
+    logger().debug(`Response Body: ${sanitizeLogText(body)}`);
     throw new Error("Failed to fetch exchange rate.");
   }
 

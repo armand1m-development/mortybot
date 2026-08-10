@@ -328,7 +328,7 @@ const tokenize = (expression: string): Token[] => {
       continue;
     }
 
-    throw new SyntaxError(`Unexpected character "${character}".`);
+    throw new SyntaxError("The expression contains an unsupported character.");
   }
 
   if (tokens.length > MAX_TOKENS) {

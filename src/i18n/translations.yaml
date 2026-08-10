@@ -39,6 +39,8 @@ en:
     textRequired: "Missing text. Usage: {command} text goes here"
   math:
     invalidExpression: "The provided text is not a valid calculation expression."
+    rateLimited: "Too many calculations. Try again in a few seconds."
+    exchangeRatesUnavailable: "Current exchange rates are temporarily unavailable. Try again shortly."
   chat:
     aliasNotImplemented: "Command alias creation is not implemented yet."
     report:
@@ -168,6 +170,8 @@ pt:
     textRequired: "Texto ausente. Uso: {command} escreva o texto aqui"
   math:
     invalidExpression: "O texto informado não é uma expressão de cálculo válida."
+    rateLimited: "Muitos cálculos em pouco tempo. Tente novamente em alguns segundos."
+    exchangeRatesUnavailable: "As taxas de câmbio estão temporariamente indisponíveis. Tente novamente em instantes."
   chat:
     aliasNotImplemented: "A criação de aliases de comandos ainda não foi implementada."
     report:

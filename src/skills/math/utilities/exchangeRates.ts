@@ -6,8 +6,10 @@ import {
 } from "/src/skills/currency/httpClients/convertCurrencyValue.ts";
 import { createTtlCache } from "/src/utilities/createTtlCache.ts";
 import { injectToken } from "/src/utilities/injectToken.ts";
+import { getSafeErrorSummary } from "/src/utilities/sanitizeLogText.ts";
 
 export const EXCHANGE_RATE_CACHE_FALLBACK_TTL_MS = 60 * 60 * 1_000;
+export const EXCHANGE_RATE_FAILURE_BACKOFF_MS = 30_000;
 
 export const getExchangeRateCacheTtlMs = (
   rate: ExchangeRateResponse,
@@ -21,6 +23,7 @@ export const getExchangeRateCacheTtlMs = (
 };
 
 const exchangeRateCache = createTtlCache<ExchangeRateResponse>({
+  failureTtlMs: EXCHANGE_RATE_FAILURE_BACKOFF_MS,
   ttlMs: getExchangeRateCacheTtlMs,
 });
 
@@ -32,6 +35,11 @@ export const getExchangeRates = (exchangeApiToken: string) => {
 
   return exchangeRateCache.get(() => {
     getLogger().info("Updating exchange rates for the math skill...");
-    return fetchExchangeRateFn({});
+    return fetchExchangeRateFn({}).catch((error) => {
+      getLogger().warn(
+        `Failed to update exchange rates: ${getSafeErrorSummary(error)}`,
+      );
+      throw error;
+    });
   });
 };

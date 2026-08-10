@@ -63,7 +63,9 @@ export const translationKeys = [
   "language.name.en",
   "language.name.pt",
   "language.unsupported",
+  "math.exchangeRatesUnavailable",
   "math.invalidExpression",
+  "math.rateLimited",
   "rodosol.error",
   "taxIncome.incomeRequired",
   "taxIncome.report",
@@ -137,7 +139,9 @@ export interface TranslationValues {
   "language.name.en": Record<never, never>;
   "language.name.pt": Record<never, never>;
   "language.unsupported": Record<never, never>;
+  "math.exchangeRatesUnavailable": Record<never, never>;
   "math.invalidExpression": Record<never, never>;
+  "math.rateLimited": Record<never, never>;
   "rodosol.error": Record<never, never>;
   "taxIncome.incomeRequired": Record<never, never>;
   "taxIncome.report": { "grossHour": string | number | Date; "grossYear": string | number | Date; "incomeTax": string | number | Date; "labourCredit": string | number | Date; "netMonth": string | number | Date; "netYear": string | number | Date; "payrollTax": string | number | Date; "socialTax": string | number | Date; "taxableYear": string | number | Date; "taxCredit": string | number | Date; "taxFreeYear": string | number | Date };

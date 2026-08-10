@@ -1,4 +1,9 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import {
+  assertEquals,
+  assertFalse,
+  assertInstanceOf,
+  assertThrows,
+} from "@std/assert";
 import type { ExchangeRateResponse } from "/src/skills/currency/httpClients/convertCurrencyValue.ts";
 import {
   CurrencyRatesRequiredError,
@@ -69,4 +74,15 @@ Deno.test("calculator rejects unsafe or incompatible expressions", () => {
   assertThrows(() => evaluateCalculation("1 m + 1 kg"));
   assertThrows(() => evaluateCalculation("1 / 0"));
   assertThrows(() => evaluateCalculation("unknown(1)"));
+});
+
+Deno.test("calculator errors do not reflect terminal control characters", () => {
+  const error = assertThrows(() => evaluateCalculation("1 + \u001b[31m"));
+
+  assertInstanceOf(error, Error);
+  assertFalse(error.message.includes("\u001b"));
+  assertEquals(
+    error.message,
+    "The expression contains an unsupported character.",
+  );
 });
