@@ -1,5 +1,5 @@
-import { getLogger } from "std/log/mod.ts";
-import type { CommandMiddleware } from "grammy/composer.ts";
+import { getLogger } from "@std/log";
+import type { CommandMiddleware } from "grammy";
 import type { BotContext } from "/src/context/mod.ts";
 import { parseHashtags } from "../utilities/parseHashtags.ts";
 
@@ -7,9 +7,7 @@ export const cmdLeave: CommandMiddleware<BotContext> = (ctx) => {
   const hashtags = parseHashtags(ctx.match);
 
   if (hashtags.length === 0) {
-    ctx.reply(
-      "You should provide a hashtag in order to leave one. Example: `/leave_hashtag #games`",
-    );
+    ctx.reply(ctx.t("hashtags.leaveUsage"));
     return;
   }
 
@@ -26,8 +24,6 @@ export const cmdLeave: CommandMiddleware<BotContext> = (ctx) => {
 
     getLogger().info(`Removed ${userId} from hashtag channel ${hashtag}`);
 
-    ctx.reply(
-      `You're now unsubscribed from the hashtag ${hashtag}.`,
-    );
+    ctx.reply(ctx.t("hashtags.left", { hashtag }));
   });
 };

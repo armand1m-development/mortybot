@@ -1,24 +1,30 @@
-import type { CommandMiddleware } from "grammy/composer.ts";
+import type { CommandMiddleware } from "grammy";
 import type { BotContext } from "/src/context/mod.ts";
+import { createFilterActionAudit } from "../utilities/createFilterActionAudit.ts";
+import { markdown } from "/src/utilities/formatMarkdown.ts";
 
 export const cmdDeleteFilter: CommandMiddleware<BotContext> = (ctx) => {
   const trigger = ctx.match;
 
   if (!trigger) {
-    return ctx.reply(
-      "You should give me a filter to use. Example: `/delete_filter !myfilter`",
-    );
+    return ctx.reply(ctx.t("filters.missingArgument.delete"));
   }
 
   const filter = ctx.session.filters.get(trigger);
 
   if (!filter) {
-    return ctx.reply(
-      `Couldn't find a filter for this trigger "${trigger}"`,
-    );
+    return ctx.reply(ctx.t("filters.notFound", { filter: trigger }));
   }
 
   ctx.session.filters.delete(trigger);
 
-  return ctx.reply(`Filter got permanently deleted.`);
+  return ctx.reply(
+    createFilterActionAudit({
+      action: "deleted",
+      filterTrigger: trigger,
+      translate: ctx.t,
+      user: ctx.from!,
+    }),
+    { parse_mode: markdown.parse_mode },
+  );
 };

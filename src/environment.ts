@@ -1,5 +1,23 @@
-import * as dotenv from "std/dotenv/mod.ts";
+import * as dotenv from "@std/dotenv";
 import type { Configuration } from "/src/platform/configuration/middlewares/types.ts";
+
+export const DEFAULT_API_PORT = 3_000;
+
+export const parseApiPort = (value: string | undefined): number => {
+  if (value === undefined || value.trim() === "") {
+    return DEFAULT_API_PORT;
+  }
+
+  const port = Number(value);
+
+  if (!Number.isInteger(port) || port < 1 || port > 65_535) {
+    throw new TypeError(
+      `API_PORT must be an integer between 1 and 65535; received "${value}".`,
+    );
+  }
+
+  return port;
+};
 
 export const loadEnvironment = async (): Promise<Configuration> => {
   await dotenv.load({
@@ -22,7 +40,7 @@ export const loadEnvironment = async (): Promise<Configuration> => {
     mainMemeTemplateChatSessionPath: Deno.env.get(
       "MAIN_MEME_TEMPLATE_CHAT_SESSION_PATH",
     )!,
-    apiPort: Number.parseInt(Deno.env.get("API_PORT")!),
+    apiPort: parseApiPort(Deno.env.get("API_PORT")),
     sentryDSN: Deno.env.get("SENTRY_DSN")!,
   };
 };

@@ -1,4 +1,4 @@
-import type { CommandMiddleware } from "grammy/composer.ts";
+import type { CommandMiddleware } from "grammy";
 import { getChunks } from "/src/utilities/array/getChunks.ts";
 import type { BotContext } from "/src/context/mod.ts";
 
@@ -7,7 +7,7 @@ export const cmdListFilters: CommandMiddleware<BotContext> = async (ctx) => {
   const entries = Object.entries(filters);
 
   if (entries.length === 0) {
-    await ctx.reply("There are no filters defined for this group currently.");
+    await ctx.reply(ctx.t("filters.none"));
     return;
   }
 

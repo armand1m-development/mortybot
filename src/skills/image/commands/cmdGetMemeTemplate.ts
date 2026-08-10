@@ -1,4 +1,4 @@
-import type { CommandMiddleware } from "grammy/composer.ts";
+import type { CommandMiddleware } from "grammy";
 import type { BotContext } from "/src/context/mod.ts";
 
 export const cmdGetMemeTemplate: CommandMiddleware<BotContext> = (ctx) => {
@@ -11,5 +11,5 @@ export const cmdGetMemeTemplate: CommandMiddleware<BotContext> = (ctx) => {
     });
   }
 
-  return ctx.reply("Meme template not found.");
+  return ctx.reply(ctx.t("image.templateNotFound"));
 };

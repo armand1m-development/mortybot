@@ -1,5 +1,5 @@
-import type { InlineQueryMiddleware } from "grammy/composer.ts";
-import type { InlineQueryContext } from "grammy/context.ts";
+import type { InlineQueryMiddleware } from "grammy";
+import type { InlineQueryContext } from "grammy";
 import type { BotContext } from "/src/context/mod.ts";
 import { mapFilterToInlineQueryResult } from "../utilities/mapFilterToInlineQueryResult.ts";
 import { mapAudioToInlineQueryResult } from "../utilities/mapAudioToInlineQueryResult.ts";

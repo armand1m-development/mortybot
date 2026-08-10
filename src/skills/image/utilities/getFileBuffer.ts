@@ -1,4 +1,4 @@
-import type { CommandContext } from "grammy/context.ts";
+import type { CommandContext } from "grammy";
 import type { BotContext } from "/src/context/mod.ts";
 
 export const getFileBuffer = async (

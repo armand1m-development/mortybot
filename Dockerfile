@@ -1,18 +1,18 @@
-FROM denoland/deno:1.44.0
+FROM denoland/deno:2.9.4
 
-ENV DENO_DIR /app/
-RUN apt update
-RUN apt install -y fontconfig
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends chromium fontconfig \
+  && rm -rf /var/lib/apt/lists/*
 COPY ./fonts/impact-font /usr/share/fonts/impact-font
-RUN cd /usr/share/fonts/impact-font && fc-cache -fv
+RUN fc-cache -fv
 WORKDIR /app
+ENV CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium
+
+COPY deno.json deno.lock ./
+RUN deno install --frozen
+
 COPY . .
-
-RUN deno cache \
-  --lock=deno.lock \
-  main.ts
-
 RUN deno task generate:skills
-RUN deno cache ./main.ts
+RUN deno cache --frozen main.ts src/skills/*/mod.ts
 
-CMD ["run", "--allow-net", "--allow-env", "--allow-read", "--allow-write", "--allow-ffi", "main.ts"]
+CMD ["task", "start"]

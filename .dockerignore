@@ -3,6 +3,8 @@
 *.test.ts
 data/
 coverage/
+coverage.lcov
+node_modules/
 Dockerfile
 .gitattributes
 .gitignore

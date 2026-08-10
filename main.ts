@@ -1,9 +1,9 @@
-import * as log from "std/log/mod.ts";
-import { bold } from "std/fmt/colors.ts";
+import * as log from "@std/log";
+import { bold } from "@std/fmt/colors";
 
 log.setup({
   handlers: {
-    console: new log.handlers.ConsoleHandler("DEBUG"),
+    console: new log.ConsoleHandler("DEBUG"),
   },
   loggers: {
     default: {

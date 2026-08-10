@@ -1,20 +1,21 @@
-import { getLogger } from "std/log/mod.ts";
-import { run } from "grammy_runner/mod.ts";
-import { resolve } from "std/path/posix.ts";
-import { Bot, type Context, enhanceStorage, session } from "grammy/mod.ts";
-import { sequentialize } from "grammy_runner/mod.ts";
-import { hydrateFiles } from "grammy_files/mod.ts";
-import { FileAdapter } from "grammy_storages/file/src/mod.ts";
-import type { BotContext } from "/src/context/mod.ts";
+import { getLogger } from "@std/log";
+import { run } from "@grammyjs/runner";
+import { resolve } from "@std/path/posix";
+import { Bot, type Context, enhanceStorage, session } from "grammy";
+import { sequentialize } from "@grammyjs/runner";
+import { hydrateFiles } from "@grammyjs/files";
+import { FileAdapter } from "@grammyjs/storage-file";
+import type { BotContext, SessionData } from "/src/context/mod.ts";
 import { replacer, reviver } from "/src/utilities/jsonParsing.ts";
 import type { Configuration } from "/src/platform/configuration/middlewares/types.ts";
 import { createConfigurationMiddleware } from "/src/platform/configuration/middlewares/createConfigurationMiddleware.ts";
 import { injectGlobalErrorHandler } from "/src/platform/errorHandling/globalErrorHandler.ts";
 import { setupSkillModulesLoader } from "/src/platform/skillModules/setupSkillModulesLoader.ts";
-import { autoRetry } from "grammy_auto_retry/mod.ts";
+import { autoRetry } from "@grammyjs/auto-retry";
 
 import { skills } from "/src/skills/skills.ts";
 import { setupSkillMigrationLoader } from "/src/platform/skillModules/setupSkillMigrationLoader.ts";
+import { createI18nMiddleware } from "/src/i18n/createI18nMiddleware.ts";
 
 export const createBot = async (configuration: Configuration) => {
   const bot = new Bot<BotContext>(configuration.botToken);
@@ -43,22 +44,23 @@ export const createBot = async (configuration: Configuration) => {
     initial: createSessionData,
     storage: enhanceStorage({
       migrations,
-      storage: new FileAdapter({
+      storage: new FileAdapter<SessionData>({
         dirName: resolve(configuration.dataPath, "./sessions"),
-        deserializer: (input) => {
+        deserializer: (input: string): SessionData => {
           try {
             return JSON.parse(input, reviver);
           } catch (err) {
             getLogger().error(err);
-            return {};
+            return {} as SessionData;
           }
         },
-        serializer: (input) => {
+        serializer: (input: SessionData): string => {
           return JSON.stringify(input, replacer, `\t`);
         },
       }),
     }),
   }));
+  bot.use(createI18nMiddleware());
 
   await loadSkills();
 

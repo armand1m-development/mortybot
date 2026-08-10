@@ -1,7 +1,7 @@
-import { resolve } from "std/path/posix.ts";
-import * as log from "std/log/mod.ts";
-import { crypto } from "std/crypto/mod.ts";
-import { encodeHex } from "jsr:@std/encoding/hex";
+import { resolve } from "@std/path/posix";
+import * as log from "@std/log";
+import { crypto } from "@std/crypto";
+import { encodeHex } from "@std/encoding/hex";
 
 const skillsDirectoryPath = resolve(Deno.cwd(), "./src/skills");
 const skillsFilePath = resolve(skillsDirectoryPath, "skills.ts");
@@ -14,7 +14,7 @@ export const readFileHash = async () => {
   return hash;
 };
 
-export const generateSkillsFile = async (force = false) => {
+export const generateSkillsFile = async (force = false, check = false) => {
   const skills = [];
 
   for await (const dirEntry of Deno.readDir(skillsDirectoryPath)) {
@@ -22,6 +22,7 @@ export const generateSkillsFile = async (force = false) => {
       skills.push(dirEntry.name);
     }
   }
+  skills.sort();
 
   const code = `// THIS FILE IS AUTO-GENERATED DURING STARTUP
 // RUN \`deno task generate:skills\` TO FORCE UPDATE
@@ -41,9 +42,15 @@ export type Skill = typeof skills[number];
   const newFileHash = encodeHex(newContentHashBuffer);
   const currentFileHash = await readFileHash();
 
+  if (check && currentFileHash !== newFileHash) {
+    throw new Error(
+      "src/skills/skills.ts is stale. Run `deno task generate:skills`.",
+    );
+  }
+
   if (force || currentFileHash !== newFileHash) {
-    log.getLogger().warning(
-      `Generated skills/skills.ts file hash are different. Regenerating file."`,
+    log.getLogger().warn(
+      "Generated skills/skills.ts file hashes differ. Regenerating file.",
     );
     await Deno.writeFile(skillsFilePath, newFileContent);
     log.getLogger().info(`Wrote skills file at "${skillsFilePath}"`);
@@ -55,5 +62,5 @@ export type Skill = typeof skills[number];
 };
 
 if (import.meta.main) {
-  await generateSkillsFile(true);
+  await generateSkillsFile(false, Deno.args.includes("--check"));
 }

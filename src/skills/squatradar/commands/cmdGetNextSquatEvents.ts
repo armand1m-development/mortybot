@@ -1,7 +1,8 @@
-import type { CommandMiddleware } from "grammy/composer.ts";
+import type { CommandMiddleware } from "grammy";
 import type { BotContext } from "/src/context/mod.ts";
 import { markdown } from "/src/utilities/formatMarkdown.ts";
 import { EventEntry } from "/src/skills/squatradar/httpClients/fetchNextEvents.ts";
+import { getLanguageLocale } from "/src/i18n/mod.ts";
 
 export const cmdGetNextSquatEvents: CommandMiddleware<BotContext> = async (
   ctx,
@@ -32,11 +33,14 @@ export const cmdGetNextSquatEvents: CommandMiddleware<BotContext> = async (
       })
       .map((event) => {
         const date = new Date(event.date_time[0].time_start);
-        const formattedDate = new Intl.DateTimeFormat("en-GB", {
-          dateStyle: "short",
-          timeStyle: "short",
-          timeZone: "Europe/Amsterdam",
-        }).format(date);
+        const formattedDate = new Intl.DateTimeFormat(
+          getLanguageLocale(ctx.language),
+          {
+            dateStyle: "short",
+            timeStyle: "short",
+            timeZone: "Europe/Amsterdam",
+          },
+        ).format(date);
         return `- (${formattedDate}) ${markdown.url(event.title, event.url)}`;
       });
 

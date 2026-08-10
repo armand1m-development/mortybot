@@ -3,4 +3,6 @@ data/
 *.log
 rose-migration/
 coverage/
+coverage.lcov
+node_modules/
 data_*/

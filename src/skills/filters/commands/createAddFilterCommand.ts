@@ -1,8 +1,8 @@
-import { getLogger } from "std/log/mod.ts";
-import type { CommandMiddleware } from "grammy/composer.ts";
-import { format, relative, resolve } from "std/path/posix.ts";
+import { getLogger } from "@std/log";
+import type { CommandMiddleware } from "grammy";
+import { format, relative, resolve } from "@std/path/posix";
 import type { BotContext } from "/src/context/mod.ts";
-import { extensionsByType } from "std/media_types/mod.ts";
+import { extension } from "@std/media-types";
 import { downloadMessage } from "../utilities/downloadMessage.ts";
 
 interface CommandFactoryProps {
@@ -31,9 +31,7 @@ async (ctx) => {
   const filterTrigger = ctx.match;
 
   if (!filterTrigger) {
-    return ctx.reply(
-      "You should give me a filter to use. Example: `/add_filter !myfilter`",
-    );
+    return ctx.reply(ctx.t("filters.missingArgument.add"));
   }
 
   const filePath = resolve(
@@ -46,10 +44,11 @@ async (ctx) => {
   const downloadFile = async (fileId: string, mimeType?: string) => {
     try {
       const file = await ctx.api.getFile(fileId);
+      const fileExtension = mimeType ? extension(mimeType) : undefined;
 
       const downloadFileName = format({
         name: fileId,
-        ext: mimeType ? "." + extensionsByType(mimeType)![0] : undefined,
+        ext: fileExtension ? `.${fileExtension}` : undefined,
       });
 
       const downloadedPath = await file.download(
@@ -73,5 +72,5 @@ async (ctx) => {
     isLoud: isLoud,
   });
 
-  await ctx.reply("Filter is added");
+  await ctx.reply(ctx.t("filters.added"));
 };

@@ -1,6 +1,6 @@
 import { match, P } from "ts-pattern";
 import type { BotContext } from "/src/context/mod.ts";
-import type { Filter } from "grammy/filter.ts";
+import type { Filter } from "grammy";
 import type { Filter as SessionFilter } from "../sessionData/types.ts";
 
 export const replyFilter = async (

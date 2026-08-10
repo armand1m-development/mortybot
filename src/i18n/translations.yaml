@@ -1,0 +1,257 @@
+en:
+  language:
+    current: "Current language: {language}. Use /language PT or /language EN to change it."
+    changed: "Language changed to {language}."
+    unsupported: "Unsupported language. Use /language PT or /language EN."
+    name:
+      en: "English"
+      pt: "Portuguese"
+  filters:
+    missingArgument:
+      add: "You should give me a filter to use. Example: `/add_filter !myfilter`"
+      activate: "You should give me a filter to use. Example: `/activate_filter !myfilter`"
+      delete: "You should give me a filter to use. Example: `/delete_filter !myfilter`"
+      stop: "You should give me a filter to use. Example: `/stop_filter !myfilter`"
+    notFound: "Could not find a filter for the trigger {filter}."
+    none: "There are no filters defined for this group currently."
+    added: "Filter added."
+    activated: "Filter activated."
+    actionAudit:
+      deleted: "Just for the record: {user} deleted the filter {filter}. There is no point deleting the evidence later. Have some shame!"
+      deactivated: "Just for the record: {user} deactivated the filter {filter}. There is no point deleting the evidence later. Have some shame!"
+    caseSensitivity: "Filter case sensitivity is now {enabled, select, true {on} other {off}}."
+    ownerList:
+      entry: "- {filter} (owner: {owner}, {active, select, true {active} other {stopped}})"
+      unknownOwner: "- {filter} (owner UID: {ownerId})"
+    ownerCount:
+      heading: |-
+        *Filters per Owner*:
+
+        {entries}
+      entry: "- {owner}: {count, plural, one {# filter} other {# filters}}"
+      unknownOwner: "- UID {ownerId}: {count, plural, one {# filter} other {# filters}}"
+  terceiraPonte:
+    loading: "Loading photos..."
+    error: "Failed to fetch Third Bridge camera pictures."
+  common:
+    replyRequired: "Run this command while replying to a message. Usage: reply to a message with {command}."
+    locationReplyRequired: "The replied message must contain a location. Usage: reply to a location with {command}."
+    textRequired: "Missing text. Usage: {command} text goes here"
+  math:
+    invalidExpression: "The provided text is not a valid mathjs expression. See https://mathjs.org/ for more information."
+  chat:
+    aliasNotImplemented: "Command alias creation is not implemented yet."
+    report:
+      reporterUnknown: "Could not identify the reporting user. This should not normally happen."
+      authorUnknown: "Could not find the author of the replied message. This should not normally happen."
+      reported: "Reported {user} [{userId}] to the administrators."
+    noImage: "No image found."
+  currency:
+    usage: "Could not read the parameters. Send a message such as `/convert 150 EUR to BRL`."
+    result: "{amount} {currency}: {value}"
+    error: "Failed to convert the value."
+  rodosol:
+    error: "Failed to fetch Rodosol camera pictures."
+  goodbye:
+    farewell: "It was nice to see you!"
+    none: "Nobody has ever left this group, at least as far as I know."
+    heading: |-
+      *Leaving Rank*:
+
+      {entries}
+    entry: "{rank}. {user} - {count, plural, one {left the group once} other {left the group # times}}{winner, select, true { (the winner! 🏆)} other {}}"
+    unknownUserEntry: "{rank}. UID {userId} - {count, plural, one {left the group once} other {left the group # times}}{winner, select, true { (the winner! 🏆)} other {}}"
+  hashtags:
+    joinUsage: "Provide a hashtag to join. Example: `/join_hashtag #games`"
+    leaveUsage: "Provide a hashtag to leave. Example: `/leave_hashtag #games`"
+    alreadyJoined: "You are already registered for {hashtag}."
+    joined: "You are registered for {hashtag}. Use `/leave_hashtag {hashtag}` to unsubscribe."
+    left: "You are now unsubscribed from {hashtag}."
+    none: "There are no hashtags defined for this group currently."
+    listEntry: "- {hashtag} ({count, plural, one {# participant} other {# participants}})"
+  horeca:
+    section: |-
+      *Best rated with {threshold} reviews:*
+
+      {location}
+    noPlace: "No place with {threshold} reviews."
+    location: |-
+      *Name*: {name}
+      *Rating*: {rating} ({reviewCount})
+      *Address*: {address}
+
+      [See in Google Maps]({mapsUrl})
+      [Directions by Bike]({bikeUrl})
+      [Directions by Public Transportation]({transitUrl})
+  image:
+    debugMode: "Meme template debug mode is now {enabled, select, true {enabled} other {disabled}}."
+    invalidMemeInput: "Invalid input. Use `/create_meme templateId top=first text&bottom=second text&balloon=third`, and so on."
+    invalidTemplate: "Invalid template name. Available templates: {templates}"
+    templateCreated: "Meme template created successfully."
+    invalidTemplateJson: "Send a valid MemeTemplateEntry JSON object."
+    invalidJson: "Send a valid JSON object."
+    templateNotFound: "Meme template not found."
+  weather:
+    temperature: "Temperature in {query}: {temperature}°C | feels like {feelsLike}°C"
+    temperatureError: "Could not find weather data for your query. Try again."
+    forecastHeading: "⚠ Forecast for {query} ⚠"
+    forecastEntry: "{time}h - {description}"
+    forecastError: "Could not find forecast data for your query. Try again."
+  taxIncome:
+    incomeRequired: "Specify the `income` parameter. Example: income=36000"
+    report: |-
+      Year Gross Income     : {grossYear}
+      Year Tax Free Income  : {taxFreeYear}
+      Year Taxable Income   : {taxableYear}
+      Hour Gross Income     : {grossHour}
+      Payroll Tax           : {payrollTax}
+      Social Security Tax   : {socialTax}
+      General Tax Credit    : {taxCredit}
+      Labour Tax Credit     : {labourCredit}
+      Total Income Tax      : {incomeTax}
+      Year Net Income       : {netYear}
+      Month Net Income      : {netMonth}
+  galileo:
+    replyMustBeLocation: "The replied message must contain a location."
+    positionRequired: "Provide a valid position. Example: `/iss -20.316839,-40.309921`"
+    noPasses: "There are no ISS passes for this location (lat: {latitude}, long: {longitude}) on the horizon for the next 3 days."
+    duration: "{minutes}:{seconds} {minutes, plural, one {minute} other {minutes}}"
+    pass: |-
+      🛰️ ISS pass on {date}
+
+      Starts at: {startTime} {startCompass}/{startAzimuth}° elev: {startElevation}°
+      Max elevation: {maxTime} {maxCompass}/{maxAzimuth}° elev: {maxElevation}°
+      Ends at: {endTime} {endCompass}/{endAzimuth}° elev: {endElevation}°
+
+      Size in the sky: {magnitudeBar}
+      Magnitude: {magnitude}
+      Total duration: {duration}
+
+pt:
+  language:
+    current: "Idioma atual: {language}. Use /language PT ou /language EN para alterá-lo."
+    changed: "Idioma alterado para {language}."
+    unsupported: "Idioma não suportado. Use /language PT ou /language EN."
+    name:
+      en: "Inglês"
+      pt: "Português"
+  filters:
+    missingArgument:
+      add: "Você precisa informar um filtro. Exemplo: `/add_filter !meufiltro`"
+      activate: "Você precisa informar um filtro. Exemplo: `/activate_filter !meufiltro`"
+      delete: "Você precisa informar um filtro. Exemplo: `/delete_filter !meufiltro`"
+      stop: "Você precisa informar um filtro. Exemplo: `/stop_filter !meufiltro`"
+    notFound: "Não encontrei um filtro com o gatilho {filter}."
+    none: "Não há filtros definidos para este grupo no momento."
+    added: "Filtro adicionado."
+    activated: "Filtro ativado."
+    actionAudit:
+      deleted: "Só pra deixar registrado: {user} foi quem deletou o filtro {filter}. Não adianta apagar a evidência depois. Toma vergonha!"
+      deactivated: "Só pra deixar registrado: {user} foi quem desativou o filtro {filter}. Não adianta apagar a evidência depois. Toma vergonha!"
+    caseSensitivity: "A diferenciação entre maiúsculas e minúsculas agora está {enabled, select, true {ativada} other {desativada}}."
+    ownerList:
+      entry: "- {filter} (dono: {owner}, {active, select, true {ativo} other {parado}})"
+      unknownOwner: "- {filter} (UID do dono: {ownerId})"
+    ownerCount:
+      heading: |-
+        *Filtros por dono*:
+
+        {entries}
+      entry: "- {owner}: {count, plural, one {# filtro} other {# filtros}}"
+      unknownOwner: "- UID {ownerId}: {count, plural, one {# filtro} other {# filtros}}"
+  terceiraPonte:
+    loading: "Carregando fotos..."
+    error: "Não foi possível buscar as imagens das câmeras da Terceira Ponte."
+  common:
+    replyRequired: "Execute este comando respondendo a uma mensagem. Uso: responda a uma mensagem com {command}."
+    locationReplyRequired: "A mensagem respondida precisa conter uma localização. Uso: responda a uma localização com {command}."
+    textRequired: "Texto ausente. Uso: {command} escreva o texto aqui"
+  math:
+    invalidExpression: "O texto informado não é uma expressão mathjs válida. Consulte https://mathjs.org/ para mais informações."
+  chat:
+    aliasNotImplemented: "A criação de aliases de comandos ainda não foi implementada."
+    report:
+      reporterUnknown: "Não foi possível identificar quem fez a denúncia. Isso normalmente não deveria acontecer."
+      authorUnknown: "Não foi possível encontrar o autor da mensagem respondida. Isso normalmente não deveria acontecer."
+      reported: "{user} [{userId}] foi denunciado aos administradores."
+    noImage: "Nenhuma imagem encontrada."
+  currency:
+    usage: "Não foi possível ler os parâmetros. Envie uma mensagem como `/convert 150 EUR to BRL`."
+    result: "{amount} {currency}: {value}"
+    error: "Não foi possível converter o valor."
+  rodosol:
+    error: "Não foi possível buscar as imagens das câmeras da Rodosol."
+  goodbye:
+    farewell: "Foi bom ter você por aqui!"
+    none: "Ninguém nunca saiu deste grupo, pelo menos até onde eu sei."
+    heading: |-
+      *Ranking de saídas*:
+
+      {entries}
+    entry: "{rank}. {user} - {count, plural, one {saiu do grupo uma vez} other {saiu do grupo # vezes}}{winner, select, true { (campeão! 🏆)} other {}}"
+    unknownUserEntry: "{rank}. UID {userId} - {count, plural, one {saiu do grupo uma vez} other {saiu do grupo # vezes}}{winner, select, true { (campeão! 🏆)} other {}}"
+  hashtags:
+    joinUsage: "Informe uma hashtag para participar. Exemplo: `/join_hashtag #jogos`"
+    leaveUsage: "Informe uma hashtag para sair. Exemplo: `/leave_hashtag #jogos`"
+    alreadyJoined: "Você já está inscrito em {hashtag}."
+    joined: "Você se inscreveu em {hashtag}. Use `/leave_hashtag {hashtag}` para sair."
+    left: "Você não está mais inscrito em {hashtag}."
+    none: "Não há hashtags definidas para este grupo no momento."
+    listEntry: "- {hashtag} ({count, plural, one {# participante} other {# participantes}})"
+  horeca:
+    section: |-
+      *Melhor avaliado com {threshold} avaliações:*
+
+      {location}
+    noPlace: "Nenhum lugar com {threshold} avaliações."
+    location: |-
+      *Nome*: {name}
+      *Avaliação*: {rating} ({reviewCount})
+      *Endereço*: {address}
+
+      [Ver no Google Maps]({mapsUrl})
+      [Rotas de bicicleta]({bikeUrl})
+      [Rotas de transporte público]({transitUrl})
+  image:
+    debugMode: "O modo de depuração de templates de meme agora está {enabled, select, true {ativado} other {desativado}}."
+    invalidMemeInput: "Entrada inválida. Use `/create_meme templateId top=primeiro texto&bottom=segundo texto&balloon=terceiro`, e assim por diante."
+    invalidTemplate: "Nome de template inválido. Templates disponíveis: {templates}"
+    templateCreated: "Template de meme criado com sucesso."
+    invalidTemplateJson: "Envie um objeto JSON MemeTemplateEntry válido."
+    invalidJson: "Envie um objeto JSON válido."
+    templateNotFound: "Template de meme não encontrado."
+  weather:
+    temperature: "Temperatura em {query}: {temperature}°C | sensação de {feelsLike}°C"
+    temperatureError: "Não foi possível encontrar dados meteorológicos para sua busca. Tente novamente."
+    forecastHeading: "⚠ Previsão para {query} ⚠"
+    forecastEntry: "{time}h - {description}"
+    forecastError: "Não foi possível encontrar a previsão para sua busca. Tente novamente."
+  taxIncome:
+    incomeRequired: "Informe o parâmetro `income`. Exemplo: income=36000"
+    report: |-
+      Renda bruta anual        : {grossYear}
+      Renda anual sem impostos : {taxFreeYear}
+      Renda anual tributável   : {taxableYear}
+      Renda bruta por hora     : {grossHour}
+      Imposto sobre a folha    : {payrollTax}
+      Contribuição social      : {socialTax}
+      Crédito tributário geral : {taxCredit}
+      Crédito tributário trab. : {labourCredit}
+      Imposto de renda total   : {incomeTax}
+      Renda líquida anual      : {netYear}
+      Renda líquida mensal     : {netMonth}
+  galileo:
+    replyMustBeLocation: "A mensagem respondida precisa conter uma localização."
+    positionRequired: "Informe uma posição válida. Exemplo: `/iss -20.316839,-40.309921`"
+    noPasses: "Não há passagens da ISS no horizonte desta localização (lat: {latitude}, long: {longitude}) nos próximos 3 dias."
+    duration: "{minutes}:{seconds} {minutes, plural, one {minuto} other {minutos}}"
+    pass: |-
+      🛰️ Passagem da ISS em {date}
+
+      Início: {startTime} {startCompass}/{startAzimuth}° elev: {startElevation}°
+      Elevação máxima: {maxTime} {maxCompass}/{maxAzimuth}° elev: {maxElevation}°
+      Fim: {endTime} {endCompass}/{endAzimuth}° elev: {endElevation}°
+
+      Tamanho no céu: {magnitudeBar}
+      Magnitude: {magnitude}
+      Duração total: {duration}

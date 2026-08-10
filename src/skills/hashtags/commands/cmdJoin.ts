@@ -1,5 +1,5 @@
-import { getLogger } from "std/log/mod.ts";
-import type { CommandMiddleware } from "grammy/composer.ts";
+import { getLogger } from "@std/log";
+import type { CommandMiddleware } from "grammy";
 import type { BotContext } from "/src/context/mod.ts";
 import { parseHashtags } from "../utilities/parseHashtags.ts";
 
@@ -7,9 +7,7 @@ export const cmdJoin: CommandMiddleware<BotContext> = (ctx) => {
   const hashtags = parseHashtags(ctx.match);
 
   if (hashtags.length === 0) {
-    ctx.reply(
-      "You should provide a hashtag in order to join one. Example: `/join_hashtag #games`",
-    );
+    ctx.reply(ctx.t("hashtags.joinUsage"));
     return;
   }
 
@@ -19,9 +17,7 @@ export const cmdJoin: CommandMiddleware<BotContext> = (ctx) => {
     const userId = ctx.message!.from.id;
 
     if (channel?.participants?.includes(userId)) {
-      ctx.reply(
-        `You're already registered to the hashtag ${hashtag}`,
-      );
+      ctx.reply(ctx.t("hashtags.alreadyJoined", { hashtag }));
       return;
     }
 
@@ -34,8 +30,6 @@ export const cmdJoin: CommandMiddleware<BotContext> = (ctx) => {
 
     getLogger().info(`Registered ${userId} into tag ${hashtag}`);
 
-    ctx.reply(
-      `You're registered to the hashtag ${hashtag}. Use "/leave_hashtag ${hashtag}" to unsubscribe.`,
-    );
+    ctx.reply(ctx.t("hashtags.joined", { hashtag }));
   });
 };

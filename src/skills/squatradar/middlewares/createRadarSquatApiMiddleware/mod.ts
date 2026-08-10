@@ -1,4 +1,4 @@
-import type { MiddlewareFn } from "grammy/composer.ts";
+import type { MiddlewareFn } from "grammy";
 import type { BotContext } from "/src/context/mod.ts";
 import { fetchNextEvents } from "/src/skills/squatradar/httpClients/fetchNextEvents.ts";
 

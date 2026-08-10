@@ -1,7 +1,7 @@
-import type { CommandMiddleware } from "grammy/composer.ts";
-import outdent from "outdent";
+import type { CommandMiddleware } from "grammy";
 import type { Result } from "../httpClients/fetchNearbyLocations.ts";
 import type { BotContext } from "/src/context/mod.ts";
+import type { Translate } from "/src/i18n/mod.ts";
 
 export const cmdSuggest: CommandMiddleware<BotContext> = async (ctx) => {
   const keyword = ctx.match;
@@ -20,31 +20,19 @@ export const cmdSuggest: CommandMiddleware<BotContext> = async (ctx) => {
 
   const bestRated = getBestRated(locations.results);
 
-  const message = outdent`
-Best rated with more +1000 reviews:
+  const createSection = (location: Result | undefined, threshold: string) =>
+    ctx.t("horeca.section", {
+      location: location
+        ? locationToMessage(location, ctx.t)
+        : ctx.t("horeca.noPlace", { threshold }),
+      threshold,
+    });
 
-${
-    bestRated.plusThousand
-      ? locationToMessage(bestRated.plusThousand)
-      : "No place with +1000 reviews."
-  }
-
-Best rated with +500 reviews:
-
-${
-    bestRated.plusFiveHundred
-      ? locationToMessage(bestRated.plusFiveHundred)
-      : "No place with +500 reviews."
-  } 
-
-Best rated with +100 reviews:
-
-${
-    bestRated.plusOneHundred
-      ? locationToMessage(bestRated.plusOneHundred)
-      : "No place with +100 reviews."
-  }
-`;
+  const message = [
+    createSection(bestRated.plusThousand, "+1000"),
+    createSection(bestRated.plusFiveHundred, "+500"),
+    createSection(bestRated.plusOneHundred, "+100"),
+  ].join("\n\n");
 
   return ctx.reply(message, {
     parse_mode: "Markdown",
@@ -143,6 +131,7 @@ const locationToMessage = (
     vicinity: address,
     geometry: { location },
   }: Result,
+  translate: Translate,
 ) => {
   const googleMapsLink =
     `https://www.google.com/maps/place/?q=place_id:${place_id}`;
@@ -151,12 +140,13 @@ const locationToMessage = (
   const publicTransportationDirections =
     `https://www.google.com/maps/dir/?api=1&destination=${location.lat},${location.lng}&travelmode=transit`;
 
-  return outdent`
-**Name**: ${name}
-**Rating**: ${rating} (${user_ratings_total})
-**Address**: ${address}
-
-[See in Google Maps](${googleMapsLink}) 
-[Directions by Bike](${bikeDirections})
-[Directions by Public Transportation](${publicTransportationDirections})`;
+  return translate("horeca.location", {
+    address,
+    bikeUrl: bikeDirections,
+    mapsUrl: googleMapsLink,
+    name,
+    rating,
+    reviewCount: user_ratings_total,
+    transitUrl: publicTransportationDirections,
+  });
 };

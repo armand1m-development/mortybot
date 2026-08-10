@@ -1,12 +1,18 @@
 import type { GeoPosition } from "./types.ts";
 import type { N2yoVisualPasses } from "../httpClients/types.ts";
+import {
+  getLanguageLocale,
+  type Language,
+  type Translate,
+} from "/src/i18n/mod.ts";
 
-const formatDate = (date: number) => {
+const formatDate = (date: number, language: Language) => {
   const timestamp = new Date(date * 1000);
+  const locale = getLanguageLocale(language);
 
   return {
-    date: timestamp.toLocaleDateString("pt-br"),
-    time: timestamp.toLocaleTimeString("pt-br", {
+    date: timestamp.toLocaleDateString(locale),
+    time: timestamp.toLocaleTimeString(locale, {
       hour: "2-digit",
       minute: "2-digit",
     }),
@@ -19,60 +25,46 @@ const generateMagnitudeBar = (mag: number) => {
   const fillSpace = Array(roundedMag).fill("█");
   const emptySpace = Array(10 - roundedMag).fill("▒");
 
-  console.log(
-    "%cformatIssPassMessage.ts line:18 object",
-    "color: #007acc;",
-    fillSpace,
-  );
-  console.log(
-    "%cformatIssPassMessage.ts line:18 object",
-    "color: #007acc;",
-    emptySpace,
-  );
-
   return [...fillSpace, ...emptySpace].join("");
 };
 
-const formatPassDuration = (duration: number) => {
-  return `${Math.floor(duration / 60)}:${
-    Intl.NumberFormat("pt-br", {
-      minimumIntegerDigits: 2,
-    }).format(Math.floor(duration & 60))
-  } minutes`;
+const formatPassDuration = (duration: number, translate: Translate) => {
+  const minutes = Math.floor(duration / 60);
+  const seconds = Math.floor(duration % 60).toString().padStart(2, "0");
+  return translate("galileo.duration", { minutes, seconds });
 };
-
-const sateliteEmoji = "\uD83D\uDEF0\uFE0F";
 
 export const formatIssPassMessage = (
   position: GeoPosition,
   passes: N2yoVisualPasses["passes"],
+  translate: Translate,
+  language: Language,
 ) => {
   if (passes === undefined || passes.length == 0) {
-    return `There are no passes for this location (lat: ${position.latitude}, long: ${position.longitude}) in the horizon for the upcoming 3 days.`;
+    return translate("galileo.noPasses", {
+      latitude: position.latitude,
+      longitude: position.longitude,
+    });
   }
 
-  const fullMessage = passes.reduce((acc, pass) => {
-    const message = `${sateliteEmoji} ISS pass on day: ${
-      formatDate(pass.startUTC).date
-    }
-
-    Starts at:  ${formatDate(pass.startUTC).time}  ${pass.startAzCompass}/${
-      Math.floor(pass.startAz)
-    }°  elev: ${pass.startEl}°
-    Max elev:  ${formatDate(pass.maxUTC).time}  ${pass.maxAzCompass}/${
-      Math.floor(pass.maxAz)
-    }°  elev: ${pass.maxEl}°
-    Ends at:  ${formatDate(pass.endUTC).time}  ${pass.endAzCompass}/${
-      Math.floor(pass.endAz)
-    }°  elev: ${pass.endEl}°
-    
-    Size in the sky: ${generateMagnitudeBar(pass.mag)}
-    Magnitude: ${pass.mag}
-    Total duration: ${formatPassDuration(pass.duration)}
-    `;
-
-    return acc + "\n\n" + message;
-  }, "");
-
-  return fullMessage;
+  return passes.map((pass) =>
+    translate("galileo.pass", {
+      date: formatDate(pass.startUTC, language).date,
+      duration: formatPassDuration(pass.duration, translate),
+      endAzimuth: Math.floor(pass.endAz),
+      endCompass: pass.endAzCompass,
+      endElevation: pass.endEl,
+      endTime: formatDate(pass.endUTC, language).time,
+      magnitude: pass.mag,
+      magnitudeBar: generateMagnitudeBar(pass.mag),
+      maxAzimuth: Math.floor(pass.maxAz),
+      maxCompass: pass.maxAzCompass,
+      maxElevation: pass.maxEl,
+      maxTime: formatDate(pass.maxUTC, language).time,
+      startAzimuth: Math.floor(pass.startAz),
+      startCompass: pass.startAzCompass,
+      startElevation: pass.startEl,
+      startTime: formatDate(pass.startUTC, language).time,
+    })
+  ).join("\n\n");
 };

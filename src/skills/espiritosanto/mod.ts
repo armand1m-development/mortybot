@@ -5,8 +5,7 @@ import { cmdTerceiraPonteNow } from "./commands/cmdTerceiraPonteNow.ts";
 
 const skillModule: SkillModule = {
   name: "espiritosanto",
-  description:
-    "Commands to get information about the cameras of the roads of Espírito Santo. _(deprecated since Rodosol is not supplying these anymore)_",
+  description: "Commands to get live road camera images from Espírito Santo.",
   initializers: [],
   middlewares: [createRodosolApiMiddleware],
   commands: [

@@ -1,5 +1,5 @@
-import { getLogger } from "std/log/mod.ts";
-import type { CommandMiddleware } from "grammy/composer.ts";
+import { getLogger } from "@std/log";
+import type { CommandMiddleware } from "grammy";
 import type { BotContext } from "/src/context/mod.ts";
 import { createMemberMention } from "/src/utilities/createMemberMention.ts";
 
@@ -19,28 +19,30 @@ export const cmdLeavingRank: CommandMiddleware<BotContext> = async (ctx) => {
         const { user } = await ctx.getChatMember(userId);
         const mention = createMemberMention(user, false);
 
-        if (rank === 1) {
-          return `${rank}. ${mention} - left the group ${metadata.count} times (the winner! 🏆)`;
-        }
-
-        return `${rank}. ${mention} - left the group ${metadata.count} times`;
+        return ctx.t("goodbye.entry", {
+          count: metadata.count,
+          rank,
+          user: mention,
+          winner: String(rank === 1),
+        });
       } catch (error) {
         getLogger().error(`Failed to fetch user with id ${userId}`);
         getLogger().error(error);
-        return `${rank}. UID ${userId} - left the group ${metadata.count} times`;
+        return ctx.t("goodbye.unknownUserEntry", {
+          count: metadata.count,
+          rank,
+          userId,
+          winner: String(rank === 1),
+        });
       }
     }),
   );
 
   if (rank.length === 0) {
-    return ctx.reply("Nobody ever left this group (at least not that I know).");
+    return ctx.reply(ctx.t("goodbye.none"));
   }
 
-  const message = `
-**Leaving Rank**:
-
-${rank.join("\n")}
-`;
+  const message = ctx.t("goodbye.heading", { entries: rank.join("\n") });
 
   await ctx.reply(message, {
     parse_mode: "Markdown",

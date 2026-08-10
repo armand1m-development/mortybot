@@ -1,6 +1,6 @@
-import type { CommandMiddleware } from "grammy/composer.ts";
+import type { CommandMiddleware } from "grammy";
 import type { BotContext } from "/src/context/mod.ts";
-import { InputFile } from "grammy/mod.ts";
+import { InputFile } from "grammy";
 
 export const cmdGetFile: CommandMiddleware<BotContext> = async (ctx) => {
   const replyMessage = ctx.msg.reply_to_message!;
@@ -25,7 +25,7 @@ export const cmdGetFile: CommandMiddleware<BotContext> = async (ctx) => {
 
   const { buffer, url } = await getFileBuffer();
 
-  if (!buffer) return ctx.reply("No image found.");
+  if (!buffer) return ctx.reply(ctx.t("chat.noImage"));
   const inputFile = new InputFile(new Uint8Array(buffer));
 
   if (replyMessage?.sticker !== undefined) {

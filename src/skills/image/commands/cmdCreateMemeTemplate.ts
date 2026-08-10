@@ -1,7 +1,7 @@
-import type { CommandMiddleware } from "grammy/composer.ts";
+import type { CommandMiddleware } from "grammy";
 import type { BotContext } from "/src/context/mod.ts";
 import type { MemeTemplateEntry } from "../sessionData/types.ts";
-import { getLogger } from "std/log/mod.ts";
+import { getLogger } from "@std/log";
 
 // deno-lint-ignore no-explicit-any
 function isValidMemeTemplateEntry(obj: any): obj is MemeTemplateEntry {
@@ -21,12 +21,12 @@ export const cmdCreateMemeTemplate: CommandMiddleware<BotContext> = (ctx) => {
 
     if (isValidMemeTemplateEntry(serialized)) {
       ctx.session.memeTemplates.set(serialized.name, serialized);
-      return ctx.reply("Meme template create successfully.");
+      return ctx.reply(ctx.t("image.templateCreated"));
     } else {
-      return ctx.reply("Please send a valid MemeTemplateEntry JSON object.");
+      return ctx.reply(ctx.t("image.invalidTemplateJson"));
     }
   } catch (error) {
     getLogger().error(error);
-    return ctx.reply("Please send a valid JSON object.");
+    return ctx.reply(ctx.t("image.invalidJson"));
   }
 };

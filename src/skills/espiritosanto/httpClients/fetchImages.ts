@@ -1,10 +1,17 @@
 import { DOMParser } from "linkedom";
-import { getLogger } from "std/log/mod.ts";
+import { getLogger } from "@std/log";
 
 const logger = () => getLogger();
 
-export const fetchImages = async () => {
+export const fetchRodosolRoadImages = async (): Promise<string[]> => {
   const response = await fetch("https://www.rodosol.com.br/de-olho-na-via/");
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch Rodosol cameras: HTTP ${response.status}.`,
+    );
+  }
+
   const html = await response.text();
   const document = new DOMParser().parseFromString(html, "text/html");
 
@@ -16,16 +23,10 @@ export const fetchImages = async () => {
   }
 
   const rodosolRoadNodes = document.querySelectorAll("[rel='prettyPhoto[RD]']");
-  const thirdBridgeNodes = document.querySelectorAll("[rel='prettyPhoto[TP]']");
+  const getHref = (node: Element) => node.getAttribute("href");
+  const isUrl = (url: string | null): url is string => url !== null;
 
-  return {
-    rodosolRoadPicturesUrls: rodosolRoadNodes.map((node) =>
-      node.getAttribute("href")
-    ),
-    thirdBridgePictureUrls: thirdBridgeNodes.map((node) =>
-      node.getAttribute("href")
-    ),
-  };
+  return rodosolRoadNodes.map(getHref).filter(isUrl);
 };
 
-export type FetchImagesFunction = typeof fetchImages;
+export type FetchRodosolRoadImagesFunction = typeof fetchRodosolRoadImages;

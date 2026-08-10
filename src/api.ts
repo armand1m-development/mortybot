@@ -1,10 +1,10 @@
-import * as log from "std/log/mod.ts";
+import * as log from "@std/log";
 import { Application, Router, serve } from "oak";
 import { replacer, reviverToObject } from "/src/utilities/jsonParsing.ts";
-import { bold, yellow } from "std/fmt/colors.ts";
-import { serveDir } from "std/http/file_server.ts";
+import { bold, yellow } from "@std/fmt/colors";
+import { serveDir } from "@std/http/file-server";
 import type { Configuration } from "/src/platform/configuration/middlewares/types.ts";
-import * as path from "std/path/mod.ts";
+import * as path from "@std/path";
 import { skills } from "/src/skills/skills.ts";
 import { setupSkillRouteLoader } from "/src/platform/skillModules/setupSkillRouteLoader.ts";
 

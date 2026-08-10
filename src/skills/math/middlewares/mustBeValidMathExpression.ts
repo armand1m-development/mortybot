@@ -1,7 +1,7 @@
-import { getLogger } from "std/log/mod.ts";
+import { getLogger } from "@std/log";
 import { limitedEvaluate } from "../utilities/mathjs.ts";
 import type { BotContext } from "/src/context/mod.ts";
-import type { CommandMiddleware } from "grammy/mod.ts";
+import type { CommandMiddleware } from "grammy";
 
 export function isValidMathExpression(expression: string) {
   try {
@@ -22,9 +22,7 @@ export const mustBeValidMathExpression: CommandMiddleware<BotContext> = async (
   const expression = ctx.match;
 
   if (!isValidMathExpression(expression)) {
-    await ctx.reply(
-      `The provided text message is not a valid mathjs expression. Refer to https://mathjs.org/ for more information.`,
-    );
+    await ctx.reply(ctx.t("math.invalidExpression"));
     return;
   }
 

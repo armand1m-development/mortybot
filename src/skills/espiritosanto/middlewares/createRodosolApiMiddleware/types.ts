@@ -1,7 +1,9 @@
-import type { FetchImagesFunction } from "../../httpClients/fetchImages.ts";
+import type { FetchRodosolRoadImagesFunction } from "../../httpClients/fetchImages.ts";
+import type { FetchThirdBridgeImagesFunction } from "../../httpClients/fetchThirdBridgeImages.ts";
 
 export interface RodosolApiContext {
   rodosolApi: {
-    fetchImages: FetchImagesFunction;
+    fetchRodosolRoadImages: FetchRodosolRoadImagesFunction;
+    fetchThirdBridgeImages: FetchThirdBridgeImagesFunction;
   };
 }

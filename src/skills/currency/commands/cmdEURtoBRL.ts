@@ -1,5 +1,5 @@
-import { getLogger } from "std/log/mod.ts";
-import type { CommandMiddleware } from "grammy/composer.ts";
+import { getLogger } from "@std/log";
+import type { CommandMiddleware } from "grammy";
 import type { BotContext } from "/src/context/mod.ts";
 
 export const cmdEURtoBRL: CommandMiddleware<BotContext> = async (ctx) => {
@@ -12,9 +12,13 @@ export const cmdEURtoBRL: CommandMiddleware<BotContext> = async (ctx) => {
       toCurrency: "BRL",
     });
 
-    return ctx.reply(`1 EUR: ${convertedValue}`);
+    return ctx.reply(ctx.t("currency.result", {
+      amount: 1,
+      currency: "EUR",
+      value: convertedValue,
+    }));
   } catch (error) {
     getLogger().error(error);
-    return ctx.reply("Failed to convert the value.");
+    return ctx.reply(ctx.t("currency.error"));
   }
 };

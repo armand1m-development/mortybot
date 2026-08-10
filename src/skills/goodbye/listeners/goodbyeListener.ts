@@ -1,6 +1,6 @@
-import type { Middleware } from "grammy/composer.ts";
-import type { Filter } from "grammy/filter.ts";
-import { getLogger } from "std/log/mod.ts";
+import type { Middleware } from "grammy";
+import type { Filter } from "grammy";
+import { getLogger } from "@std/log";
 import type { BotContext } from "/src/context/mod.ts";
 
 export const goodbyeListener: Middleware<
@@ -8,7 +8,7 @@ export const goodbyeListener: Middleware<
 > = async (
   ctx,
 ) => {
-  await ctx.reply("Was nice to see you!", {
+  await ctx.reply(ctx.t("goodbye.farewell"), {
     reply_to_message_id: ctx.message?.message_id,
   });
 

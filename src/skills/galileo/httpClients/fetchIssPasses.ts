@@ -1,4 +1,4 @@
-import { getLogger } from "std/log/mod.ts";
+import { getLogger } from "@std/log";
 import type { OmitToken } from "/src/types/OmitToken.ts";
 import type { GeoPosition } from "../utilities/types.ts";
 import type { N2yoVisualPasses } from "./types.ts";

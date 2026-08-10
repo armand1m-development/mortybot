@@ -1,21 +1,17 @@
-import type { CommandMiddleware } from "grammy/composer.ts";
+import type { CommandMiddleware } from "grammy";
 import type { BotContext } from "/src/context/mod.ts";
 
 export const cmdActivateFilter: CommandMiddleware<BotContext> = (ctx) => {
   const trigger = ctx.match;
 
   if (!trigger) {
-    return ctx.reply(
-      "You should give me a filter to use. Example: `/activate_filter !myfilter`",
-    );
+    return ctx.reply(ctx.t("filters.missingArgument.activate"));
   }
 
   const filter = ctx.session.filters.get(trigger);
 
   if (!filter) {
-    return ctx.reply(
-      `Couldn't find a filter for this trigger "${trigger}"`,
-    );
+    return ctx.reply(ctx.t("filters.notFound", { filter: trigger }));
   }
 
   ctx.session.filters.set(trigger, {
@@ -23,5 +19,5 @@ export const cmdActivateFilter: CommandMiddleware<BotContext> = (ctx) => {
     active: true,
   });
 
-  return ctx.reply(`Filter got activated.`);
+  return ctx.reply(ctx.t("filters.activated"));
 };

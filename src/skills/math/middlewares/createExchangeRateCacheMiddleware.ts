@@ -1,30 +1,43 @@
-import { createUnit, math, UnitDefinition } from "../utilities/mathjs.ts";
+import { createUnit, math, type UnitDefinition } from "../utilities/mathjs.ts";
 import {
   ExchangeRateResponse,
   fetchExchangeRate,
   FetchExchangeRateFunction,
 } from "/src/skills/currency/httpClients/convertCurrencyValue.ts";
 import { injectToken } from "/src/utilities/injectToken.ts";
-import { MiddlewareFn } from "grammy/mod.ts";
+import { MiddlewareFn } from "grammy";
 import { BotContext } from "/src/context/mod.ts";
-import { LRU } from "https://deno.land/x/lru@1.0.2/mod.ts";
-import { getLogger } from "std/log/mod.ts";
+import { getLogger } from "@std/log";
+import { createTtlCache } from "/src/utilities/createTtlCache.ts";
+
+export const EXCHANGE_RATE_CACHE_FALLBACK_TTL_MS = 60 * 60 * 1_000;
+
+export const getExchangeRateCacheTtlMs = (
+  rate: ExchangeRateResponse,
+  loadedAt: number,
+) => {
+  const timeUntilNextUpdate = rate.time_next_update_unix * 1_000 - loadedAt;
+
+  return Number.isFinite(timeUntilNextUpdate) && timeUntilNextUpdate > 0
+    ? timeUntilNextUpdate
+    : EXCHANGE_RATE_CACHE_FALLBACK_TTL_MS;
+};
 
 export const createExchangeRateCacheMiddleware = () => {
-  const lru = new LRU<ExchangeRateResponse>(2);
+  const exchangeRateCache = createTtlCache<ExchangeRateResponse>({
+    ttlMs: getExchangeRateCacheTtlMs,
+  });
+
   const middleware: MiddlewareFn<BotContext> = async (ctx, next) => {
     const fetchExchangeRateFn: FetchExchangeRateFunction = injectToken(
       ctx.configuration.exchangeApiToken,
       fetchExchangeRate,
     );
 
-    if (!lru.has("exchangeRate")) {
+    const rate = await exchangeRateCache.get(() => {
       getLogger().info("Updating exchange rate for math skills..");
-      const rate = await fetchExchangeRateFn({});
-      lru.set("exchangeRate", rate);
-    }
-
-    const rate = lru.get("exchangeRate")!;
+      return fetchExchangeRateFn({});
+    });
 
     const rawUnits = Object
       .entries(rate.conversion_rates)

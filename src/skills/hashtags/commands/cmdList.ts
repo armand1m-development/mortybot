@@ -1,4 +1,4 @@
-import type { CommandMiddleware } from "grammy/composer.ts";
+import type { CommandMiddleware } from "grammy";
 import { getChunks } from "/src/utilities/array/getChunks.ts";
 import type { BotContext } from "/src/context/mod.ts";
 
@@ -7,7 +7,7 @@ export const cmdListHashtags: CommandMiddleware<BotContext> = async (ctx) => {
   const entries = Object.entries(filters);
 
   if (entries.length === 0) {
-    await ctx.reply("There are no hashtags defined for this group currently.");
+    await ctx.reply(ctx.t("hashtags.none"));
     return;
   }
 
@@ -15,7 +15,10 @@ export const cmdListHashtags: CommandMiddleware<BotContext> = async (ctx) => {
 
   for (const entrySet of chunkedEntries) {
     const lines = entrySet.map(([hashtag, hashtagProps]) => {
-      return `- ${hashtag} (${hashtagProps.participants.length} registered)`;
+      return ctx.t("hashtags.listEntry", {
+        count: hashtagProps.participants.length,
+        hashtag,
+      });
     });
 
     await ctx.reply(lines.join("\n"));
