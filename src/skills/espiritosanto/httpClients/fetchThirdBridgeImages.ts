@@ -1,5 +1,3 @@
-import { chromium } from "playwright-core";
-
 const THIRD_BRIDGE_URL = "https://terceiraponte.ceturb.es.gov.br/";
 const CAMERA_IMAGE_SELECTOR = "img[src^='data:image/']";
 const EXPECTED_CAMERA_COUNT = 4;
@@ -27,6 +25,7 @@ const getChromiumExecutablePath = () => {
 export const fetchThirdBridgeImages = async (): Promise<
   EmbeddedCameraImage[]
 > => {
+  const { chromium } = await import("playwright-core");
   const browser = await chromium.launch({
     executablePath: getChromiumExecutablePath(),
     headless: true,

@@ -55,8 +55,8 @@
     ]
   },
   "tasks": {
-    "start": "deno run --allow-net --allow-env --allow-read --allow-write --allow-ffi --allow-run --allow-sys ./main.ts",
-    "dev": "deno run --watch --allow-net --allow-env --allow-read --allow-write --allow-ffi --allow-run --allow-sys ./main.ts",
+    "start": "deno run --allow-all ./main.ts",
+    "dev": "deno run --watch --allow-all ./main.ts",
     "watch": "deno task dev",
     "check": "deno check main.ts generators/*.ts src/**/*.ts",
     "test": "deno test --allow-read --allow-env --allow-ffi --allow-sys",
