@@ -320,11 +320,13 @@ Publishing it in your instance should be easy:
 # get credentials
 fly auth login
 
-# set bot token from @BotFather as a secret
+# set the bot token from @BotFather and a Tailscale auth key as secrets
 #
 # secrets in fly are automatically added to
 # the instance as env vars with the same name
-fly secrets set BOT_TOKEN=123123123:32132132131312
+fly secrets set \
+  BOT_TOKEN=123123123:32132132131312 \
+  TAILSCALE_AUTHKEY=tskey-auth-example
 
 # create a volume to hold persistent group data
 # 1gb is more than enough.
@@ -333,5 +335,16 @@ fly vol create mortybot_data -s 1
 # ship it
 fly deploy
 ```
+
+The Tailscale key should be reusable, pre-authorized, and ephemeral so deploys
+can join the tailnet without manual approval and stale Fly nodes are cleaned up.
+The daemon keeps its node state under `/app/data/tailscale` on the existing Fly
+volume, accepts advertised subnet routes and MagicDNS, and blocks unsolicited
+inbound tailnet connections. Configure the tailnet policy for the key's node or
+tag so it can reach the private model endpoint and port.
+
+`TAILSCALE_ENABLED` is set only in `fly.toml`, so running the Docker image
+elsewhere still starts the bot without requiring Tailscale. Override
+`TAILSCALE_HOSTNAME` if this instance needs a different tailnet name.
 
 Refer to https://fly.io docs for more details on other commons operations.
