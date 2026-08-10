@@ -48,7 +48,6 @@
     "npm:linkedom@0.18.13": "0.18.13",
     "npm:outdent@0.8.0": "0.8.0",
     "npm:path-to-regexp@^6.3.0": "6.3.0",
-    "npm:playwright-core@1.62.1": "1.62.1",
     "npm:sharp@0.35.3": "0.35.3",
     "npm:ts-pattern@5.9.0": "5.9.0"
   },
@@ -626,10 +625,6 @@
     "path-to-regexp@6.3.0": {
       "integrity": "sha512-Yhpw4T9C6hPpgPeA28us07OJeqZ5EzQTkbfwuhsUg0c237RomFoETJgmp2sa3F/41gfLE6G5cqcYwznmeEeOlQ=="
     },
-    "playwright-core@1.62.1": {
-      "integrity": "sha512-wPYSwEBJY9GHraISXqyqtx0na0LpO3XEX7jNDhntbex7tzUS7kLnZsOlFruFJB4Hi/rhDMjXGqHewDZ68nYZVw==",
-      "bin": true
-    },
     "semifies@1.0.0": {
       "integrity": "sha512-xXR3KGeoxTNWPD4aBvL5NUpMTT7WMANr3EWnaS190QVkY52lqqcVRD7Q05UVbBhiWDGWMlJEUam9m7uFFGVScw=="
     },
@@ -723,7 +718,6 @@
       "npm:intl-messageformat@11.2.13",
       "npm:linkedom@0.18.13",
       "npm:outdent@0.8.0",
-      "npm:playwright-core@1.62.1",
       "npm:sharp@0.35.3",
       "npm:ts-pattern@5.9.0"
     ]

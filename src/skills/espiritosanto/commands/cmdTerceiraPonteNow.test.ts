@@ -38,11 +38,15 @@ Deno.test("Third Bridge command removes loading feedback after one uncaptained a
         return Promise.resolve([
           {
             alt: "Subida Vitória",
-            dataUrl: "data:image/jpeg;base64,/9j/2Q==",
+            bytes: new Uint8Array([0xff, 0xd8, 0xff, 0xd9]),
+            extension: "jpg",
+            mimeType: "image/jpeg",
           },
           {
             alt: "Descida Vitória",
-            dataUrl: "data:image/jpeg;base64,/9j/2Q==",
+            bytes: new Uint8Array([0xff, 0xd8, 0xff, 0xd9]),
+            extension: "jpg",
+            mimeType: "image/jpeg",
           },
         ]);
       },

@@ -1,83 +1,121 @@
 const THIRD_BRIDGE_URL = "https://terceiraponte.ceturb.es.gov.br/";
-const CAMERA_IMAGE_SELECTOR = "img[src^='data:image/']";
-const EXPECTED_CAMERA_COUNT = 4;
-const PAGE_TIMEOUT_MS = 30_000;
+const TOKEN_ENDPOINT = new URL("api/auth/token", THIRD_BRIDGE_URL);
+export const THIRD_BRIDGE_REQUEST_TIMEOUT_MS = 10_000;
 
-export interface EmbeddedCameraImage {
+const CAMERAS = [
+  { id: "Subida_Vix", alt: "Subida sentido Vitória" },
+  { id: "Descida_Vix", alt: "Descida sentido Vitória" },
+  { id: "Subida_VilaVelha", alt: "Subida sentido Vila Velha" },
+  { id: "Descida_VilaVelha", alt: "Descida sentido Vila Velha" },
+] as const;
+
+const extensionsByMimeType: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+};
+
+export interface ThirdBridgeCameraImage {
   alt: string;
-  dataUrl: string;
+  bytes: Uint8Array;
+  extension: string;
+  mimeType: string;
 }
 
-const getChromiumExecutablePath = () => {
-  const configuredPath = Deno.env.get("CHROMIUM_EXECUTABLE_PATH");
+interface TokenResponse {
+  token?: unknown;
+}
 
-  if (configuredPath) {
-    return configuredPath;
+interface CameraResponse {
+  camera: (typeof CAMERAS)[number];
+  response: Response;
+}
+
+const fetchAccessToken = async (): Promise<string> => {
+  const response = await fetch(TOKEN_ENDPOINT, {
+    signal: AbortSignal.timeout(THIRD_BRIDGE_REQUEST_TIMEOUT_MS),
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch Third Bridge access token: HTTP ${response.status}.`,
+    );
   }
 
-  if (Deno.build.os === "darwin") {
-    return "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+  const payload = await response.json() as TokenResponse;
+
+  if (typeof payload.token !== "string" || payload.token.trim() === "") {
+    throw new Error("Third Bridge access token response is invalid.");
   }
 
-  return "/usr/bin/chromium";
+  return payload.token;
+};
+
+const fetchCameraResponses = (token: string): Promise<CameraResponse[]> =>
+  Promise.all(
+    CAMERAS.map(async (camera) => ({
+      camera,
+      response: await fetch(
+        new URL(`api/imagem/${camera.id}`, THIRD_BRIDGE_URL),
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          signal: AbortSignal.timeout(THIRD_BRIDGE_REQUEST_TIMEOUT_MS),
+        },
+      ),
+    })),
+  );
+
+const readCameraImage = async (
+  { camera, response }: CameraResponse,
+): Promise<ThirdBridgeCameraImage> => {
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch Third Bridge camera ${camera.id}: HTTP ${response.status}.`,
+    );
+  }
+
+  const mimeType = response.headers.get("content-type")
+    ?.split(";", 1)[0]
+    .trim()
+    .toLowerCase();
+  const extension = mimeType === undefined
+    ? undefined
+    : extensionsByMimeType[mimeType];
+
+  if (!mimeType || !extension) {
+    throw new Error(
+      `Third Bridge camera ${camera.id} returned an unsupported content type.`,
+    );
+  }
+
+  const bytes = new Uint8Array(await response.arrayBuffer());
+
+  if (bytes.byteLength === 0) {
+    throw new Error(
+      `Third Bridge camera ${camera.id} returned an empty image.`,
+    );
+  }
+
+  return {
+    alt: camera.alt,
+    bytes,
+    extension,
+    mimeType,
+  };
 };
 
 export const fetchThirdBridgeImages = async (): Promise<
-  EmbeddedCameraImage[]
+  ThirdBridgeCameraImage[]
 > => {
-  const { chromium } = await import("playwright-core");
-  const browser = await chromium.launch({
-    executablePath: getChromiumExecutablePath(),
-    headless: true,
-    args: Deno.build.os === "linux"
-      ? ["--disable-dev-shm-usage", "--no-sandbox"]
-      : [],
-  });
+  let token = await fetchAccessToken();
+  let cameraResponses = await fetchCameraResponses(token);
 
-  try {
-    const page = await browser.newPage();
-    const response = await page.goto(THIRD_BRIDGE_URL, {
-      timeout: PAGE_TIMEOUT_MS,
-      waitUntil: "domcontentloaded",
-    });
-
-    if (!response?.ok()) {
-      throw new Error(
-        `Failed to load Third Bridge cameras: HTTP ${response?.status()}.`,
-      );
-    }
-
-    await page.waitForFunction(
-      ({ expectedCount, selector }) =>
-        document.querySelectorAll(selector).length >= expectedCount,
-      {
-        expectedCount: EXPECTED_CAMERA_COUNT,
-        selector: CAMERA_IMAGE_SELECTOR,
-      },
-      { timeout: PAGE_TIMEOUT_MS },
-    );
-
-    const images = await page.locator(CAMERA_IMAGE_SELECTOR).evaluateAll(
-      (nodes) =>
-        nodes.map((node) => {
-          const image = node as HTMLImageElement;
-          return {
-            alt: image.alt || "Terceira Ponte",
-            dataUrl: image.src,
-          };
-        }),
-    );
-
-    if (images.length < EXPECTED_CAMERA_COUNT) {
-      throw new Error(
-        `Expected ${EXPECTED_CAMERA_COUNT} Third Bridge cameras, found ${images.length}.`,
-      );
-    }
-
-    return images;
-  } finally {
-    await browser.close();
+  if (cameraResponses.some(({ response }) => response.status === 401)) {
+    token = await fetchAccessToken();
+    cameraResponses = await fetchCameraResponses(token);
   }
+
+  return await Promise.all(cameraResponses.map(readCameraImage));
 };
 
 export type FetchThirdBridgeImagesFunction = typeof fetchThirdBridgeImages;

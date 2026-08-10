@@ -1,7 +1,6 @@
 import { getLogger } from "@std/log";
 import { type CommandMiddleware, InputFile } from "grammy";
 import type { BotContext } from "/src/context/mod.ts";
-import { decodeEmbeddedImageDataUrl } from "../utilities/decodeEmbeddedImageDataUrl.ts";
 
 export const cmdTerceiraPonteNow: CommandMiddleware<BotContext> = async (
   ctx,
@@ -15,17 +14,13 @@ export const cmdTerceiraPonteNow: CommandMiddleware<BotContext> = async (
     await ctx.api.sendChatAction(ctx.chat.id, "upload_photo");
 
     const thirdBridgePictures = await ctx.rodosolApi.fetchThirdBridgeImages();
-    const media = thirdBridgePictures.map(({ dataUrl }, index) => {
-      const image = decodeEmbeddedImageDataUrl(dataUrl);
-
-      return {
-        type: "photo" as const,
-        media: new InputFile(
-          image.bytes,
-          `terceira-ponte-${index + 1}.${image.extension}`,
-        ),
-      };
-    });
+    const media = thirdBridgePictures.map(({ bytes, extension }, index) => ({
+      type: "photo" as const,
+      media: new InputFile(
+        bytes,
+        `terceira-ponte-${index + 1}.${extension}`,
+      ),
+    }));
 
     await ctx.replyWithMediaGroup(media);
   } catch (error) {

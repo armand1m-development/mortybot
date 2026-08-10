@@ -27,7 +27,6 @@
     "linkedom": "npm:linkedom@0.18.13",
     "oak": "jsr:@oak/oak@17.2.0",
     "outdent": "npm:outdent@0.8.0",
-    "playwright-core": "npm:playwright-core@1.62.1",
     "querystring": "node:querystring",
     "sentry": "npm:@sentry/deno@10.69.0",
     "sharp": "npm:sharp@0.35.3",
