@@ -1,11 +1,8 @@
-name: Build, Test, Coverage, Docker and Fly Deploy
+name: Build, Test, Coverage and Docker
 on:
   push:
     branches:
       - main
-
-env:
-  FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
 jobs:
   deploy:
@@ -39,9 +36,3 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: false
-
-      - name: Setup Fly
-        uses: superfly/flyctl-actions/setup-flyctl@master
-
-      - name: Deploy
-        run: flyctl deploy --remote-only
