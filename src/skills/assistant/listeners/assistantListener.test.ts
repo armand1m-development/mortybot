@@ -1,10 +1,16 @@
 import {
   assertEquals,
   assertNotStrictEquals,
+  assertRejects,
   assertStrictEquals,
   assertStringIncludes,
 } from "@std/assert";
+import type { BotContext } from "/src/context/mod.ts";
+import { skills } from "/src/skills/skills.ts";
+import { loadSkillModule } from "/src/platform/skillModules/loadSkill.ts";
+import { SkillCommandToolRegistry } from "/src/platform/skillModules/SkillCommandToolRegistry.ts";
 import {
+  assistantListener,
   buildSystemPrompt,
   MAX_CACHED_SYSTEM_PROMPTS,
 } from "./assistantListener.ts";
@@ -82,4 +88,128 @@ Deno.test("the prompt cache evicts its least recently used entries", async () =>
 
   assertNotStrictEquals(reloadedWarm, warm);
   assertStrictEquals(stillCachedLatest, stillCachedLatestAgain);
+});
+
+const runAssistantListener = assistantListener as unknown as (
+  ctx: BotContext,
+) => Promise<{ handled: boolean } | undefined>;
+
+const NO_TURN_ERROR = "assistant turn must not start";
+
+const buildContext = ({
+  chatType,
+  message,
+  replyToBotMessage = false,
+}: {
+  chatType: "private" | "supergroup";
+  message: Record<string, unknown>;
+  replyToBotMessage?: boolean;
+}) => {
+  const chat = { id: 4242, type: chatType };
+  const me = { id: 999, username: "MortyBot", is_bot: true };
+  let replyCalls = 0;
+
+  const ctx = {
+    chat,
+    me,
+    update: { update_id: 1 },
+    msg: {
+      message_id: 7,
+      date: 0,
+      chat,
+      from: { id: 42, is_bot: false, first_name: "Rick" },
+      ...(replyToBotMessage
+        ? {
+          reply_to_message: {
+            message_id: 6,
+            date: 0,
+            chat,
+            from: { id: me.id, is_bot: true, first_name: "Morty" },
+          },
+        }
+        : {}),
+      ...message,
+    },
+    configuration: {
+      assistantAllowedChatIds: [4242],
+      environment: "development" as const,
+      assistantTrajectoryEnabled: false,
+    },
+    t: () => "Checking",
+    reply: () => {
+      replyCalls++;
+      throw new Error(NO_TURN_ERROR);
+    },
+  } as unknown as BotContext;
+
+  return { ctx, getReplyCalls: () => replyCalls };
+};
+
+const buildRegistry = async () => {
+  const modules = await Promise.all(skills.map(loadSkillModule));
+  const registry = new SkillCommandToolRegistry();
+  registry.registerSkills(modules);
+  return registry;
+};
+
+Deno.test("assistant steps aside for a leading command in a private chat", async () => {
+  const { ctx, getReplyCalls } = buildContext({
+    chatType: "private",
+    message: {
+      text: "/tp_now",
+      entities: [{ type: "bot_command", offset: 0, length: 7 }],
+    },
+  });
+  ctx.skillCommandTools = await buildRegistry();
+
+  const result = await runAssistantListener(ctx);
+
+  assertEquals(result, { handled: false });
+  assertEquals(getReplyCalls(), 0);
+});
+
+Deno.test("assistant steps aside for a command reply in a group", async () => {
+  const { ctx, getReplyCalls } = buildContext({
+    chatType: "supergroup",
+    replyToBotMessage: true,
+    message: {
+      text: "/tp_now",
+      entities: [{ type: "bot_command", offset: 0, length: 7 }],
+    },
+  });
+  ctx.skillCommandTools = await buildRegistry();
+
+  const result = await runAssistantListener(ctx);
+
+  assertEquals(result, { handled: false });
+  assertEquals(getReplyCalls(), 0);
+});
+
+Deno.test("assistant keeps a command sent as a media caption", async () => {
+  const { ctx } = buildContext({
+    chatType: "private",
+    message: {
+      photo: [{ file_id: "photo-1", width: 640, height: 480 }],
+      caption: "/tp_now",
+      caption_entities: [{ type: "bot_command", offset: 0, length: 7 }],
+    },
+  });
+  ctx.skillCommandTools = await buildRegistry();
+
+  // The command chain never matches caption commands, so the caption must
+  // become an assistant turn; the throwing reply marks how far intake got.
+  await assertRejects(() => runAssistantListener(ctx), Error, NO_TURN_ERROR);
+});
+
+Deno.test("assistant keeps an unknown leading command", async () => {
+  const { ctx } = buildContext({
+    chatType: "private",
+    message: {
+      text: "/tp_naw",
+      entities: [{ type: "bot_command", offset: 0, length: 7 }],
+    },
+  });
+  ctx.skillCommandTools = await buildRegistry();
+
+  await assertRejects(() => runAssistantListener(ctx), Error, NO_TURN_ERROR);
 });

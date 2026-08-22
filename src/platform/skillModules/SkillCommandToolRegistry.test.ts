@@ -40,6 +40,25 @@ Deno.test("SkillCommandToolRegistry exposes every canonical command exactly once
   );
 });
 
+Deno.test("SkillCommandToolRegistry reports whether a command name is registered", async () => {
+  const modules = await Promise.all(skills.map(loadSkillModule));
+  const registry = new SkillCommandToolRegistry();
+  registry.registerSkills(modules);
+
+  assertEquals(registry.isRegisteredCommand("tp_now", "private"), true);
+  assertEquals(registry.isRegisteredCommand("assistant_lang", "private"), true);
+  assertEquals(registry.isRegisteredCommand("set_title", "private"), false);
+  assertEquals(registry.isRegisteredCommand("set_title", "supergroup"), true);
+  assertEquals(registry.isRegisteredCommand("batiza", "supergroup"), true);
+  assertEquals(registry.isRegisteredCommand("batiza", "private"), false);
+  assertEquals(registry.isRegisteredCommand("tp_naw", "private"), false);
+  // Command names compare verbatim, mirroring the command chain.
+  assertEquals(registry.isRegisteredCommand("TP_NOW", "private"), false);
+  // `has` stays about tool names, not command names.
+  assertEquals(registry.has("tp_now"), false);
+  assertEquals(registry.has("bot_tp_now"), true);
+});
+
 Deno.test("SkillCommandToolRegistry runs command middleware with scoped match", async () => {
   const order: string[] = [];
   const skill: SkillModule = {

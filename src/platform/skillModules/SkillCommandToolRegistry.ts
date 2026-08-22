@@ -104,6 +104,21 @@ export class SkillCommandToolRegistry {
     return this.tools.has(name);
   }
 
+  /**
+   * Whether a slash command with this name — canonical or alias — is
+   * registered and available in the given chat type, i.e. whether the command
+   * chain would claim a message leading with it. Unlike `has()`, this looks up
+   * command names, not `bot_`-prefixed tool names.
+   */
+  isRegisteredCommand(commandName: string, chatType?: Chat["type"]): boolean {
+    return [...this.tools.values()].some(({ command }) =>
+      (command.command === commandName ||
+        command.aliases.includes(commandName)) &&
+      (!chatType || !command.chatType ||
+        command.chatType.includes(chatType))
+    );
+  }
+
   prepare(
     name: string,
     args: Record<string, unknown>,

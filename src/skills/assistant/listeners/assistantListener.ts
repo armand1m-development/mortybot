@@ -36,6 +36,7 @@ import {
 import { buildAssistantPreferencesDirective } from "../utilities/assistantPreferences.ts";
 import { createInitialAssistantState } from "../sessionData/getInitialAssistantSessionData.ts";
 import {
+  extractLeadingCommandName,
   isAssistantChatAllowed,
   isAssistantMessageAddressedToBot,
 } from "../utilities/routingPolicy.ts";
@@ -328,6 +329,27 @@ export const assistantListener: Middleware<Filter<BotContext, "message">> =
     ) {
       logger().debug(
         `Assistant ignored message from chat ${chat.id}: bot was not addressed.`,
+      );
+      return { handled: false };
+    }
+
+    // A message leading with a slash command is owned by the command chain,
+    // which runs concurrently with this forked listener; treating it as an
+    // assistant turn as well would re-run the same handler through a bot_
+    // tool. Step aside only when the command chain really claims the message:
+    // a known command, available in this chat type, addressed to this bot —
+    // commands in media captions never qualify.
+    const leadingCommand = extractLeadingCommandName(
+      ctx.msg.text,
+      ctx.msg.entities,
+      ctx.me.username,
+    );
+    if (
+      leadingCommand !== undefined &&
+      ctx.skillCommandTools.isRegisteredCommand(leadingCommand, chat.type)
+    ) {
+      logger().debug(
+        `Assistant ignored message from chat ${chat.id}: command "/${leadingCommand}" is handled by the command chain.`,
       );
       return { handled: false };
     }
