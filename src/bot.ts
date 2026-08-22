@@ -14,6 +14,7 @@ import { setupSkillModulesLoader } from "/src/platform/skillModules/setupSkillMo
 import { autoRetry } from "@grammyjs/auto-retry";
 
 import { skills } from "/src/skills/skills.ts";
+import { createAlbumBufferMiddleware } from "/src/skills/assistant/vision/albumBufferMiddleware.ts";
 import { setupSkillMigrationLoader } from "/src/platform/skillModules/setupSkillMigrationLoader.ts";
 import { createI18nMiddleware } from "/src/i18n/createI18nMiddleware.ts";
 import { getSafeErrorSummary } from "/src/utilities/sanitizeLogText.ts";
@@ -43,6 +44,11 @@ export const createBot = async (configuration: Configuration) => {
     maxRetryAttempts: 5,
   }));
   bot.use(createConfigurationMiddleware(configuration));
+  // Album siblings must reach the buffer before the per-chat lock below: a
+  // turn that waits out an album holds the sequentialize chain for the whole
+  // chat, and the updates carrying the siblings would otherwise queue behind
+  // the very turn that is waiting for them.
+  bot.use(createAlbumBufferMiddleware());
   bot.use(sequentialize(getSessionKey));
   bot.use(session({
     getSessionKey,

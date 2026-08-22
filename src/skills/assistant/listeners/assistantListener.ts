@@ -49,12 +49,10 @@ import {
 } from "../trajectory/recorder.ts";
 import type { AssistantTrajectoryRecorder } from "../trajectory/types.ts";
 import { collectMessageMedia } from "../vision/collectMessageMedia.ts";
-import {
-  collectAlbumAttachments,
-  getAlbumBuffer,
-} from "../vision/albumBuffer.ts";
+import { collectAlbumAttachments } from "../vision/albumBuffer.ts";
 import { describeIncomingMedia } from "../vision/describeChatMedia.ts";
 import { appendMediaNotes } from "../vision/mediaMemory.ts";
+import { mergeTurnMedia } from "../vision/mergeTurnMedia.ts";
 import type { MediaAttachment } from "../vision/types.ts";
 
 const logger = () => getLogger();
@@ -248,13 +246,12 @@ const NO_TEXT_PROMPT =
   "The user sent this without any text of their own. Respond to what they sent.";
 
 /**
- * Describes everything this turn should be able to see: what the message
- * carries, and what it is replying to.
- *
- * The two are described separately so each note keeps its own provenance —
- * "the user is replying to a photo from @bob" answers a different question
- * from "attached photo from @bob", and three turns later that difference is
- * all the model has.
+ * Describes everything this turn should be able to see — what the message
+ * carries and what it is replying to — in a single vision pass, so
+ * `assistantVisionMaxImages` really is a per-turn ceiling across every
+ * attachment instead of a per-call one. Reply media leads the merged list:
+ * when the budget truncates it, the user's own and less relevant media drops
+ * off rather than what they explicitly pointed at.
  */
 const describeTurnMedia = async (
   ctx: BotContext,
@@ -281,12 +278,12 @@ const describeTurnMedia = async (
   const album = mediaGroupId ? await collectAlbumAttachments(mediaGroupId) : [];
   const attached = album.length > ownMedia.length ? album : ownMedia;
 
-  const notes = await Promise.all([
-    describeIncomingMedia(ctx, replyMedia),
-    describeIncomingMedia(ctx, attached),
-  ]);
+  const note = await describeIncomingMedia(
+    ctx,
+    mergeTurnMedia(replyMedia, attached),
+  );
 
-  return notes.filter((note): note is string => Boolean(note));
+  return note ? [note] : [];
 };
 
 const formatSources = (sources: Source[]): string =>
@@ -312,17 +309,10 @@ export const assistantListener: Middleware<Filter<BotContext, "message">> =
     const chatId = chat.id;
     const ownMedia = collectMessageMedia(ctx.msg);
 
-    // Telegram splits an album into one update per item, so every media
-    // message is filed away as it arrives. By the time the one carrying the
-    // question is handled, its siblings are already known.
-    if (ctx.msg.media_group_id && ownMedia.length > 0) {
-      getAlbumBuffer().remember(ctx.msg.media_group_id, ownMedia);
-    }
-
     // Media arrives with its text in `caption`, and the mention that addresses
     // the bot is then an entity of the caption rather than of the message.
     const body = ctx.msg.text ?? ctx.msg.caption ?? "";
-    const mentionedQuestion = extractBotMention(
+    const mention = extractBotMention(
       body,
       ctx.msg.entities ?? ctx.msg.caption_entities,
       ctx.me.username,
@@ -332,7 +322,7 @@ export const assistantListener: Middleware<Filter<BotContext, "message">> =
     if (
       !isAssistantMessageAddressedToBot(
         chat.type,
-        mentionedQuestion,
+        mention !== undefined,
         replyToBot,
       )
     ) {
@@ -342,7 +332,7 @@ export const assistantListener: Middleware<Filter<BotContext, "message">> =
       return { handled: false };
     }
 
-    const question = (mentionedQuestion ?? body).trim();
+    const question = (mention?.question ?? body).trim();
     const replyMedia = collectMessageMedia(ctx.msg.reply_to_message, {
       fromReply: true,
     });

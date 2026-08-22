@@ -318,7 +318,30 @@ export const askAssistant = async (
         if (batch.length === 0) {
           return;
         }
-        outcomes.push(...await Promise.all(batch.map(runToolCall)));
+        // runToolCall already turns tool failures into outcomes, so a
+        // rejection here means something around the call threw. allSettled
+        // keeps one member's rejection from discarding its batch siblings,
+        // and the fallback still hands the model one result per tool call it
+        // made.
+        const settled = await Promise.allSettled(batch.map(runToolCall));
+        outcomes.push(
+          ...settled.map((outcome, index) => {
+            if (outcome.status === "fulfilled") {
+              return outcome.value;
+            }
+            const name = batch[index].function.name;
+            logger().error(`Tool "${name}" failed outside its error handling.`);
+            logger().error(outcome.reason);
+            return {
+              result: {
+                text: `The tool "${name}" failed to run.`,
+                sources: [],
+              },
+              invocation: { name, failed: true, durationMs: 0 },
+              failed: true,
+            };
+          }),
+        );
         batch = [];
       };
 

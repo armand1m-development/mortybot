@@ -58,20 +58,31 @@ export const summarizeAttachments = (
   );
 };
 
+const withSender = (attachments: MediaAttachment[]): string => {
+  const summary = summarizeAttachments(attachments);
+  const sender = attachments.find((attachment) => attachment.sender)?.sender;
+  return sender ? `${summary} from ${sender}` : summary;
+};
+
 /**
  * Names where the media came from, so a description read three turns later
- * still says whose photo it was and whether the user was replying to it.
+ * still says whose photo it was and whether the user was replying to it. A
+ * list mixing replied-to and freshly sent media names both groups.
  */
 export const buildMediaHeadline = (
   attachments: MediaAttachment[],
 ): string => {
-  const summary = summarizeAttachments(attachments);
-  const sender = attachments.find((attachment) => attachment.sender)?.sender;
-  const from = sender ? ` from ${sender}` : "";
+  const replied = attachments.filter((attachment) => attachment.fromReply);
+  const sent = attachments.filter((attachment) => !attachment.fromReply);
 
-  return attachments.some((attachment) => attachment.fromReply)
-    ? `The user is replying to ${summary}${from}`
-    : `Attached ${summary}${from}`;
+  if (replied.length > 0 && sent.length > 0) {
+    return `The user is replying to ${withSender(replied)} and attached ${
+      withSender(sent)
+    }`;
+  }
+  return replied.length > 0
+    ? `The user is replying to ${withSender(attachments)}`
+    : `Attached ${withSender(attachments)}`;
 };
 
 /** Headline for media a bot command posted into the chat itself. */

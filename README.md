@@ -300,10 +300,13 @@ to `OPENAI_MODEL` in a separate vision request first, and only the resulting
 description travels on.
 
 That description is what lands in the conversation history, as a bracketed note
-naming who sent the media and whether the user was replying to it. Keeping the
-history plain text is deliberate: images in it would be re-sent with every later
-turn, wrecking both the prefix cache and the history token budget, and the note
-still answers follow-up questions long after the photo has scrolled away.
+naming who sent the media and whether the user was replying to it. Everything a
+single turn can see — its own attachments, album siblings and replied-to media
+alike — travels in one bounded vision request, so `ASSISTANT_VISION_MAX_IMAGES`
+is a per-turn ceiling, not a per-attachment one. Keeping the history plain text
+is deliberate: images in it would be re-sent with every later turn, wrecking
+both the prefix cache and the history token budget, and the note still answers
+follow-up questions long after the photo has scrolled away.
 
 Videos, GIFs and video notes are sampled with `ffmpeg`, evenly across the clip
 when Telegram reports its duration. Without `ffmpeg` on the host — or for a

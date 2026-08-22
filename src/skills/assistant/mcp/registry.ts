@@ -275,9 +275,7 @@ export class McpRegistry {
   }
 
   async close(): Promise<void> {
-    await Promise.all(
-      this.clients.map((client) => client.close().catch(() => {})),
-    );
+    await Promise.allSettled(this.clients.map((client) => client.close()));
     this.clients = [];
     this.openAiTools = undefined;
     this.tools.clear();

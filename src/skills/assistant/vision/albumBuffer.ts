@@ -95,9 +95,11 @@ export const resetAlbumBuffer = (): void => {
 /**
  * Waits out the album's remaining items, then returns everything seen for it.
  *
- * The wait is only ever paid by a message that is part of an album and is
- * actually addressed to the bot, and listeners run forked, so nothing else in
- * the chat is held up by it.
+ * The siblings are filed by `createAlbumBufferMiddleware`, which runs in
+ * bot.ts before the per-chat `sequentialize` lock, so they reach the buffer
+ * even while this wait holds the chat's serialized chain. The wait itself is
+ * only ever paid by a message that is part of an album and is actually
+ * addressed to the bot, and is bounded at ALBUM_COLLECTION_WAIT_MS.
  */
 export const collectAlbumAttachments = async (
   mediaGroupId: string,

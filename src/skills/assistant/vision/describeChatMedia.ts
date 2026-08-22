@@ -12,9 +12,11 @@ import type { MediaAttachment } from "./types.ts";
 /**
  * Describes media a user put in the chat, as one bracketed note.
  *
- * The note is what ends up in the conversation history, so it names the sender
- * and whether it was a reply: three turns later that is all the model has left
- * to tell one photo from another.
+ * The attachments may mix media the user replied to with media they just
+ * sent; both are described in the same pass so the per-turn image ceiling
+ * holds across all of them. The note is what ends up in the conversation
+ * history, so it names the sender and whether it was a reply: three turns
+ * later that is all the model has left to tell one photo from another.
  */
 export const describeIncomingMedia = async (
   ctx: BotContext,
@@ -28,11 +30,17 @@ export const describeIncomingMedia = async (
     .map((attachment) => attachment.caption)
     .filter((caption): caption is string => Boolean(caption));
 
+  const hasReplied = attachments.some((attachment) => attachment.fromReply);
+  const hasSent = attachments.some((attachment) => !attachment.fromReply);
+  const origin = hasReplied && hasSent
+    ? "some of them the user is replying to, and some they just sent"
+    : hasReplied
+    ? "the user is asking the assistant about them"
+    : "the user just sent them to the assistant";
+
   const description = await analyzeTelegramMedia(ctx, attachments, {
     context: [
-      attachments.some((attachment) => attachment.fromReply)
-        ? "the user is asking the assistant about them"
-        : "the user just sent them to the assistant",
+      origin,
       ...(captions.length > 0 ? [`caption: "${captions[0]}"`] : []),
     ].join("; "),
   });

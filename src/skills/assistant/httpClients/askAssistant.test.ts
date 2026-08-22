@@ -526,6 +526,84 @@ Deno.test("askAssistant runs concurrency-safe tools together and keeps result or
   assertEquals(toolMessages, ["result for first", "result for second"]);
 });
 
+Deno.test("askAssistant keeps a batch when one member rejects outside its tool call", async () => {
+  const toolMessages: string[] = [];
+  let completionCount = 0;
+  let progressCalls = 0;
+
+  await askAssistant({
+    token: "test-token",
+    baseUrl: "http://unused",
+    model: "test-model",
+    messages: [{ role: "user", content: "Look two things up" }],
+    tools: [{
+      type: "function",
+      function: { name: "search_web", parameters: { type: "object" } },
+    }],
+    maxToolIterations: 2,
+    isConcurrencySafe: (name) => name === "search_web",
+    // Throwing on the second tool's progress report — before its try block —
+    // rejects runToolCall itself rather than the tool it wraps. The batch
+    // mapper runs its members in order, so counting the tool's own reports
+    // identifies the second call.
+    onProgress: (activity) => {
+      if (activity === "search_web") {
+        progressCalls += 1;
+        if (progressCalls === 2) {
+          throw new Error("progress reporting exploded");
+        }
+      }
+    },
+    callTool: (_name, args) =>
+      Promise.resolve({
+        text: `result for ${args.query}`,
+        sources: [],
+      }),
+    completion: (params) => {
+      completionCount += 1;
+
+      if (completionCount === 2) {
+        for (const message of params.messages) {
+          if (message.role === "tool") {
+            toolMessages.push(messageText(message.content));
+          }
+        }
+      }
+
+      return modelReply(
+        completionCount === 1
+          ? {
+            role: "assistant",
+            tool_calls: [
+              {
+                id: "call-1",
+                type: "function",
+                function: {
+                  name: "search_web",
+                  arguments: '{"query":"first"}',
+                },
+              },
+              {
+                id: "call-2",
+                type: "function",
+                function: {
+                  name: "search_web",
+                  arguments: '{"query":"second"}',
+                },
+              },
+            ],
+          }
+          : { role: "assistant", content: "Done." },
+      );
+    },
+  });
+
+  assertEquals(toolMessages, [
+    "result for first",
+    'The tool "search_web" failed to run.',
+  ]);
+});
+
 Deno.test("askAssistant keeps tools that are not concurrency-safe sequential", async () => {
   let running = 0;
   let peakConcurrency = 0;

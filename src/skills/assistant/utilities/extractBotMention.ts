@@ -1,15 +1,31 @@
 import type { MessageEntity } from "grammy/types";
 
+export interface BotMention {
+  /**
+   * The message text with the bot's mention removed and the surrounding
+   * whitespace tidied to single spaces. May be empty when the mention was the
+   * whole message — only the presence of the BotMention says the bot was
+   * addressed, never the emptiness of the question.
+   */
+  question: string;
+}
+
 /**
- * Finds a mention of the bot in the message and returns the text that follows
- * it (the question). Returns undefined when the bot is not mentioned or when
- * there is no text after the mention.
+ * Finds the first mention of the bot in the message and returns the text
+ * around it with the mention removed. Returns undefined when the bot is not
+ * mentioned at all.
+ *
+ * Only the first bot mention is removed: entities after it would need their
+ * offsets shifted, and a message mentioning the bot twice is rare enough to
+ * keep the second mention as ordinary text. Telegram entity offsets and
+ * lengths are UTF-16 code units, so String.slice cuts exactly at entity
+ * boundaries.
  */
 export const extractBotMention = (
   text: string,
   entities: MessageEntity[] | undefined,
   botUsername: string,
-): string | undefined => {
+): BotMention | undefined => {
   if (!entities || entities.length === 0) {
     return undefined;
   }
@@ -34,8 +50,13 @@ export const extractBotMention = (
       continue;
     }
 
-    const question = text.slice(entity.offset + entity.length).trim();
-    return question.length > 0 ? question : undefined;
+    const before = text.slice(0, entity.offset).trim();
+    const after = text.slice(entity.offset + entity.length).trim();
+    return {
+      question: [before, after]
+        .filter((part) => part.length > 0)
+        .join(" "),
+    };
   }
 
   return undefined;

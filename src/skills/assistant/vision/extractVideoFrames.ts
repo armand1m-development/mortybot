@@ -142,9 +142,24 @@ export const extractVideoFrames = async (
     }
     names.sort();
 
-    return await Promise.all(
+    // One unreadable frame must not discard the frames that did read.
+    const settled = await Promise.allSettled(
       names.map((name) => Deno.readFile(join(directory, name))),
     );
+    const readable: Uint8Array[] = [];
+    for (const frame of settled) {
+      if (frame.status === "fulfilled") {
+        readable.push(frame.value);
+      }
+    }
+    if (readable.length < names.length) {
+      logger().warn(
+        `Could not read ${
+          names.length - readable.length
+        } sampled video frames.`,
+      );
+    }
+    return readable;
   } catch (error) {
     if (error instanceof FfmpegUnavailableError) {
       logger().warn(

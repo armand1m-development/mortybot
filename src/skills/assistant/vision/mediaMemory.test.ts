@@ -51,6 +51,16 @@ Deno.test("headlines keep who sent the media and whether it was a reply", () => 
   );
 });
 
+Deno.test("a mixed list names both the replied-to and the sent media", () => {
+  assertEquals(
+    buildMediaHeadline([
+      attachment({ sender: "@bob", fromReply: true, fileId: "reply" }),
+      attachment({ sender: "@armand1m", fileId: "own" }),
+    ]),
+    "The user is replying to photo from @bob and attached photo from @armand1m",
+  );
+});
+
 Deno.test("notes are bracketed, collapsed and bounded", () => {
   assertEquals(
     formatMediaMemoryNote("Attached photo", "  a bridge\n  at dusk  "),

@@ -36,22 +36,22 @@ Deno.test("configured assistant allowlist is enforced in development", () => {
 
 Deno.test("private messages address the assistant without a mention", () => {
   assertEquals(
-    isAssistantMessageAddressedToBot("private", undefined, false),
+    isAssistantMessageAddressedToBot("private", false, false),
     true,
   );
 });
 
 Deno.test("group messages still require a mention or reply", () => {
   assertEquals(
-    isAssistantMessageAddressedToBot("supergroup", undefined, false),
+    isAssistantMessageAddressedToBot("supergroup", false, false),
     false,
   );
   assertEquals(
-    isAssistantMessageAddressedToBot("supergroup", "question", false),
+    isAssistantMessageAddressedToBot("supergroup", true, false),
     true,
   );
   assertEquals(
-    isAssistantMessageAddressedToBot("supergroup", undefined, true),
+    isAssistantMessageAddressedToBot("supergroup", false, true),
     true,
   );
 });

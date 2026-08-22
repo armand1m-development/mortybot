@@ -17,7 +17,6 @@ export const isAssistantChatAllowed = (
 
 export const isAssistantMessageAddressedToBot = (
   chatType: string,
-  mentionedQuestion: string | undefined,
+  mentioned: boolean,
   replyToBot: boolean,
-): boolean =>
-  chatType === "private" || mentionedQuestion !== undefined || replyToBot;
+): boolean => chatType === "private" || mentioned || replyToBot;
