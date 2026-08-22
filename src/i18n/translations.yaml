@@ -6,6 +6,46 @@ en:
     name:
       en: "English"
       pt: "Portuguese"
+  assistant:
+    looking: "Checking…"
+    working: "{activity}... ({seconds}s)"
+    sources: "Sources:"
+    error: "Sorry, I couldn't reach my brain right now. Please try again."
+    filesReady: "{count, plural, one {Generated code file attached.} other {Generated code files attached.}}"
+    language:
+      current: "Assistant response language: {language}. Use /assistant_language AUTO, PT, or EN to change it."
+      changed: "Assistant response language changed to {language}."
+      unsupported: "Unsupported assistant language. Use /assistant_language AUTO, PT, or EN."
+      name:
+        auto: "chat default"
+    emojis:
+      current: "Emojis in assistant responses are currently {enabled, select, true {enabled} other {disabled}}. Use /assistant_emojis ON or OFF to change it."
+      changed: "Emojis in assistant responses are now {enabled, select, true {enabled} other {disabled}}."
+      unsupported: "Unsupported emoji setting. Use /assistant_emojis ON or OFF."
+    preferences:
+      empty: "There are no standing preferences in this chat yet. Ask me to remember one, or use /remember_preference."
+      heading: "Standing preferences in this chat:"
+      chatEntry: "- [{id}] chat: {text} (added by {author})"
+      userEntry: "- [{id}] user: {text} (added by {author})"
+      stored: "Preference stored as {id}: {text}"
+      duplicate: "That preference is already stored as {id}."
+      limit: "That preference list is full (max {count}). Use /forget_preference to make room."
+      tooLong: "Preference text is too long; keep it under {count} characters."
+      usage: "Usage: /remember_preference chat TEXT or /remember_preference user TEXT, e.g. /remember_preference user call me Duke."
+      forgetUsage: "Usage: /forget_preference ID, e.g. /forget_preference p3."
+      forgotten: "Preference {id} forgotten."
+      notFound: "No preference with id {id} exists in this chat."
+      forbidden: "Only the person who stored preference {id} can forget it."
+    tool:
+      confirm: "Confirm"
+      cancel: "Cancel"
+      running: "Running it…"
+      completed: "/{command} completed."
+      failed: "The approved action failed. Please try again."
+      cancelled: "Action cancelled."
+      expired: "This confirmation has expired. Please ask again."
+      wrongUser: "Only the person who requested this action can confirm it."
+      notAllowed: "Assistant tools are not enabled in this chat."
   filters:
     missingArgument:
       add: "You should give me a filter to use. Example: `/add_filter !myfilter`"
@@ -137,6 +177,46 @@ pt:
     name:
       en: "Inglês"
       pt: "Português"
+  assistant:
+    looking: "Olhando aqui…"
+    working: "{activity}... ({seconds}s)"
+    sources: "Fontes:"
+    error: "Desculpe, não consegui acessar meu cérebro agora. Por favor, tente novamente."
+    filesReady: "{count, plural, one {Arquivo de código gerado em anexo.} other {Arquivos de código gerados em anexo.}}"
+    language:
+      current: "Idioma de resposta do assistente: {language}. Use /assistant_language AUTO, PT ou EN para alterá-lo."
+      changed: "Idioma de resposta do assistente alterado para {language}."
+      unsupported: "Idioma do assistente não suportado. Use /assistant_language AUTO, PT ou EN."
+      name:
+        auto: "padrão do chat"
+    emojis:
+      current: "Os emojis nas respostas do assistente estão {enabled, select, true {ativados} other {desativados}}. Use /assistant_emojis ON ou OFF para alterar."
+      changed: "Os emojis nas respostas do assistente agora estão {enabled, select, true {ativados} other {desativados}}."
+      unsupported: "Configuração de emojis não suportada. Use /assistant_emojis ON ou OFF."
+    preferences:
+      empty: "Ainda não há preferências salvas neste chat. Peça para eu lembrar uma, ou use /remember_preference."
+      heading: "Preferências salvas neste chat:"
+      chatEntry: "- [{id}] chat: {text} (adicionada por {author})"
+      userEntry: "- [{id}] usuário: {text} (adicionada por {author})"
+      stored: "Preferência salva como {id}: {text}"
+      duplicate: "Essa preferência já está salva como {id}."
+      limit: "Essa lista de preferências está cheia (máximo de {count}). Use /forget_preference para abrir espaço."
+      tooLong: "O texto da preferência é longo demais; use menos de {count} caracteres."
+      usage: "Uso: /remember_preference chat TEXTO ou /remember_preference user TEXTO, ex.: /remember_preference user me chame de Duke."
+      forgetUsage: "Uso: /forget_preference ID, ex.: /forget_preference p3."
+      forgotten: "Preferência {id} removida."
+      notFound: "Não existe preferência com id {id} neste chat."
+      forbidden: "Somente quem salvou a preferência {id} pode removê-la."
+    tool:
+      confirm: "Confirmar"
+      cancel: "Cancelar"
+      running: "Executando…"
+      completed: "/{command} concluído."
+      failed: "A ação aprovada falhou. Tente novamente."
+      cancelled: "Ação cancelada."
+      expired: "Esta confirmação expirou. Faça o pedido novamente."
+      wrongUser: "Somente quem solicitou esta ação pode confirmá-la."
+      notAllowed: "As ferramentas do assistente não estão ativadas neste chat."
   filters:
     missingArgument:
       add: "Você precisa informar um filtro. Exemplo: `/add_filter !meufiltro`"

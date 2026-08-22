@@ -3,6 +3,7 @@ import type { SessionData } from "/src/context/mod.ts";
 import { defaultLanguage } from "/src/i18n/mod.ts";
 import { cmdLanguage } from "./commands/cmdLanguage.ts";
 import { getInitialLanguageSessionData } from "./sessionData/getInitialLanguageSessionData.ts";
+import { textAssistantTool } from "/src/platform/skillModules/assistantTool.ts";
 
 const skillModule: SkillModule = {
   name: "language",
@@ -12,6 +13,11 @@ const skillModule: SkillModule = {
     aliases: ["idioma"],
     description: "Changes the bot language between PT and EN",
     handler: cmdLanguage,
+    assistantTool: textAssistantTool("language", {
+      effect: "write",
+      enum: ["PT", "EN"],
+      argumentDescription: "The language to use for this chat.",
+    }),
   }],
   sessionDataInitializers: [getInitialLanguageSessionData],
   migrations: {

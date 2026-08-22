@@ -23,6 +23,7 @@ import { loadEnvironment } from "./src/environment.ts";
 import { createBot } from "./src/bot.ts";
 import { createApi } from "./src/api.ts";
 import { startTracing } from "./src/tracing.ts";
+import { getMcpRegistry } from "./src/skills/assistant/mcp/registry.ts";
 
 logger.debug(bold("Loading environment..."));
 const configuration = await loadEnvironment();
@@ -44,6 +45,9 @@ const stopServers = () => {
 
   logger.debug(bold("Stopping HTTP server instance..."));
   api.abortController.abort("shutdown");
+
+  logger.debug(bold("Stopping MCP clients..."));
+  void getMcpRegistry().close().catch((error) => logger.error(error));
 };
 
 Deno.addSignalListener("SIGINT", stopServers);

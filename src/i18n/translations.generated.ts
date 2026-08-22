@@ -4,6 +4,40 @@ export const supportedLanguages = ["en","pt"] as const;
 export type Language = typeof supportedLanguages[number];
 
 export const translationKeys = [
+  "assistant.emojis.changed",
+  "assistant.emojis.current",
+  "assistant.emojis.unsupported",
+  "assistant.error",
+  "assistant.filesReady",
+  "assistant.language.changed",
+  "assistant.language.current",
+  "assistant.language.name.auto",
+  "assistant.language.unsupported",
+  "assistant.looking",
+  "assistant.preferences.chatEntry",
+  "assistant.preferences.duplicate",
+  "assistant.preferences.empty",
+  "assistant.preferences.forbidden",
+  "assistant.preferences.forgetUsage",
+  "assistant.preferences.forgotten",
+  "assistant.preferences.heading",
+  "assistant.preferences.limit",
+  "assistant.preferences.notFound",
+  "assistant.preferences.stored",
+  "assistant.preferences.tooLong",
+  "assistant.preferences.usage",
+  "assistant.preferences.userEntry",
+  "assistant.sources",
+  "assistant.tool.cancel",
+  "assistant.tool.cancelled",
+  "assistant.tool.completed",
+  "assistant.tool.confirm",
+  "assistant.tool.expired",
+  "assistant.tool.failed",
+  "assistant.tool.notAllowed",
+  "assistant.tool.running",
+  "assistant.tool.wrongUser",
+  "assistant.working",
   "chat.aliasNotImplemented",
   "chat.noImage",
   "chat.report.authorUnknown",
@@ -80,6 +114,40 @@ export const translationKeys = [
 export type TranslationKey = typeof translationKeys[number];
 
 export interface TranslationValues {
+  "assistant.emojis.changed": { "enabled": string };
+  "assistant.emojis.current": { "enabled": string };
+  "assistant.emojis.unsupported": Record<never, never>;
+  "assistant.error": Record<never, never>;
+  "assistant.filesReady": { "count": number };
+  "assistant.language.changed": { "language": string | number | Date };
+  "assistant.language.current": { "language": string | number | Date };
+  "assistant.language.name.auto": Record<never, never>;
+  "assistant.language.unsupported": Record<never, never>;
+  "assistant.looking": Record<never, never>;
+  "assistant.preferences.chatEntry": { "author": string | number | Date; "id": string | number | Date; "text": string | number | Date };
+  "assistant.preferences.duplicate": { "id": string | number | Date };
+  "assistant.preferences.empty": Record<never, never>;
+  "assistant.preferences.forbidden": { "id": string | number | Date };
+  "assistant.preferences.forgetUsage": Record<never, never>;
+  "assistant.preferences.forgotten": { "id": string | number | Date };
+  "assistant.preferences.heading": Record<never, never>;
+  "assistant.preferences.limit": { "count": string | number | Date };
+  "assistant.preferences.notFound": { "id": string | number | Date };
+  "assistant.preferences.stored": { "id": string | number | Date; "text": string | number | Date };
+  "assistant.preferences.tooLong": { "count": string | number | Date };
+  "assistant.preferences.usage": Record<never, never>;
+  "assistant.preferences.userEntry": { "author": string | number | Date; "id": string | number | Date; "text": string | number | Date };
+  "assistant.sources": Record<never, never>;
+  "assistant.tool.cancel": Record<never, never>;
+  "assistant.tool.cancelled": Record<never, never>;
+  "assistant.tool.completed": { "command": string | number | Date };
+  "assistant.tool.confirm": Record<never, never>;
+  "assistant.tool.expired": Record<never, never>;
+  "assistant.tool.failed": Record<never, never>;
+  "assistant.tool.notAllowed": Record<never, never>;
+  "assistant.tool.running": Record<never, never>;
+  "assistant.tool.wrongUser": Record<never, never>;
+  "assistant.working": { "activity": string | number | Date; "seconds": string | number | Date };
   "chat.aliasNotImplemented": Record<never, never>;
   "chat.noImage": Record<never, never>;
   "chat.report.authorUnknown": Record<never, never>;

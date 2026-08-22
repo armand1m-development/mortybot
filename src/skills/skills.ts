@@ -1,6 +1,7 @@
 // THIS FILE IS AUTO-GENERATED DURING STARTUP
 // RUN `deno task generate:skills` TO FORCE UPDATE
 export const skills = [
+  "assistant",
   "chat",
   "currency",
   "espiritosanto",

@@ -9,6 +9,8 @@ import type { Skill } from "/src/skills/skills.ts";
 import type { SkillModule } from "./types/SkillModule.ts";
 import { loadSkillModule } from "./loadSkill.ts";
 import { Configuration } from "../configuration/middlewares/types.ts";
+import { SkillCommandToolRegistry } from "./SkillCommandToolRegistry.ts";
+import { createInstrumentedCommandHandler } from "./executeSkillCommand.ts";
 
 const logger = () => getLogger();
 
@@ -22,6 +24,7 @@ export const setupSkillModulesLoader = async (
   configuration: Configuration,
 ) => {
   const loadedSkillModules = await Promise.all(skills.map(loadSkillModule));
+  const skillCommandTools = new SkillCommandToolRegistry();
 
   const createSessionData = () => {
     let initialSessionData: Partial<SessionData> = {};
@@ -50,7 +53,13 @@ export const setupSkillModulesLoader = async (
 
   const loadSkillCommands = (skill: SkillModule) => {
     logger().debug(`Loading skill "${skill.name}" commands..`);
-    skill.commands.forEach(({ command, aliases, handler, middlewares }) => {
+    skill.commands.forEach((skillCommand) => {
+      const {
+        command,
+        aliases,
+        middlewares,
+        chatType,
+      } = skillCommand;
       if (aliases.length === 0) {
         const logMessage =
           `Loading command "/${command}" for skill "${skill.name}"`;
@@ -63,36 +72,11 @@ export const setupSkillModulesLoader = async (
         logger().info(logMessage);
       }
 
-      bot.command(
+      const composer = chatType ? bot.chatType(chatType) : bot;
+      composer.command(
         [command, ...aliases],
         ...(middlewares ?? []),
-        async (ctx) => {
-          Sentry.metrics.count(`command_invocation`, 1, {
-            attributes: {
-              skill: skill.name,
-              command,
-              match: ctx.match,
-            },
-          });
-
-          const begin = performance.now();
-
-          // @ts-ignore: the type is guaranteed in this case.
-          const result = await handler(ctx);
-
-          const end = performance.now();
-          const time = end - begin;
-
-          Sentry.metrics.distribution(`command_duration`, time, {
-            attributes: {
-              skill: skill.name,
-              command,
-            },
-            unit: "millisecond",
-          });
-
-          return result;
-        },
+        createInstrumentedCommandHandler(skill.name, skillCommand),
       );
     });
   };
@@ -159,21 +143,22 @@ export const setupSkillModulesLoader = async (
 
   const runSkillInitializers = (skill: SkillModule) => {
     logger().debug(`Running skill "${skill.name}" initializers..`);
-    return Promise.allSettled(
+    return Promise.all(
       skill.initializers.map(async (initializer) => {
         const begin = performance.now();
-        const result = await initializer(configuration);
-        const end = performance.now();
-        const time = end - begin;
+        try {
+          return await initializer(configuration);
+        } finally {
+          const end = performance.now();
+          const time = end - begin;
 
-        Sentry.metrics.distribution(`skill_initializer_duration`, time, {
-          attributes: {
-            skill: skill.name,
-          },
-          unit: "millisecond",
-        });
-
-        return result;
+          Sentry.metrics.distribution(`skill_initializer_duration`, time, {
+            attributes: {
+              skill: skill.name,
+            },
+            unit: "millisecond",
+          });
+        }
       }),
     );
   };
@@ -195,9 +180,10 @@ export const setupSkillModulesLoader = async (
 
   const printSkillLoadingReport = (
     result: PromiseSettledResult<BotCommand[] | undefined>[],
+    reportedSkills: SkillModule[],
   ) => {
     const skillLoadingReport = result.map((result, index) => {
-      const skill = loadedSkillModules[index];
+      const skill = reportedSkills[index];
       const resumedSkill: Record<string, unknown> = { ...skill };
 
       resumedSkill.commands = skill.commands.map((command) =>
@@ -255,15 +241,12 @@ export const setupSkillModulesLoader = async (
     logger().debug(JSON.stringify(skillLoadingReport, null, 2));
   };
 
-  const loadSkill = async (skill: SkillModule) => {
+  const loadSkill = (skill: SkillModule) => {
     try {
       logger().debug(`Loading skill "${skill.name}"`);
 
       const begin = performance.now();
 
-      await runSkillInitializers(skill);
-
-      loadSkillMiddlewares(skill);
       loadSkillCommands(skill);
       loadSkillListeners(skill);
       loadSkillInlineQueryListeners(skill);
@@ -280,6 +263,7 @@ export const setupSkillModulesLoader = async (
 
       return compileSkillCommandsToDocs(skill);
     } catch (err) {
+      logger().error(`Failed to load skill "${skill.name}".`);
       logger().error(err);
       return [];
     }
@@ -288,9 +272,33 @@ export const setupSkillModulesLoader = async (
   const loadSkills = async () => {
     const beginAll = performance.now();
 
-    const skillLoaderResults = await Promise.allSettled(
-      loadedSkillModules.flatMap(loadSkill),
+    const initializerResults = await Promise.allSettled(
+      loadedSkillModules.map(async (skill) => {
+        try {
+          await runSkillInitializers(skill);
+          return skill;
+        } catch (error) {
+          logger().error(`Failed to initialize skill "${skill.name}".`);
+          logger().error(error);
+          throw error;
+        }
+      }),
     );
+    const initializedSkills = initializerResults.flatMap((result) =>
+      isFulfilled(result) ? [result.value] : []
+    );
+
+    // Context-producing middleware must be registered before any forked
+    // listener (especially the assistant) can invoke another skill.
+    for (const skill of initializedSkills) loadSkillMiddlewares(skill);
+
+    const skillLoaderResults = await Promise.allSettled(
+      initializedSkills.map(loadSkill),
+    );
+    const activeSkills = initializedSkills.filter((_, index) =>
+      isFulfilled(skillLoaderResults[index])
+    );
+    skillCommandTools.registerSkills(activeSkills);
 
     const endAll = performance.now();
     const time = endAll - beginAll;
@@ -300,7 +308,7 @@ export const setupSkillModulesLoader = async (
     });
 
     if (Deno.env.get("PRINT_SKILL_LOADING_REPORT") === "true") {
-      printSkillLoadingReport(skillLoaderResults);
+      printSkillLoadingReport(skillLoaderResults, initializedSkills);
     }
 
     const commands = skillLoaderResults.flatMap((result) => {
@@ -318,5 +326,6 @@ export const setupSkillModulesLoader = async (
   return {
     createSessionData,
     loadSkills,
+    skillCommandTools,
   };
 };

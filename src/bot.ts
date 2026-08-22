@@ -19,16 +19,17 @@ import { createI18nMiddleware } from "/src/i18n/createI18nMiddleware.ts";
 import { getSafeErrorSummary } from "/src/utilities/sanitizeLogText.ts";
 
 export const BOT_RUNNER_CONCURRENCY = 32;
-export const BOT_UPDATE_TIMEOUT_MS = 120_000;
+export const BOT_UPDATE_TIMEOUT_MS = 20 * 60_000;
 
 export const createBot = async (configuration: Configuration) => {
   const bot = new Bot<BotContext>(configuration.botToken);
 
-  const { createSessionData, loadSkills } = await setupSkillModulesLoader(
-    skills,
-    bot,
-    configuration,
-  );
+  const { createSessionData, loadSkills, skillCommandTools } =
+    await setupSkillModulesLoader(
+      skills,
+      bot,
+      configuration,
+    );
 
   const getSessionKey = (ctx: Context) => {
     return ctx.chat?.id.toString() ?? configuration.inlineQuerySourceChatId;
@@ -65,6 +66,10 @@ export const createBot = async (configuration: Configuration) => {
     }),
   }));
   bot.use(createI18nMiddleware());
+  bot.use((ctx, next) => {
+    ctx.skillCommandTools = skillCommandTools;
+    return next();
+  });
 
   await loadSkills();
 

@@ -14,6 +14,23 @@ manage the data accordingly.
 
 ## Features
 
+## Skill: "assistant"
+
+Answers questions asked to the bot through a @mention by calling an
+OpenAI-compatible endpoint. Only enabled for allowlisted chats.
+
+### Listeners
+
+- [x] `message:text`: This listener answers messages that mention the bot with a
+      question, in allowlisted chats.
+
+### Commands
+
+- [x] `/assistant_language` _[alias: assistant_lang]_: Force assistant replies
+      to use `EN` or `PT`, or use `AUTO` to follow the chat language.
+- [x] `/assistant_emojis` _[alias: assistant_emoji]_: Enable or disable emojis
+      in assistant responses with `ON` or `OFF`.
+
 ## Skill: "language"
 
 Selects the language Mortybot uses in each chat.
@@ -236,6 +253,79 @@ Now you should be able to run the bot:
 ```sh
 deno task dev
 ```
+
+### Assistant tuning and prompt caching
+
+The assistant talks to an OpenAI-compatible endpoint (`OPENAI_BASE_URL`). Its
+prompt is deliberately front-loaded with static text — persona, formatting
+rules, skill documentation — and every per-chat directive sits at the very end,
+so the inference server can serve almost the whole prompt from its prefix cache
+instead of prefilling it on every message.
+
+| Variable                      | Default | What it does                                                                                                                                                                                                                                                                                                     |
+| ----------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ASSISTANT_TEMPERATURE`       | `0.7`   | Sampling temperature.                                                                                                                                                                                                                                                                                            |
+| `ASSISTANT_MAX_TOKENS`        | `2000`  | Hard cap on a single reply.                                                                                                                                                                                                                                                                                      |
+| `ASSISTANT_THINKING`          | `auto`  | `off`, `auto` or `on`. On a hybrid reasoning model such as Qwen3, `auto` disables reasoning for plain questions and for continuations after a tool returned successfully, and keeps it for error recovery and final synthesis. Reasoning tokens are never shown to the user but are the slowest part of a reply. |
+| `ASSISTANT_VISION_ENABLED`    | `true`  | Whether images and video posted in the chat are described for the assistant. Turn it off when `OPENAI_MODEL` is not a vision model.                                                                                                                                                                              |
+| `ASSISTANT_VISION_MAX_IMAGES` | `4`     | Hard ceiling on images described per turn, across every attachment. Pixels are paid for in prompt tokens.                                                                                                                                                                                                        |
+| `ASSISTANT_VIDEO_FRAMES`      | `4`     | Frames sampled from each video before it is described.                                                                                                                                                                                                                                                           |
+
+Every turn logs its token usage, and each reply carries a debug footer in
+development showing the prompt size and how much of it was cached. On SGLang,
+`cached_tokens` is only reported when the server was started with
+`--enable-cache-report`; without it the footer says `cache report off` rather
+than claiming a 0% hit rate. Cross-check against the server's `/metrics`
+cache-hit gauge when the numbers look surprising.
+
+When the cache-hit rate is low, the log line names the reason — `cold_start`,
+`system_change`, `tools_change` or `history_evicted` — so a regression in prompt
+stability is visible rather than silent.
+
+One caveat that is not about caching at all: the stored chat history is part of
+every prompt, and at this model size in-context precedent outweighs system
+instructions. If the assistant repeatedly refuses a capability or claims tool
+output was delivered without calling the tool, the pattern almost certainly
+lives in `DATA_PATH/sessions/<chat-id>.json` from before a behavior change, not
+in the prompt. Clearing that chat's `assistant.messages` fixes it; the skill of
+the model at following updated instructions recovers immediately once the stale
+exchanges are gone.
+
+### Images and video
+
+The assistant never receives an image. Anything visual in the chat — an upload,
+a reply to someone else's photo, an album, a GIF, a sticker, or the media a bot
+command such as `/tp_now` posts while the assistant runs it as a tool — is sent
+to `OPENAI_MODEL` in a separate vision request first, and only the resulting
+description travels on.
+
+That description is what lands in the conversation history, as a bracketed note
+naming who sent the media and whether the user was replying to it. Keeping the
+history plain text is deliberate: images in it would be re-sent with every later
+turn, wrecking both the prefix cache and the history token budget, and the note
+still answers follow-up questions long after the photo has scrolled away.
+
+Videos, GIFs and video notes are sampled with `ffmpeg`, evenly across the clip
+when Telegram reports its duration. Without `ffmpeg` on the host — or for a
+video above the Bot API's 20 MB download limit — the cover frame Telegram sends
+is described instead, so the feature degrades rather than fails.
+
+### Assistant trajectories
+
+Set `ASSISTANT_TRAJECTORY_ENABLED=true` to retain a full debug trajectory for
+each addressed assistant message. Trajectories include the assembled prompts,
+model responses, tool arguments and results, timings, errors, and Telegram
+delivery outcome. They can contain private chat content, so capture is disabled
+by default and the files are only exposed through the configured data volume.
+
+Each turn is checkpointed at:
+
+```text
+DATA_PATH/trajectories/<chat-id>/<trajectory-id>/trajectory.json
+```
+
+Files are kept until an operator deletes or archives them. API credentials,
+authorization headers, and raw streaming chunks are never written.
 
 Before opening a pull request, run the same verification used by CI:
 

@@ -2,6 +2,7 @@ import type { SkillModule } from "/src/platform/skillModules/types/SkillModule.t
 import { cmdGetNextSquatEvents } from "./commands/cmdGetNextSquatEvents.ts";
 import { mustHaveTextMiddleware } from "/src/utilities/middlewares/mustHaveTextMiddleware.ts";
 import { createRadarSquatApiMiddlerware } from "./middlewares/createRadarSquatApiMiddleware/mod.ts";
+import { textAssistantTool } from "/src/platform/skillModules/assistantTool.ts";
 
 const skillModule: SkillModule = {
   name: "squatradar",
@@ -16,6 +17,9 @@ const skillModule: SkillModule = {
       description:
         "Gets the next 20 events from radar.squat.net based on the city provided.",
       handler: cmdGetNextSquatEvents,
+      assistantTool: textAssistantTool("city", {
+        argumentDescription: "The city whose events should be fetched.",
+      }),
       middlewares: [mustHaveTextMiddleware],
     },
   ],

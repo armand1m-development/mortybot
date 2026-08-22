@@ -14,6 +14,9 @@ import type { HashtagChannelSessionData } from "/src/skills/hashtags/sessionData
 import type { N2yoApiContext } from "/src/skills/galileo/middleware/createN2yoMiddleware/types.ts";
 import type { MemeTemplateSessionData } from "/src/skills/image/sessionData/types.ts";
 import type { RadarSquatApiContext } from "/src/skills/squatradar/middlewares/createRadarSquatApiMiddleware/types.ts";
+import type { AssistantApiContext } from "/src/skills/assistant/middlewares/createAssistantApiMiddleware/types.ts";
+import type { AssistantSessionData } from "/src/skills/assistant/sessionData/types.ts";
+import type { SkillCommandToolsContext } from "/src/platform/skillModules/SkillCommandToolRegistry.ts";
 import type { I18nContext, LanguageSessionData } from "/src/i18n/types.ts";
 
 export type SessionData =
@@ -21,7 +24,8 @@ export type SessionData =
   & GoodbyeCounterSessionData
   & HashtagChannelSessionData
   & MemeTemplateSessionData
-  & LanguageSessionData;
+  & LanguageSessionData
+  & AssistantSessionData;
 
 export type BotContext =
   & FileFlavor<Context>
@@ -32,5 +36,7 @@ export type BotContext =
   & ConfigurationContext
   & LocationsApiContext
   & RadarSquatApiContext
+  & AssistantApiContext
+  & SkillCommandToolsContext
   & I18nContext
   & SessionFlavor<SessionData>;

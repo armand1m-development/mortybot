@@ -14,6 +14,10 @@ import { createDownloadsFolder } from "./initializers/createDownloadsFolder.ts";
 import { searchListener } from "./inlineQueryListeners/searchListener.ts";
 import { cmdToggleCaseSensitiveFilters } from "./commands/cmdToggleCaseSensitiveFilters.ts";
 import { mustHaveReplyMiddleware } from "/src/utilities/middlewares/mustHaveReplyMiddleware.ts";
+import {
+  noArgumentAssistantTool,
+  textAssistantTool,
+} from "/src/platform/skillModules/assistantTool.ts";
 
 const skillModule: SkillModule = {
   name: "filters",
@@ -27,18 +31,26 @@ const skillModule: SkillModule = {
       aliases: [],
       description: "List all filters",
       handler: cmdListFilters,
+      assistantTool: noArgumentAssistantTool(),
     },
     {
       command: "filterowners",
       aliases: ["filterinfo"],
       description: "List filters with owner info",
       handler: cmdListFilterOwners,
+      assistantTool: noArgumentAssistantTool(),
     },
     {
       command: "add_filter",
       aliases: ["filter"],
       description: "Adds a new filter",
       handler: createAddFilterCommand({ isLoud: false }),
+      assistantTool: textAssistantTool("trigger", {
+        effect: "write",
+        description:
+          "Add a filter whose response is the message that the user's request is replying to.",
+        argumentDescription: "The text trigger for the filter.",
+      }),
       middlewares: [mustHaveReplyMiddleware],
     },
     {
@@ -46,6 +58,12 @@ const skillModule: SkillModule = {
       aliases: ["loud_filter"],
       description: "Adds a new loud filter.",
       handler: createAddFilterCommand({ isLoud: true }),
+      assistantTool: textAssistantTool("trigger", {
+        effect: "write",
+        description:
+          "Add a loud filter whose response is the message that the user's request is replying to.",
+        argumentDescription: "The text trigger for the loud filter.",
+      }),
       middlewares: [mustHaveReplyMiddleware],
     },
     {
@@ -53,30 +71,35 @@ const skillModule: SkillModule = {
       aliases: [],
       description: "Stops listening to an existing filter",
       handler: cmdStopFilter,
+      assistantTool: textAssistantTool("trigger", { effect: "write" }),
     },
     {
       command: "activate_filter",
       aliases: [],
       description: "Starts listening to an existing filter",
       handler: cmdActivateFilter,
+      assistantTool: textAssistantTool("trigger", { effect: "write" }),
     },
     {
       command: "delete_filter",
       aliases: [],
       description: "Deletes a filter permanently",
       handler: cmdDeleteFilter,
+      assistantTool: textAssistantTool("trigger", { effect: "write" }),
     },
     {
       command: "filterownercount",
       aliases: [],
       description: "Count of filters per owner",
       handler: cmdCountPerOwner,
+      assistantTool: noArgumentAssistantTool(),
     },
     {
       command: "toggle_case_sensitive_filters",
       aliases: [],
       description: "Toggles case sensitiviness for filters in this chat.",
       handler: cmdToggleCaseSensitiveFilters,
+      assistantTool: noArgumentAssistantTool("write"),
     },
   ],
   sessionDataInitializers: [getInitialFilterSessionData],
