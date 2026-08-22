@@ -25,6 +25,8 @@ primary_region = "ams"
   API_PORT="3000"
   NODE_DEBUG="sharp"
   ENVIRONMENT="production"
+  TAILSCALE_ENABLED="true"
+  TAILSCALE_HOSTNAME="mortybot-fly"
 
 [mounts]
   source="mortybot_data"
