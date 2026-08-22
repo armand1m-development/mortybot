@@ -1,3 +1,30 @@
+## Skill: "assistant"
+
+Answers questions asked to the bot through a @mention by calling an
+OpenAI-compatible endpoint, with MCP tool support (e.g. web search). Only
+enabled for allowlisted chats.
+
+### Commands
+
+- [x] `/assistant_language` _[aliases: assistant_lang]_: Forces assistant
+      replies to use EN or PT, or AUTO to follow the chat language.
+- [x] `/assistant_emojis` _[aliases: assistant_emoji]_: Enables or disables
+      emojis in assistant responses.
+- [x] `/preferences` _[aliases: prefs]_: Lists the standing behavioral
+      preferences of this chat.
+- [x] `/remember_preference`: Stores a standing behavioral preference for this
+      chat or for you.
+- [x] `/forget_preference`: Forgets a standing preference by its id.
+
+### Listeners
+
+- [x] `message:text,message:photo,message:video,message:animation,message:video_note,message:sticker,message:document`:
+      This listener answers messages that mention the bot with a question, in
+      allowlisted chats, describing any image or video the message carries or
+      replies to.
+- [x] `callback_query:data`: Handles requester-bound confirmation and
+      cancellation buttons for assistant command tools.
+
 ## Skill: "chat"
 
 Commands to manage chat settings. Invoke admins, report messages, get the

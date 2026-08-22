@@ -10,6 +10,7 @@ import {
   createMultipleTextCommand,
   createTextCommand,
 } from "./utilities/createTextCommand.ts";
+import { textAssistantTool } from "/src/platform/skillModules/assistantTool.ts";
 
 const skillModule: SkillModule = {
   name: "text",
@@ -22,6 +23,7 @@ const skillModule: SkillModule = {
       aliases: ["fun", "funtxt", "kawaii"],
       description: "Converts a text string into funny characters.",
       handler: createTextCommand(funTextTable),
+      assistantTool: textAssistantTool("text"),
       middlewares: [mustHaveTextMiddleware],
     },
     {
@@ -29,6 +31,7 @@ const skillModule: SkillModule = {
       aliases: ["crazify", "crazytxt"],
       description: "Converts a text string into crazy characters.",
       handler: createMultipleTextCommand(crazyTextTable),
+      assistantTool: textAssistantTool("text"),
       middlewares: [mustHaveTextMiddleware],
     },
     {
@@ -36,6 +39,7 @@ const skillModule: SkillModule = {
       aliases: ["telugu", "telugutxt"],
       description: "Converts a text string into telugu characters.",
       handler: createTextCommand(teluguTextTable),
+      assistantTool: textAssistantTool("text"),
       middlewares: [mustHaveTextMiddleware],
     },
     {
@@ -43,6 +47,7 @@ const skillModule: SkillModule = {
       aliases: ["decodetelugu"],
       description: "Decodes telugu characters.",
       handler: createTextCommand(teluguReverseTable),
+      assistantTool: textAssistantTool("text"),
       middlewares: [mustHaveTextMiddleware],
     },
   ],

@@ -3,6 +3,7 @@ import type { SkillListener } from "/src/platform/skillModules/types/SkillListen
 import { getInitialGoodbyeCounterSessionData } from "./sessionData/getInitialGoodbyeCounterSessionData.ts";
 import { goodbyeListener } from "./listeners/goodbyeListener.ts";
 import { cmdLeavingRank } from "./commands/cmdLeavingRank.ts";
+import { noArgumentAssistantTool } from "/src/platform/skillModules/assistantTool.ts";
 
 const skillModule: SkillModule = {
   name: "goodbye",
@@ -17,6 +18,7 @@ const skillModule: SkillModule = {
       description:
         "Ranks the group members by the amount of times they left the group.",
       handler: cmdLeavingRank,
+      assistantTool: noArgumentAssistantTool(),
       chatType: ["group", "supergroup"],
     },
   ],

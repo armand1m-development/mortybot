@@ -2,6 +2,7 @@ import type { SkillModule } from "/src/platform/skillModules/types/SkillModule.t
 import { createRodosolApiMiddleware } from "./middlewares/createRodosolApiMiddleware/mod.ts";
 import { cmdRodosolNow } from "./commands/cmdRodosolNow.ts";
 import { cmdTerceiraPonteNow } from "./commands/cmdTerceiraPonteNow.ts";
+import { noArgumentAssistantTool } from "/src/platform/skillModules/assistantTool.ts";
 
 const skillModule: SkillModule = {
   name: "espiritosanto",
@@ -14,12 +15,14 @@ const skillModule: SkillModule = {
       aliases: [],
       description: "Fetch Vila Velha's Rodosol Road camera pictures now.",
       handler: cmdRodosolNow,
+      assistantTool: noArgumentAssistantTool(),
     },
     {
       command: "tp_now",
       aliases: [],
       description: "Fetch Vila Velha's Third Bridge camera pictures now.",
       handler: cmdTerceiraPonteNow,
+      assistantTool: noArgumentAssistantTool(),
     },
   ],
   sessionDataInitializers: [],

@@ -15,13 +15,13 @@ export const cmdGetIncomeReport: CommandMiddleware<BotContext> = (
 
   const income = Number(params.income);
   const year = params.year != undefined ? Number(params.year) : 2024;
-  const checked = params.ruling != undefined ? Boolean(params.ruling) : false;
-  const allowance = params.allowance != undefined
-    ? Boolean(params.allowance)
-    : false;
-  const socialSecurity = params.socialSecurity != undefined
-    ? Boolean(params.socialSecurity)
-    : true;
+  const parseBoolean = (
+    value: string | string[] | undefined,
+    fallback: boolean,
+  ) => value === undefined ? fallback : String(value).toLowerCase() === "true";
+  const checked = parseBoolean(params.ruling, false);
+  const allowance = parseBoolean(params.allowance, false);
+  const socialSecurity = parseBoolean(params.socialSecurity, true);
   const hours = params.hours != undefined ? Number(params.hours) : 40;
 
   const paycheck = new SalaryPaycheck(

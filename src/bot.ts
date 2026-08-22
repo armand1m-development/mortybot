@@ -14,21 +14,23 @@ import { setupSkillModulesLoader } from "/src/platform/skillModules/setupSkillMo
 import { autoRetry } from "@grammyjs/auto-retry";
 
 import { skills } from "/src/skills/skills.ts";
+import { createAlbumBufferMiddleware } from "/src/skills/assistant/vision/albumBufferMiddleware.ts";
 import { setupSkillMigrationLoader } from "/src/platform/skillModules/setupSkillMigrationLoader.ts";
 import { createI18nMiddleware } from "/src/i18n/createI18nMiddleware.ts";
 import { getSafeErrorSummary } from "/src/utilities/sanitizeLogText.ts";
 
 export const BOT_RUNNER_CONCURRENCY = 32;
-export const BOT_UPDATE_TIMEOUT_MS = 120_000;
+export const BOT_UPDATE_TIMEOUT_MS = 20 * 60_000;
 
 export const createBot = async (configuration: Configuration) => {
   const bot = new Bot<BotContext>(configuration.botToken);
 
-  const { createSessionData, loadSkills } = await setupSkillModulesLoader(
-    skills,
-    bot,
-    configuration,
-  );
+  const { createSessionData, loadSkills, skillCommandTools } =
+    await setupSkillModulesLoader(
+      skills,
+      bot,
+      configuration,
+    );
 
   const getSessionKey = (ctx: Context) => {
     return ctx.chat?.id.toString() ?? configuration.inlineQuerySourceChatId;
@@ -42,6 +44,11 @@ export const createBot = async (configuration: Configuration) => {
     maxRetryAttempts: 5,
   }));
   bot.use(createConfigurationMiddleware(configuration));
+  // Album siblings must reach the buffer before the per-chat lock below: a
+  // turn that waits out an album holds the sequentialize chain for the whole
+  // chat, and the updates carrying the siblings would otherwise queue behind
+  // the very turn that is waiting for them.
+  bot.use(createAlbumBufferMiddleware());
   bot.use(sequentialize(getSessionKey));
   bot.use(session({
     getSessionKey,
@@ -65,6 +72,10 @@ export const createBot = async (configuration: Configuration) => {
     }),
   }));
   bot.use(createI18nMiddleware());
+  bot.use((ctx, next) => {
+    ctx.skillCommandTools = skillCommandTools;
+    return next();
+  });
 
   await loadSkills();
 

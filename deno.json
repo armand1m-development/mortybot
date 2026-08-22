@@ -20,6 +20,7 @@
     "@grammyjs/router": "npm:@grammyjs/router@2.0.0",
     "@grammyjs/runner": "npm:@grammyjs/runner@2.0.3",
     "@grammyjs/storage-file": "npm:@grammyjs/storage-file@2.6.0",
+    "@modelcontextprotocol/sdk": "npm:@modelcontextprotocol/sdk@1.30.0",
     "dutch-tax-income-calculator": "npm:dutch-tax-income-calculator@26.1.3",
     "grammy": "npm:grammy@1.45.1",
     "grammy/types": "npm:grammy@1.45.1/types",
