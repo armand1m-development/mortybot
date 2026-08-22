@@ -138,6 +138,47 @@ export const parseBoolean = (
   );
 };
 
+export interface AssistantEndpointVariables {
+  openAiBaseUrl: string | undefined;
+  openAiModel: string | undefined;
+  openAiApiKey: string | undefined;
+}
+
+/**
+ * Validates the OpenAI-compatible endpoint variables the assistant talks to.
+ *
+ * The assistant reaches for them on its very first turn, so a missing value
+ * would otherwise surface as a TypeError in the middle of a conversation
+ * instead of at boot — in production this was observed as `Cannot read
+ * properties of undefined (reading 'replace')` from chatCompletion. Require
+ * all three whenever the assistant can run: with an allowlist configured, or
+ * in development, where an empty allowlist admits every chat. When it is off
+ * everywhere, empty strings are fine — nothing reads them.
+ */
+export const parseAssistantEndpoint = (
+  environment: "development" | "production",
+  assistantAllowedChatIds: number[],
+  variables: AssistantEndpointVariables,
+): { openAiBaseUrl: string; openAiModel: string; openAiApiKey: string } => {
+  const assistantEnabled = assistantAllowedChatIds.length > 0 ||
+    environment === "development";
+
+  const read = (name: string, value: string | undefined): string => {
+    if ((value ?? "").trim() === "" && assistantEnabled) {
+      throw new TypeError(
+        `${name} is required when the assistant is enabled (ASSISTANT_ALLOWED_CHAT_IDS is set, or ENVIRONMENT is "development").`,
+      );
+    }
+    return value ?? "";
+  };
+
+  return {
+    openAiBaseUrl: read("OPENAI_BASE_URL", variables.openAiBaseUrl),
+    openAiModel: read("OPENAI_MODEL", variables.openAiModel),
+    openAiApiKey: read("OPENAI_API_KEY", variables.openAiApiKey),
+  };
+};
+
 export const loadEnvironment = async (): Promise<Configuration> => {
   await dotenv.load({
     export: true,
@@ -146,6 +187,19 @@ export const loadEnvironment = async (): Promise<Configuration> => {
   const environment = Deno.env.get("ENVIRONMENT")! === "production"
     ? "production"
     : "development";
+
+  const assistantAllowedChatIds = parseAssistantAllowedChatIds(
+    Deno.env.get("ASSISTANT_ALLOWED_CHAT_IDS"),
+  );
+  const { openAiBaseUrl, openAiModel, openAiApiKey } = parseAssistantEndpoint(
+    environment,
+    assistantAllowedChatIds,
+    {
+      openAiBaseUrl: Deno.env.get("OPENAI_BASE_URL"),
+      openAiModel: Deno.env.get("OPENAI_MODEL"),
+      openAiApiKey: Deno.env.get("OPENAI_API_KEY"),
+    },
+  );
 
   return {
     dataPath: Deno.env.get("DATA_PATH")!,
@@ -161,12 +215,10 @@ export const loadEnvironment = async (): Promise<Configuration> => {
     )!,
     apiPort: parseApiPort(Deno.env.get("API_PORT")),
     sentryDSN: Deno.env.get("SENTRY_DSN")!,
-    openAiBaseUrl: Deno.env.get("OPENAI_BASE_URL")!,
-    openAiModel: Deno.env.get("OPENAI_MODEL")!,
-    openAiApiKey: Deno.env.get("OPENAI_API_KEY")!,
-    assistantAllowedChatIds: parseAssistantAllowedChatIds(
-      Deno.env.get("ASSISTANT_ALLOWED_CHAT_IDS"),
-    ),
+    openAiBaseUrl,
+    openAiModel,
+    openAiApiKey,
+    assistantAllowedChatIds,
     assistantStreamIdleTimeoutMs: parsePositiveInteger(
       "ASSISTANT_STREAM_IDLE_TIMEOUT_MS",
       Deno.env.get("ASSISTANT_STREAM_IDLE_TIMEOUT_MS"),
