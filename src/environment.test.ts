@@ -5,6 +5,7 @@ import {
   parseAssistantThinking,
   parseBoolean,
   parsePositiveInteger,
+  parseTailnetKeepaliveUrls,
   parseUnitInterval,
 } from "./environment.ts";
 
@@ -99,4 +100,16 @@ Deno.test("temperature settings reject values outside the sampling range", () =>
       "TEST_TEMPERATURE",
     );
   }
+});
+
+Deno.test("tailnet keepalive URLs default to none and accept comma-separated lists", () => {
+  assertEquals(parseTailnetKeepaliveUrls(undefined), []);
+  assertEquals(parseTailnetKeepaliveUrls(""), []);
+  assertEquals(parseTailnetKeepaliveUrls("   "), []);
+  assertEquals(
+    parseTailnetKeepaliveUrls(
+      "http://host-a:13000/healthz, http://host-b/ ,,",
+    ),
+    ["http://host-a:13000/healthz", "http://host-b/"],
+  );
 });

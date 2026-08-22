@@ -29,6 +29,12 @@ export interface Configuration {
   assistantVideoFrames: number;
   assistantTrajectoryEnabled: boolean;
   mcpConfigPath: string;
+  /** Whether the background tailnet keepalive probe runs. */
+  tailnetKeepaliveEnabled: boolean;
+  /** Delay between tailnet keepalive probes. */
+  tailnetKeepaliveIntervalMs: number;
+  /** Extra URLs probed by the tailnet keepalive, for services on other hosts. */
+  tailnetKeepaliveUrls: string[];
 }
 
 export interface ConfigurationContext {

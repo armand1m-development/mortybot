@@ -440,4 +440,13 @@ tag so it can reach the private model endpoint and port.
 elsewhere still starts the bot without requiring Tailscale. Override
 `TAILSCALE_HOSTNAME` if this instance needs a different tailnet name.
 
+After an idle period the first request to a tailnet service used to stall while
+the WireGuard path to the host was re-established through the DERP relay, so the
+bot keeps that path warm: every 25 seconds it GETs `${OPENAI_BASE_URL}/models`,
+where any HTTP answer counts as a success — only the tunnel crossing matters.
+Both the model endpoint and SearXNG live on the same tailnet host, so this one
+probe covers them all; set `TAILNET_KEEPALIVE_URLS` (comma-separated) only if a
+service moves to a different host. The cadence and on/off switch are
+`TAILNET_KEEPALIVE_INTERVAL_MS` and `TAILNET_KEEPALIVE_ENABLED`.
+
 Refer to https://fly.io docs for more details on other commons operations.
