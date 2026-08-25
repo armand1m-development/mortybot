@@ -2,6 +2,7 @@ import { assertEquals, assertThrows } from "@std/assert";
 import {
   DEFAULT_API_PORT,
   parseApiPort,
+  parseAssistantEndpoint,
   parseAssistantThinking,
   parseBoolean,
   parsePositiveInteger,
@@ -81,6 +82,71 @@ Deno.test("assistant thinking mode rejects unknown levels", () => {
     () => parseAssistantThinking("maybe"),
     TypeError,
     "ASSISTANT_THINKING",
+  );
+});
+
+const endpointVariables = {
+  openAiBaseUrl: "http://100.127.91.6:30000/v1",
+  openAiModel: "qwen3.8-27b",
+  openAiApiKey: "sk-1234",
+};
+
+Deno.test("assistant endpoint variables pass through when configured", () => {
+  assertEquals(
+    parseAssistantEndpoint("production", [-1001651043611], endpointVariables),
+    endpointVariables,
+  );
+  assertEquals(
+    parseAssistantEndpoint("development", [], endpointVariables),
+    endpointVariables,
+  );
+});
+
+Deno.test("assistant endpoint variables are required when it can run", () => {
+  for (
+    const name of ["openAiBaseUrl", "openAiModel", "openAiApiKey"] as const
+  ) {
+    const missing = { ...endpointVariables, [name]: undefined };
+    const envVar = {
+      openAiBaseUrl: "OPENAI_BASE_URL",
+      openAiModel: "OPENAI_MODEL",
+      openAiApiKey: "OPENAI_API_KEY",
+    }[name];
+
+    const cases: Array<["development" | "production", number[]]> = [
+      ["development", []],
+      ["production", [123]],
+    ];
+    for (const [environment, chatIds] of cases) {
+      assertThrows(
+        () => parseAssistantEndpoint(environment, chatIds, missing),
+        TypeError,
+        `${envVar} is required when the assistant is enabled`,
+      );
+    }
+  }
+});
+
+Deno.test("blank endpoint variables count as missing", () => {
+  assertThrows(
+    () =>
+      parseAssistantEndpoint("production", [123], {
+        ...endpointVariables,
+        openAiBaseUrl: "   ",
+      }),
+    TypeError,
+    "OPENAI_BASE_URL is required when the assistant is enabled",
+  );
+});
+
+Deno.test("endpoint variables may be absent when the assistant is off", () => {
+  assertEquals(
+    parseAssistantEndpoint("production", [], {
+      openAiBaseUrl: undefined,
+      openAiModel: undefined,
+      openAiApiKey: undefined,
+    }),
+    { openAiBaseUrl: "", openAiModel: "", openAiApiKey: "" },
   );
 });
 

@@ -255,8 +255,13 @@ deno task dev
 
 ### Assistant tuning and prompt caching
 
-The assistant talks to an OpenAI-compatible endpoint (`OPENAI_BASE_URL`). Its
-prompt is deliberately front-loaded with static text — persona, formatting
+The assistant talks to an OpenAI-compatible endpoint (`OPENAI_BASE_URL`). The
+three `OPENAI_*` variables are required whenever the assistant can run — an
+allowlist is configured, or the environment is development — and startup fails
+naming the missing one instead of letting the first conversation crash on an
+undefined endpoint.
+
+Its prompt is deliberately front-loaded with static text — persona, formatting
 rules, skill documentation — and every per-chat directive sits at the very end,
 so the inference server can serve almost the whole prompt from its prefix cache
 instead of prefilling it on every message.
