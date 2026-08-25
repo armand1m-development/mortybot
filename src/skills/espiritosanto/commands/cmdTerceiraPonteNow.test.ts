@@ -32,7 +32,7 @@ Deno.test("Third Bridge command removes loading feedback after one uncaptained a
       );
       return Promise.resolve([{ message_id: 789 }]);
     },
-    rodosolApi: {
+    thirdBridgeApi: {
       fetchThirdBridgeImages: () => {
         events.push("fetch");
         return Promise.resolve([

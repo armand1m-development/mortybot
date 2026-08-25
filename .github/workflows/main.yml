@@ -5,8 +5,8 @@ on:
       - main
 
 jobs:
-  deploy:
-    name: Deploy app
+  build:
+    name: Build and test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo

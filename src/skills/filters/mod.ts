@@ -5,6 +5,7 @@ import { createAddFilterCommand } from "./commands/createAddFilterCommand.ts";
 import { getInitialFilterSessionData } from "./sessionData/getInitialFilterSessionData.ts";
 import { filterListener } from "./listeners/filterListener.ts";
 import { cmdListFilters } from "./commands/cmdListFilters.ts";
+import { cmdSearchFilters } from "./commands/cmdSearchFilters.ts";
 import { cmdListFilterOwners } from "./commands/cmdListFilterOwners.ts";
 import { cmdStopFilter } from "./commands/cmdStopFilter.ts";
 import { cmdActivateFilter } from "./commands/cmdActivateFilter.ts";
@@ -15,6 +16,7 @@ import { searchListener } from "./inlineQueryListeners/searchListener.ts";
 import { cmdToggleCaseSensitiveFilters } from "./commands/cmdToggleCaseSensitiveFilters.ts";
 import { mustHaveReplyMiddleware } from "/src/utilities/middlewares/mustHaveReplyMiddleware.ts";
 import {
+  listingAssistantTool,
   noArgumentAssistantTool,
   textAssistantTool,
 } from "/src/platform/skillModules/assistantTool.ts";
@@ -31,14 +33,27 @@ const skillModule: SkillModule = {
       aliases: [],
       description: "List all filters",
       handler: cmdListFilters,
-      assistantTool: noArgumentAssistantTool(),
+      assistantTool: listingAssistantTool(),
+    },
+    {
+      command: "search_filters",
+      aliases: ["find_filters"],
+      description: "Search filters by trigger or content",
+      handler: cmdSearchFilters,
+      assistantTool: textAssistantTool("query", {
+        inspectable: true,
+        description:
+          "Fulltext and fuzzy search over this chat's filters by trigger text and content. Chats can carry hundreds of filters, so prefer this over listing them all: it returns only the best matches, ranked by relevance, with each filter's media type and caption. The query language takes whitespace-separated terms that must all match, \"quoted phrases\" for exact wording, and -term to exclude. Matching ignores case and accents and tolerates typos in unquoted terms.",
+        argumentDescription:
+          'Search terms, e.g. `jassa cerveja -bolsonaro` or `"tem cerveja"`.',
+      }),
     },
     {
       command: "filterowners",
       aliases: ["filterinfo"],
       description: "List filters with owner info",
       handler: cmdListFilterOwners,
-      assistantTool: noArgumentAssistantTool(),
+      assistantTool: listingAssistantTool(),
     },
     {
       command: "add_filter",

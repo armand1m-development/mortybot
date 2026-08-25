@@ -11,6 +11,8 @@ en:
     working: "{activity}... ({seconds}s)"
     sources: "Sources:"
     error: "Sorry, I couldn't reach my brain right now. Please try again."
+    mediaNotDelivered: "(No images or tool results were actually delivered in this reply.)"
+    contextCleared: "Assistant context cleared for this chat. Settings and preferences were kept."
     filesReady: "{count, plural, one {Generated code file attached.} other {Generated code files attached.}}"
     language:
       current: "Assistant response language: {language}. Use /assistant_language AUTO, PT, or EN to change it."
@@ -55,6 +57,9 @@ en:
     notFound: "Could not find a filter for the trigger {filter}."
     none: "There are no filters defined for this group currently."
     added: "Filter added."
+    search:
+      missingArgument: "Give me something to search for. Example: `/search_filters jassa` — quoted phrases and `-exclusions` also work."
+      noMatches: "No filters match \"{query}\"."
     activated: "Filter activated."
     actionAudit:
       deleted: "Just for the record: {user} deleted the filter {filter}. There is no point deleting the evidence later. Have some shame!"
@@ -92,8 +97,6 @@ en:
     usage: "Could not read the parameters. Send a message such as `/convert 150 EUR to BRL`."
     result: "{amount} {currency}: {value}"
     error: "Failed to convert the value."
-  rodosol:
-    error: "Failed to fetch Rodosol camera pictures."
   goodbye:
     farewell: "It was nice to see you!"
     none: "Nobody has ever left this group, at least as far as I know."
@@ -133,6 +136,7 @@ en:
     invalidTemplateJson: "Send a valid MemeTemplateEntry JSON object."
     invalidJson: "Send a valid JSON object."
     templateNotFound: "Meme template not found."
+    noTemplates: "No meme templates in this chat yet. Create one with /create_meme_template."
   weather:
     temperature: "Temperature in {query}: {temperature}°C | feels like {feelsLike}°C"
     temperatureError: "Could not find weather data for your query. Try again."
@@ -182,6 +186,8 @@ pt:
     working: "{activity}... ({seconds}s)"
     sources: "Fontes:"
     error: "Desculpe, não consegui acessar meu cérebro agora. Por favor, tente novamente."
+    mediaNotDelivered: "(Nenhuma imagem ou resultado de ferramenta foi de fato entregue nesta resposta.)"
+    contextCleared: "Contexto do assistente limpo neste chat. Configurações e preferências foram mantidas."
     filesReady: "{count, plural, one {Arquivo de código gerado em anexo.} other {Arquivos de código gerados em anexo.}}"
     language:
       current: "Idioma de resposta do assistente: {language}. Use /assistant_language AUTO, PT ou EN para alterá-lo."
@@ -226,6 +232,9 @@ pt:
     notFound: "Não encontrei um filtro com o gatilho {filter}."
     none: "Não há filtros definidos para este grupo no momento."
     added: "Filtro adicionado."
+    search:
+      missingArgument: "Me diga o que procurar. Exemplo: `/search_filters jassa` — frases entre aspas e exclusões com `-` também funcionam."
+      noMatches: "Nenhum filtro corresponde a \"{query}\"."
     activated: "Filtro ativado."
     actionAudit:
       deleted: "Só pra deixar registrado: {user} foi quem deletou o filtro {filter}. Não adianta apagar a evidência depois. Toma vergonha!"
@@ -263,8 +272,6 @@ pt:
     usage: "Não foi possível ler os parâmetros. Envie uma mensagem como `/convert 150 EUR to BRL`."
     result: "{amount} {currency}: {value}"
     error: "Não foi possível converter o valor."
-  rodosol:
-    error: "Não foi possível buscar as imagens das câmeras da Rodosol."
   goodbye:
     farewell: "Foi bom ter você por aqui!"
     none: "Ninguém nunca saiu deste grupo, pelo menos até onde eu sei."
@@ -304,6 +311,7 @@ pt:
     invalidTemplateJson: "Envie um objeto JSON MemeTemplateEntry válido."
     invalidJson: "Envie um objeto JSON válido."
     templateNotFound: "Template de meme não encontrado."
+    noTemplates: "Ainda não há templates de meme neste chat. Crie um com /create_meme_template."
   weather:
     temperature: "Temperatura em {query}: {temperature}°C | sensação de {feelsLike}°C"
     temperatureError: "Não foi possível encontrar dados meteorológicos para sua busca. Tente novamente."

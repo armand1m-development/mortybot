@@ -10,6 +10,8 @@ enabled for allowlisted chats.
       replies to use EN or PT, or AUTO to follow the chat language.
 - [x] `/assistant_emojis` _[aliases: assistant_emoji]_: Enables or disables
       emojis in assistant responses.
+- [x] `/assistant_clear` _[aliases: clear_context]_: Clears the assistant's
+      conversation history for this chat.
 - [x] `/preferences` _[aliases: prefs]_: Lists the standing behavioral
       preferences of this chat.
 - [x] `/remember_preference`: Stores a standing behavioral preference for this
@@ -57,7 +59,6 @@ Commands to get live road camera images from Espírito Santo.
 
 ### Commands
 
-- [x] `/rodosol_now`: Fetch Vila Velha's Rodosol Road camera pictures now.
 - [x] `/tp_now`: Fetch Vila Velha's Third Bridge camera pictures now.
 
 ## Skill: "filters"
@@ -67,6 +68,8 @@ Commands to filter messages and react with other messages to it.
 ### Commands
 
 - [x] `/filters`: List all filters
+- [x] `/search_filters` _[aliases: find_filters]_: Search filters by trigger or
+      content
 - [x] `/filterowners` _[aliases: filterinfo]_: List filters with owner info
 - [x] `/add_filter` _[aliases: filter]_: Adds a new filter
 - [x] `/add_loud_filter` _[aliases: loud_filter]_: Adds a new loud filter.
@@ -143,6 +146,8 @@ more. Meme templates are defined per user or group.
       based on a given image and text parameters.
 - [x] `/create_meme` _[aliases: meme]_: Creates a meme based on a template. The
       number of arguments depends on the template itself.
+- [x] `/memes` _[aliases: list_memes]_: List this chat's meme templates and
+      their text slots
 - [x] `/get_meme_template`: Get meme template by name. Useful for debugging
       purposes.
 - [x] `/toggle_meme_template_debug` _[aliases: debugtemplate]_: Toggle meme

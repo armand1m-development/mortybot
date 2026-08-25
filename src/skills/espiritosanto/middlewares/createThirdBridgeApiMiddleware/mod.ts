@@ -1,14 +1,10 @@
 import type { MiddlewareFn } from "grammy";
 import type { BotContext } from "/src/context/mod.ts";
-import { fetchRodosolRoadImages } from "../../httpClients/fetchImages.ts";
 import { fetchThirdBridgeImages } from "../../httpClients/fetchThirdBridgeImages.ts";
 
-export const createRodosolApiMiddleware = () => {
+export const createThirdBridgeApiMiddleware = () => {
   const middleware: MiddlewareFn<BotContext> = (ctx, next) => {
-    ctx.rodosolApi = {
-      fetchRodosolRoadImages,
-      fetchThirdBridgeImages,
-    };
+    ctx.thirdBridgeApi = { fetchThirdBridgeImages };
     return next();
   };
 

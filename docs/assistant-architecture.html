@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MortyBot — How the LLM Assistant Works</title>
+    <style>
+    :root {
+      --bg: #0b0e14;
+      --panel: #11151f;
+      --panel-2: #161b28;
+      --border: #232a3b;
+      --text: #d7dce6;
+      --muted: #8b93a7;
+      --accent: #6cb2ff;
+      --accent-2: #ffb86c;
+      --green: #7ee2a8;
+      --red: #ff7b81;
+      --violet: #c39bff;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 70px;
+    }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 16px/1.6 ui-sans-serif, system-ui, "Segoe UI", Roboto, "Helvetica Neue",
+        Arial, sans-serif;
+    }
+    code,
+    .mono {
+      font-family: ui-monospace, "JetBrains Mono", "Fira Code", Menlo, Consolas,
+        monospace;
+      font-size: 0.9em;
+    }
+
+    header.hero {
+      padding: 48px 24px 28px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    header.hero h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+      letter-spacing: -0.02em;
+    }
+    header.hero h1 .bot {
+      color: var(--accent);
+    }
+    header.hero p.lead {
+      margin: 0;
+      color: var(--muted);
+      max-width: 72ch;
+    }
+    header.hero p.lead code {
+      color: var(--accent-2);
+      background: none;
+    }
+
+    nav.toc {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(11, 14, 20, 0.92);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid var(--border);
+    }
+    nav.toc ul {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 10px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 18px;
+      list-style: none;
+    }
+    nav.toc a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13.5px;
+      white-space: nowrap;
+    }
+    nav.toc a:hover {
+      color: var(--accent);
+    }
+    nav.toc a .n {
+      color: var(--accent);
+      font-weight: 600;
+      margin-right: 4px;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 8px 24px 80px;
+    }
+    section.diagram {
+      margin-top: 48px;
+    }
+    section.diagram h2 {
+      font-size: 21px;
+      margin: 0 0 4px;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+    section.diagram h2 .num {
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 700;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1px 7px;
+      background: var(--panel);
+    }
+    section.diagram p.desc {
+      margin: 6px 0 14px;
+      color: var(--muted);
+      max-width: 80ch;
+    }
+    section.diagram p.desc code {
+      color: var(--accent-2);
+      background: none;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      overflow-x: auto;
+    }
+    .card .mermaid {
+      display: flex;
+      justify-content: center;
+      min-height: 60px;
+    }
+
+    p.src {
+      margin: 10px 2px 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    p.src code {
+      color: #9fb3d9;
+    }
+
+    .facts {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .fact {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+    .fact .v {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .fact .k {
+      font-size: 12.5px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .callout {
+      border-left: 3px solid var(--accent);
+      background: var(--panel-2);
+      border-radius: 0 10px 10px 0;
+      padding: 10px 16px;
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 14.5px;
+      max-width: 80ch;
+    }
+    .callout b {
+      color: var(--text);
+    }
+    .callout code {
+      color: var(--accent-2);
+      background: none;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+    }
+    footer p {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px 24px;
+    }
+    </style>
+  </head>
+  <body>
+    <header class="hero">
+      <h1>🤖 <span class="bot">MortyBot</span> — how the LLM assistant works</h1>
+      <p class="lead">
+    MortyBot is a grammY Telegram bot composed of <i>skill modules</i>. One of them,
+    <code>assistant</code>, turns @mentions into turns of an agentic loop against an
+    OpenAI-compatible endpoint, with three families of tools: built-ins, MCP tools
+    (web search), and every bot command exposed as a <code>bot_*</code> tool.
+    Static file references are in each section.
+  </p>
+    </header>
+
+    <nav class="toc">
+      <ul>
+        <li><a href="#routing"><span class="n">1</span>Update routing &amp; gating</a></li>
+        <li><a href="#pipeline"><span class="n">2</span>Turn pipeline (pre-model)</a></li>
+        <li><a href="#prompt"><span class="n">3</span>Prompt assembly &amp; cache</a></li>
+        <li><a href="#loop"><span class="n">4</span>The agent loop</a></li>
+        <li><a href="#tools"><span class="n">5</span>Tool resolution</a></li>
+        <li><a href="#confirm"><span class="n">6</span>Write-tool confirmation</a></li>
+        <li><a href="#fabrication"><span class="n">7</span>Fabrication guard</a></li>
+        <li><a href="#delivery"><span class="n">8</span>Delivery &amp; memory</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <!-- ============================================================ 1 -->
+      <section class="diagram" id="routing">
+        <h2><span class="num">1</span>Update routing — what even reaches the assistant</h2>
+        <p class="desc">
+    Every Telegram update flows through the grammY middleware chain (session, configuration,
+    i18n, and the <code>assistantApi</code> middleware that prepares the tool set). Skill
+    listeners are registered as <b>forks</b>, so the command chain, the filters skill and the
+    assistant listener all see the same message concurrently. The assistant then runs four
+    gates of its own and quietly steps aside — returning <code>{ handled: false }</code> —
+    whenever one fails.
+  </p>
+        <div class="card">
+          <pre class="mermaid">
+flowchart TD
+    TG["Telegram update"] --> MW["grammY middleware chain<br/>session · configuration · i18n · assistantApi + tool set"]
+
+    MW --> CMD{"message leads with a<br/>registered /command?"}
+    CMD -- "yes" --> RUN["command chain executes the<br/>skill command handler"]
+
+    MW --> FORK["forked skill listeners<br/>(run in parallel with the command chain)"]
+
+    FORK --> FLT{"filters skill:<br/>exact match or loud-filter match?"}
+    FLT -- "match" --> FREP["posts the filter's stored<br/>media/text response"]
+    FLT -- "no match" --> AST["assistant listener<br/>text · photo · video · animation<br/>video_note · sticker · document"]
+
+    AST --> G1{"gate 1<br/>chat allowlisted?"}
+    G1 -- "no" --> X1["ignore"]
+    G1 -- "dev env, empty allowlist" --> G2
+    G1 -- "yes" --> G2{"gate 2<br/>addressed to the bot?<br/>private chat · @mention · reply-to-bot"}
+    G2 -- "no" --> X2["ignore"]
+    G2 -- "yes" --> G3{"gate 3<br/>leading /command registered<br/>for this chat type?"}
+    G3 -- "yes" --> X3["step aside — the command<br/>chain already owns it"]
+    G3 -- "no" --> G4{"gate 4<br/>any question, own media<br/>or replied-to media?"}
+    G4 -- "no" --> X4["ignore — contacts, polls,<br/>bare spreadsheets are not turns"]
+    G4 -- "yes" --> TURN(["an assistant turn starts"])
+
+    style TURN fill:#0e2a19,stroke:#7ee2a8,color:#7ee2a8
+    style X1 fill:#2a0f12,stroke:#ff7b81,color:#ff7b81
+    style X2 fill:#2a0f12,stroke:#ff7b81,color:#ff7b81
+    style X3 fill:#2a1a0f,stroke:#ffb86c,color:#ffb86c
+    style X4 fill:#2a0f12,stroke:#ff7b81,color:#ff7b81
+</pre>
+        </div>
+        <p class="src">
+    <code>src/skills/assistant/listeners/assistantListener.ts</code> ·
+    <code>src/skills/assistant/utilities/routingPolicy.ts</code> ·
+    <code>src/platform/skillModules/setupSkillModulesLoader.ts</code> ·
+    <code>src/skills/filters/listeners/filterListener.ts</code>
+  </p>
+        <div class="callout">
+    <b>Note on the mention:</b> media arrives with its text in <code>caption</code>, so the
+    @mention is extracted from caption entities; the caption minus the mention becomes the
+    question. Gate 3 exists because the command chain runs <i>concurrently</i> with this fork —
+    without it, <code>/terceiraponte</code> would run once as a command and again as a
+    <code>bot_terceiraponte</code> tool call.
+  </div>
+      </section>
+
+      <!-- ============================================================ 2 -->
+      <section class="diagram" id="pipeline">
+        <h2><span class="num">2</span>Turn pipeline — from accepted message to model request</h2>
+        <p class="desc">
+    Once the gates pass, the listener immediately posts a progress message ("Morty is
+    thinking…") and starts a ticker that rewrites it every 2&nbsp;seconds — first with the
+    current activity ("looking at the media", a tool name), then with the answer itself as it
+    streams in, previewed as plain text (half-written Markdown isn't valid HTML).
+  </p>
+        <div class="card">
+          <pre class="mermaid">
+flowchart TD
+    A["assistant turn accepted"] --> P["reply with a progress message<br/>and start the 2 s edit ticker"]
+    P --> V{"vision enabled and the turn<br/>carries or replies to media?"}
+    V -- "no" --> BUILD
+    V -- "yes" --> ALB{"message is part<br/>of an album?"}
+    ALB -- "yes" --> WAIT["album buffer:<br/>wait for the other items<br/>to finish arriving"]
+    ALB -- "no" --> MERGE
+    WAIT --> MERGE["merge replied-to media + own media<br/>(reply media leads, so a truncated<br/>budget drops the less relevant items)"]
+    MERGE --> DESC["one vision pass over everything:<br/>frames extracted, images prepared,<br/>described → bracketed media note"]
+    DESC --> BUILD
+
+    BUILD["user content =<br/>reply context + media note + question<br/>(bare photo → fixed no-text prompt)"] --> HIST
+    subgraph HISTORY["conversation history, from the session store"]
+        direction LR
+        h1["sanitize:<br/>stringify / drop<br/>malformed content"] --> h2["scrub stale<br/>delivered-media notes"] --> h3["≤ ~6 000 tokens<br/>(evicted in generations)"]
+    end
+    HIST["load history"] ---> HISTORY
+    HISTORY --> SYS
+    subgraph SYSP["system prompt (see diagram 3)"]
+        direction LR
+        s1["static prefix"] --- s2["per-chat tail<br/>(language · emoji · preferences)"]
+    end
+    SYS["build system prompt<br/>(memoized, LRU 200)"] ---> SYSP
+    SYSP --> MSGS["messages = [ system, …history, user ]"]
+    MSGS --> DRIFT["cache-drift tracker records<br/>system + tools + history fingerprint<br/>(explains later cache misses)"]
+    DRIFT --> ASK["ctx.assistantApi.ask(messages) → the agent loop"]
+
+    style ASK fill:#0e2a19,stroke:#7ee2a8,color:#7ee2a8
+    style DESC fill:#1d1533,stroke:#c39bff,color:#c39bff
+</pre>
+        </div>
+        <p class="src">
+    <code>src/skills/assistant/listeners/assistantListener.ts</code> ·
+    <code>src/skills/assistant/vision/</code> (albumBuffer, describeChatMedia, extractVideoFrames…) ·
+    <code>src/skills/assistant/utilities/{sanitizeHistory, evictHistory, cacheDrift}.ts</code>
+  </p>
+        <div class="callout">
+    <b>The model never sees an image.</b> A vision pass turns every photo, video, GIF or
+    sticker into a bracketed <i>text note</i> before the request is built; those notes are the
+    model's only account of what the chat is looking at. The same machinery later describes
+    media that the assistant's own tool calls post (diagram 5).
+  </div>
+      </section>
+
+      <!-- ============================================================ 3 -->
+      <section class="diagram" id="prompt">
+        <h2><span class="num">3</span>Prompt assembly — static first, volatile last</h2>
+        <p class="desc">
+    The inference server caches on an <b>exact token prefix</b>, so the prompt is ordered to
+    keep everything shared in front and everything per-chat at the back. The tools array is
+    rendered into the head of the prompt by the chat template, which is why it rides every
+    request byte-identical (memoized per chat type) and why running out of tool budget uses
+    <code>tool_choice: "none"</code> instead of dropping the schemas.
+  </p>
+        <div class="card">
+          <pre class="mermaid">
+flowchart TD
+    subgraph REQUEST["one request to the OpenAI-compatible endpoint"]
+        direction TB
+        T0["tools array — every registered tool's schema<br/>rendered into the prompt head by the chat template<br/>(same bytes every turn → prefix cache survives)"]
+        M0["system message"]
+        M1["…conversation history, alternating user ⇄ assistant…"]
+        M2["user message — this turn"]
+        T0 -.- M0
+        M0 --> M1 --> M2
+    end
+
+    subgraph SYSTEM["system message internals"]
+        direction TB
+        subgraph STATIC["static prefix — identical for every chat, prefilled once and reused"]
+            direction TB
+            s1["'You are Morty, a Telegram group assistant.'"]
+            s2["SOUL.md — persona"]
+            s3["Formatting — Telegram-safe Markdown subset"]
+            s4["Code responses — 'File: path' + fenced blocks"]
+            s5["Images and video — how to read media notes (vision on)"]
+            s6["Tool usage rules (tools present)"]
+            s7["Length discipline — no preamble, no postamble"]
+            s8["SKILLS.md — documentation of every bot command"]
+            s1 --> s2 --> s3 --> s4 --> s5 --> s6 --> s7 --> s8
+        end
+        subgraph DYN["dynamic tail — kept last so it never shifts what precedes it"]
+            direction TB
+            d1["language directive (EN · PT · auto)"]
+            d2["emoji directive (on / off)"]
+            d3["standing preferences — chat-scoped + speaker-scoped<br/>most volatile, always last"]
+            d1 --> d2 --> d3
+        end
+        STATIC --> DYN
+    end
+
+    REQUEST -.- SYSTEM
+
+    style STATIC fill:#0e1a2a,stroke:#6cb2ff
+    style DYN fill:#2a1d0e,stroke:#ffb86c
+    style T0 fill:#1d1533,stroke:#c39bff
+</pre>
+        </div>
+        <div class="facts">
+          <div class="fact">
+            <div class="v">200</div>
+            <div
+              class="k">memoized system prompts (LRU), keyed by settings + preference fingerprint</div>
+          </div>
+          <div class="fact">
+            <div class="v">≈ 6 000 tok</div>
+            <div
+              class="k">history budget — halved per eviction, cut on a user message</div>
+          </div>
+          <div class="fact">
+            <div class="v">byte-stable</div>
+            <div
+              class="k">static segments + tools block — any edit is a cache-busting change</div>
+          </div>
+        </div>
+        <p class="src">
+    <code>buildSystemPrompt</code> in <code>src/skills/assistant/listeners/assistantListener.ts</code> ·
+    <code>src/skills/assistant/middlewares/createAssistantApiMiddleware/mod.ts</code> (tool merge cache) ·
+    <code>src/skills/assistant/utilities/evictHistory.ts</code>
+  </p>
+      </section>
+
+      <!-- ============================================================ 4 -->
+      <section class="diagram" id="loop">
+        <h2><span class="num">4</span>The agent loop — ask, call tools, ask again</h2>
+        <p class="desc">
+    <code>askAssistant</code> is a plain <code>while (true)</code>: stream a completion, execute
+    any tool calls, append their results to the conversation, and repeat until the model answers
+    in plain text. Everything observable by the user (activity label, streaming preview) is fed
+    back through callbacks; everything debuggable is emitted as trajectory events to
+    <code>data/trajectories/</code>.
+  </p>
+        <div class="card">
+          <pre class="mermaid">
+flowchart TD
+    START(["ctx.assistantApi.ask(messages)"]) --> DUR{"turn still under the<br/>15 min hard cap?"}
+    DUR -- "no" --> ERR(["throw — turn fails,<br/>progress message becomes an error"])
+    DUR -- "yes" --> REQ["build the request:<br/>· conversation + tools (always)<br/>· tool_choice = none once budget is spent<br/>· enable_thinking = false on plain follow-ups<br/>· remaining time as request timeout"]
+
+    REQ --> STREAM["streaming completion<br/>(120 s idle watchdog)"]
+    STREAM -. "while text streams" .-> PART["cumulative partial →<br/>progress message preview<br/>(plain text, ≤ 3 900 chars)"]
+    STREAM --> HAS{"response contains<br/>tool_calls?"}
+
+    HAS -- "yes" --> DISCARD["onPartialDiscarded —<br/>the preview is dropped,<br/>the user never sees it"]
+    DISCARD --> EXEC
+    HAS -- "no" --> EMPTY{"answer non-empty?"}
+    EMPTY -- "no" --> ERR
+    EMPTY -- "yes" --> RET(["return turn result:<br/>content · sources · tool invocations<br/>usage · media notes · confirmation id"])
+
+    EXEC["execute the calls in order:<br/>adjacent concurrency-safe calls batched together<br/>(web searches run in parallel),<br/>bot_ tools stay sequential"]
+    EXEC --> RES["append one role:tool result per call;<br/>failures become honest error texts,<br/>never a rejection"]
+    RES --> COLLECT["collect sources · delivered-media notes<br/>confirmation ids · usage totals"]
+    COLLECT --> BUD{"iteration count<br/>reached 5?"}
+    BUD -- "yes" --> NUDGE["append a user message:<br/>'You have used all of your tool calls.<br/>Answer now using only what you have.'"]
+    BUD -- "no" --> LOOP["next iteration"]
+    NUDGE --> LOOP
+    LOOP --> DUR
+
+    style RET fill:#0e2a19,stroke:#7ee2a8,color:#7ee2a8
+    style ERR fill:#2a0f12,stroke:#ff7b81,color:#ff7b81
+    style EXEC fill:#1d1533,stroke:#c39bff,color:#e6dcff
+</pre>
+        </div>
+        <div class="facts">
+          <div class="fact">
+            <div class="v">5</div>
+            <div class="k">max tool iterations per turn</div>
+          </div>
+          <div class="fact">
+            <div class="v">15 min</div>
+            <div class="k">hard ceiling on a whole turn</div>
+          </div>
+          <div class="fact">
+            <div class="v">120 s</div>
+            <div class="k">stream idle timeout — a stalled stream aborts</div>
+          </div>
+          <div class="fact">
+            <div class="v">1 result / call</div>
+            <div
+              class="k">a failing tool returns an error text, the loop keeps going</div>
+          </div>
+        </div>
+        <p class="src">
+    <code>src/skills/assistant/httpClients/askAssistant.ts</code> ·
+    <code>src/skills/assistant/httpClients/chatCompletion.ts</code> ·
+    <code>src/skills/assistant/utilities/thinkingPolicy.ts</code>
+  </p>
+      </section>
+
+      <!-- ============================================================ 5 -->
+      <section class="diagram" id="tools">
+        <h2><span class="num">5</span>Tool resolution — three families behind one callTool</h2>
+        <p class="desc">
+    The merged tool list the model sees is: every skill command as a <code>bot_*</code> tool,
+    then MCP tools (name collisions resolved in favor of bot tools), then built-ins. When the
+    model calls one, resolution happens in that order. Only MCP and built-in tools may run
+    concurrently; anything that posts into the chat keeps its place in the queue so visible
+    order matches the order the model asked for.
+  </p>
+        <div class="card">
+          <pre class="mermaid">
+flowchart TD
+    C["callTool(name, args)"] --> B{"built-in?<br/>(get_time — Amsterdam clock)"}
+    B -- "yes" --> BR["answered straight from<br/>the bot's own process"]
+    B -- "no" --> SK{"a bot command tool<br/>in the registry?"}
+    SK -- "no" --> MCP["MCP subprocess<br/>(e.g. web search)<br/>concurrency-safe — batched"]
+    SK -- "yes" --> PREP["prepare(name, args):<br/>validate the arguments,<br/>resolve deliver_to_chat"]
+    PREP --> EFF{"declared effect<br/>= write?"}
+
+    EFF -- "yes" --> BUSY{"another confirmation<br/>already pending<br/>this turn?"}
+    BUSY -- "yes" --> REFUSE["refuse: 'another state-changing<br/>action is awaiting confirmation'"]
+    BUSY -- "no" --> CONF["queue a confirmation (diagram 6):<br/>stored in the session, 5 min TTL<br/>model is told to ask the user<br/>to use Confirm / Cancel"]
+    EFF -- "no (read)" --> DEL{"deliver_to_chat?"}
+
+    DEL -- "false — inspect as data" --> DATA["wrap ctx.api in a Proxy:<br/>sendMessage never reaches Telegram,<br/>its text is captured instead<br/>(≤ 12 000 chars back to the model)"]
+    DEL -- "true / omitted" --> EXE["execute the command for real<br/>against the Telegram API"]
+    EXE --> POSTED{"the command<br/>posted media?"}
+    POSTED -- "yes" --> VMD["vision pass over what was posted<br/>(command description as context)<br/>→ fresh bracketed media note for this turn"]
+    POSTED -- "no" --> OBS["observe the sent text (≤ 600 chars)<br/>so errors reach the model as<br/>what actually happened"]
+    VMD --> DONE(["tool result → back to the loop"])
+    OBS --> DONE
+    DATA --> DONE
+    BR --> DONE
+    MCP --> DONE
+    CONF --> DONE2(["result + confirmationId → loop"])
+    REFUSE --> DONE2
+
+    style CONF fill:#2a1d0e,stroke:#ffb86c,color:#ffd9a8
+    style VMD fill:#1d1533,stroke:#c39bff,color:#e6dcff
+    style DATA fill:#0e1a2a,stroke:#6cb2ff,color:#b7d9ff
+</pre>
+        </div>
+        <div class="callout">
+    <b>Why read tools never ask permission:</b> the tool-usage instructions in the system
+    prompt push the model to fire read-only fetches immediately and to re-fire "live snapshot"
+    tools (road cameras…) on every request about present conditions — history notes are stale
+    records, not data. Volatile commands carry that directive inside their own tool
+    description, the most local place the model will meet it.
+  </div>
+        <p class="src">
+    <code>src/skills/assistant/middlewares/createAssistantApiMiddleware/mod.ts</code> ·
+    <code>src/platform/skillModules/SkillCommandToolRegistry.ts</code> ·
+    <code>src/platform/skillModules/sentTextCollector.ts</code> ·
+    <code>src/skills/assistant/tools/builtinTools.ts</code> ·
+    <code>src/skills/assistant/mcp/registry.ts</code>
+  </p>
+      </section>
+
+      <!-- ============================================================ 6 -->
+      <section class="diagram" id="confirm">
+        <h2><span class="num">6</span>Write-tool confirmation — human in the loop</h2>
+        <p class="desc">
+    State-changing bot tools never run inside the loop. The call is parked as a
+    <code>PendingToolConfirmation</code> bound to the requester, the reply ships with a
+    Confirm / Cancel inline keyboard, and a separate <code>callback_query</code> listener
+    settles it — 5 minutes later at most.
+  </p>
+        <div class="card">
+          <pre class="mermaid">
+sequenceDiagram
+    autonumber
+    participant M as Model
+    participant L as assistant loop
+    participant S as session store
+    participant U as requester
+    participant T as Telegram API
+
+    M->>L: calls bot_ tool, effect = write
+    L->>S: park PendingToolConfirmation<br/>(id · requesterId · chatId · call · source msg, 5 min TTL)
+    L-->>M: "requires approval — explain it,<br/>do not claim it ran" + confirmationId
+    M->>U: final reply with Confirm / Cancel keyboard
+    U->>T: presses a button (callback_query)
+    T->>L: assistantToolConfirmationListener
+    L->>L: gates: chat allowlisted · not expired ·<br/>same user, same chat, same message
+    alt wrong user / chat / message
+        L-->>U: alert: only the requester can decide
+    else expired (over 5 min)
+        L->>S: drop the pending confirmation
+        L-->>U: edit message: expired
+    else cancel
+        L->>S: drop the pending confirmation
+        L-->>U: edit message: cancelled
+    else confirm
+        L->>T: execute the parked /command for real
+        opt command posts media
+            L->>L: vision pass on the delivered media
+            L->>S: rememberMediaNotes — rewrites the<br/>stored history with fresh notes
+        end
+        L-->>U: edit the confirmation message with the result
+    end
+</pre>
+        </div>
+        <p class="src">
+    <code>src/skills/assistant/utilities/toolConfirmations.ts</code> ·
+    <code>src/skills/assistant/listeners/assistantToolConfirmationListener.ts</code>
+  </p>
+      </section>
+
+      <!-- ============================================================ 7 -->
+      <section class="diagram" id="fabrication">
+        <h2><span class="num">7</span>Fabrication guard — delivery evidence is machine-written</h2>
+        <p class="desc">
+    Two things must never appear in a model reply: bracketed media notes and the
+    <code>[tools called this turn: …]</code> marker — both are written only by the bot, after
+    real delivery. A reply carrying either without the backing same-turn tool call is forging
+    evidence (typically to skip re-fetching a camera), and is never delivered as-is.
+  </p>
+        <div class="card">
+          <pre class="mermaid">
+flowchart TD
+    TURN(["turn result from the loop"]) --> SCAN{"unbacked media notes<br/>or a forged tool-trace<br/>marker in the reply?"}
+    SCAN -- "no" --> OK(["deliver as-is"])
+    SCAN -- "yes" --> RETRY["one corrective retry — deliberately<br/>context-free: system + user + the forged<br/>reply + an explicit correction<br/>(re-reading the poison precedent<br/>just forges again)"]
+    RETRY --> SCAN2{"retry still<br/>forges?"}
+    SCAN2 -- "no" --> OK2(["deliver the honest retry"])
+    SCAN2 -- "yes" --> STRIP["strip the fabrications from the text<br/>and append the honest notice:<br/>'the media was not delivered'"]
+    STRIP --> OK3(["deliver the stripped reply"])
+    RETRY -- "retry itself fails" --> STRIP
+
+    style SCAN fill:#2a1d0e,stroke:#ffb86c
+    style SCAN2 fill:#2a1d0e,stroke:#ffb86c
+    style STRIP fill:#2a0f12,stroke:#ff7b81,color:#ffbfc2
+</pre>
+        </div>
+        <p class="src">
+    <code>buildFabricationRetryMessages</code> / listener body in
+    <code>src/skills/assistant/listeners/assistantListener.ts</code> ·
+    <code>src/skills/assistant/vision/mediaMemory.ts</code> ·
+    <code>src/skills/assistant/utilities/historyToolTrace.ts</code>
+  </p>
+      </section>
+
+      <!-- ============================================================ 8 -->
+      <section class="diagram" id="delivery">
+        <h2><span class="num">8</span>Delivery &amp; memory — how a turn ends and is remembered</h2>
+        <p class="desc">
+    The finished answer replaces the progress message (never a duplicate bubble), falls back to
+    plain text when Telegram rejects the HTML, and is then written back into the session in a
+    shape the next turn can safely learn from: the cause of side effects (the tool trace) is
+    remembered, not the delivery claims.
+  </p>
+        <div class="card">
+          <pre class="mermaid">
+flowchart TD
+    A["final answer content"] --> EMJ{"emojis enabled<br/>for this chat?"}
+    EMJ -- "no" --> REM["strip emojis"]
+    EMJ -- "yes" --> CODE
+    REM --> CODE["extract code files:<br/>'File: path' blocks become attachments,<br/>the prose stays"]
+    CODE --> SRC["append a Sources footer<br/>when search results were used"]
+    SRC -- "development env" --> TRACE["append tool-trace + usage<br/>(dev-only diagnostics)"]
+    SRC -- "production" --> CHUNK
+    TRACE --> CHUNK["Markdown → Telegram HTML,<br/>chunked under 4 096 chars"]
+
+    CHUNK --> EDIT["edit the progress message<br/>into chunk 1 (+ Confirm keyboard<br/>if a write tool is pending)"]
+    EDIT -- "HTML rejected" --> PLAIN["retry as plain text,<br/>then as a fresh reply"]
+    EDIT --> REST["remaining chunks as follow-up replies"]
+    REST --> FILES["code files sent as documents"]
+    FILES --> METRICS["report usage to metrics:<br/>tokens · cached tokens · tool calls ·<br/>duration · cache-miss reason"]
+
+    METRICS --> PERSIST
+    subgraph PERSIST["session persistence — what the next turn will read"]
+        direction TB
+        p1["history + user message"] --> p2["assistant turn = tool trace prepended<br/>+ delivered answer + fresh media notes appended"] --> p3["evictHistory: halve when over<br/>~6 000 tokens, cut on a user message"]
+    end
+    PERSIST2["trajectory recorder seals the turn log<br/>(data/trajectories/)"] -.- PERSIST
+
+    style EDIT fill:#0e1a2a,stroke:#6cb2ff,color:#b7d9ff
+    style PERSIST fill:#0e2a19,stroke:#7ee2a8
+</pre>
+        </div>
+        <div class="callout">
+    <b>Why tool traces live on the assistant's own turn:</b> history keeps alternating
+    user ⇄ assistant (so eviction cuts on whole exchanges), and the trace keeps the <i>cause</i>
+    of a delivery visible — a later turn imitates the tool call instead of imitating the claim
+    that media was posted. Stale delivered-media notes are scrubbed again before every request
+    (diagram 2), so old camera fetches can never serve as precedent.
+  </div>
+        <p class="src">
+    <code>src/skills/assistant/listeners/assistantListener.ts</code> (delivery + persistence) ·
+    <code>src/skills/assistant/utilities/{historyToolTrace, reportTurnUsage}.ts</code> ·
+    <code>src/skills/assistant/trajectory/recorder.ts</code>
+  </p>
+      </section>
+    </main>
+
+    <footer>
+      <p>Generated from the source of <code>src/skills/assistant/</code> and
+  <code>src/platform/skillModules/</code> — diagrams render with mermaid.js from a CDN, so
+  viewing needs network access for the script only.</p>
+    </footer>
+
+    <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: "base",
+      darkMode: true,
+      themeVariables: {
+        background: "#11151f",
+        primaryColor: "#1a2130",
+        primaryTextColor: "#d7dce6",
+        primaryBorderColor: "#3a4662",
+        lineColor: "#5a647d",
+        secondaryColor: "#1d1533",
+        tertiaryColor: "#0e2a19",
+        textColor: "#d7dce6",
+        fontSize: "14px",
+        clusterBkg: "#161b28",
+        clusterBorder: "#232a3b",
+        edgeLabelBackground: "#11151f",
+        actorBkg: "#1a2130",
+        actorBorder: "#3a4662",
+        actorTextColor: "#d7dce6",
+        signalColor: "#aab4cc",
+        signalTextColor: "#c7cede",
+        noteBkgColor: "#2a1d0e",
+        noteTextColor: "#ffd9a8",
+        noteBorderColor: "#ffb86c",
+        altBackground: "#161b28",
+        labelBoxBkgColor: "#1a2130",
+        labelBoxBorderColor: "#3a4662",
+        loopTextColor: "#d7dce6",
+      },
+      flowchart: { htmlLabels: true, curve: "basis", padding: 10 },
+      sequence: { actorMargin: 60, boxMargin: 10, useMaxWidth: true },
+    });
+    </script>
+  </body>
+</html>

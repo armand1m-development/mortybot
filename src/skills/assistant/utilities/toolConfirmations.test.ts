@@ -14,6 +14,7 @@ const call: PreparedSkillCommandToolCall = {
   input: "PT",
   effect: "write",
   description: "Change language",
+  deliverToChat: true,
 };
 
 Deno.test("tool confirmations bind the pending write to user, chat, and source message", () => {

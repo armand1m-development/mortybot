@@ -1,28 +1,22 @@
 import type { SkillModule } from "/src/platform/skillModules/types/SkillModule.ts";
-import { createRodosolApiMiddleware } from "./middlewares/createRodosolApiMiddleware/mod.ts";
-import { cmdRodosolNow } from "./commands/cmdRodosolNow.ts";
+import { createThirdBridgeApiMiddleware } from "./middlewares/createThirdBridgeApiMiddleware/mod.ts";
 import { cmdTerceiraPonteNow } from "./commands/cmdTerceiraPonteNow.ts";
-import { noArgumentAssistantTool } from "/src/platform/skillModules/assistantTool.ts";
+import { liveSnapshotAssistantTool } from "/src/platform/skillModules/assistantTool.ts";
 
 const skillModule: SkillModule = {
   name: "espiritosanto",
   description: "Commands to get live road camera images from Espírito Santo.",
   initializers: [],
-  middlewares: [createRodosolApiMiddleware],
+  middlewares: [createThirdBridgeApiMiddleware],
   commands: [
-    {
-      command: "rodosol_now",
-      aliases: [],
-      description: "Fetch Vila Velha's Rodosol Road camera pictures now.",
-      handler: cmdRodosolNow,
-      assistantTool: noArgumentAssistantTool(),
-    },
     {
       command: "tp_now",
       aliases: [],
       description: "Fetch Vila Velha's Third Bridge camera pictures now.",
       handler: cmdTerceiraPonteNow,
-      assistantTool: noArgumentAssistantTool(),
+      assistantTool: liveSnapshotAssistantTool(
+        "Fetch Vila Velha's Terceira Ponte (Third Bridge) road camera pictures and post them to the chat. Triggered by any question about current bridge conditions, in Portuguese or English: 'como ta a terceira ponte', 'como está a ponte', 'trânsito na terceira ponte', 'ponte agora', 'terceira ponte', 'third bridge', 'bridge traffic', 'how is the bridge'. Read-only and free: call it immediately when asked — never ask permission first and never answer from memory.",
+      ),
     },
   ],
   sessionDataInitializers: [],

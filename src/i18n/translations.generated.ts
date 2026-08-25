@@ -4,6 +4,7 @@ export const supportedLanguages = ["en","pt"] as const;
 export type Language = typeof supportedLanguages[number];
 
 export const translationKeys = [
+  "assistant.contextCleared",
   "assistant.emojis.changed",
   "assistant.emojis.current",
   "assistant.emojis.unsupported",
@@ -14,6 +15,7 @@ export const translationKeys = [
   "assistant.language.name.auto",
   "assistant.language.unsupported",
   "assistant.looking",
+  "assistant.mediaNotDelivered",
   "assistant.preferences.chatEntry",
   "assistant.preferences.duplicate",
   "assistant.preferences.empty",
@@ -65,6 +67,8 @@ export const translationKeys = [
   "filters.ownerCount.unknownOwner",
   "filters.ownerList.entry",
   "filters.ownerList.unknownOwner",
+  "filters.search.missingArgument",
+  "filters.search.noMatches",
   "galileo.duration",
   "galileo.noPasses",
   "galileo.pass",
@@ -90,6 +94,7 @@ export const translationKeys = [
   "image.invalidMemeInput",
   "image.invalidTemplate",
   "image.invalidTemplateJson",
+  "image.noTemplates",
   "image.templateCreated",
   "image.templateNotFound",
   "language.changed",
@@ -100,7 +105,6 @@ export const translationKeys = [
   "math.exchangeRatesUnavailable",
   "math.invalidExpression",
   "math.rateLimited",
-  "rodosol.error",
   "taxIncome.incomeRequired",
   "taxIncome.report",
   "terceiraPonte.error",
@@ -114,6 +118,7 @@ export const translationKeys = [
 export type TranslationKey = typeof translationKeys[number];
 
 export interface TranslationValues {
+  "assistant.contextCleared": Record<never, never>;
   "assistant.emojis.changed": { "enabled": string };
   "assistant.emojis.current": { "enabled": string };
   "assistant.emojis.unsupported": Record<never, never>;
@@ -124,6 +129,7 @@ export interface TranslationValues {
   "assistant.language.name.auto": Record<never, never>;
   "assistant.language.unsupported": Record<never, never>;
   "assistant.looking": Record<never, never>;
+  "assistant.mediaNotDelivered": Record<never, never>;
   "assistant.preferences.chatEntry": { "author": string | number | Date; "id": string | number | Date; "text": string | number | Date };
   "assistant.preferences.duplicate": { "id": string | number | Date };
   "assistant.preferences.empty": Record<never, never>;
@@ -175,6 +181,8 @@ export interface TranslationValues {
   "filters.ownerCount.unknownOwner": { "count": number; "ownerId": string | number | Date };
   "filters.ownerList.entry": { "active": string; "filter": string | number | Date; "owner": string | number | Date };
   "filters.ownerList.unknownOwner": { "filter": string | number | Date; "ownerId": string | number | Date };
+  "filters.search.missingArgument": Record<never, never>;
+  "filters.search.noMatches": { "query": string | number | Date };
   "galileo.duration": { "minutes": number | string | number | Date; "seconds": string | number | Date };
   "galileo.noPasses": { "latitude": string | number | Date; "longitude": string | number | Date };
   "galileo.pass": { "date": string | number | Date; "duration": string | number | Date; "endAzimuth": string | number | Date; "endCompass": string | number | Date; "endElevation": string | number | Date; "endTime": string | number | Date; "magnitude": string | number | Date; "magnitudeBar": string | number | Date; "maxAzimuth": string | number | Date; "maxCompass": string | number | Date; "maxElevation": string | number | Date; "maxTime": string | number | Date; "startAzimuth": string | number | Date; "startCompass": string | number | Date; "startElevation": string | number | Date; "startTime": string | number | Date };
@@ -200,6 +208,7 @@ export interface TranslationValues {
   "image.invalidMemeInput": Record<never, never>;
   "image.invalidTemplate": { "templates": string | number | Date };
   "image.invalidTemplateJson": Record<never, never>;
+  "image.noTemplates": Record<never, never>;
   "image.templateCreated": Record<never, never>;
   "image.templateNotFound": Record<never, never>;
   "language.changed": { "language": string | number | Date };
@@ -210,7 +219,6 @@ export interface TranslationValues {
   "math.exchangeRatesUnavailable": Record<never, never>;
   "math.invalidExpression": Record<never, never>;
   "math.rateLimited": Record<never, never>;
-  "rodosol.error": Record<never, never>;
   "taxIncome.incomeRequired": Record<never, never>;
   "taxIncome.report": { "grossHour": string | number | Date; "grossYear": string | number | Date; "incomeTax": string | number | Date; "labourCredit": string | number | Date; "netMonth": string | number | Date; "netYear": string | number | Date; "payrollTax": string | number | Date; "socialTax": string | number | Date; "taxableYear": string | number | Date; "taxCredit": string | number | Date; "taxFreeYear": string | number | Date };
   "terceiraPonte.error": Record<never, never>;

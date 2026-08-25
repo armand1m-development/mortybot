@@ -45,11 +45,39 @@ export const noArgumentAssistantTool = (
   toCommandInput: () => "",
 });
 
+/**
+ * Read-only, argument-less command whose output is a textual listing. The
+ * assistant can either post it natively or request it as data to answer
+ * questions like "which of these have to do with X?" without dumping the
+ * whole listing into the chat.
+ */
+export const listingAssistantTool = (
+  description?: string,
+): SkillCommandAssistantTool => ({
+  ...noArgumentAssistantTool("read", description),
+  inspectable: true,
+});
+
+/**
+ * Read-only, argument-less command whose output is a live snapshot — road
+ * cameras and similar feeds that are stale the moment they are posted. The
+ * tool's description tells the model to fetch again on every request about
+ * current conditions rather than answer from an earlier fetch's note in the
+ * conversation history.
+ */
+export const liveSnapshotAssistantTool = (
+  description?: string,
+): SkillCommandAssistantTool => ({
+  ...noArgumentAssistantTool("read", description),
+  volatile: true,
+});
+
 export interface TextAssistantToolOptions {
   effect?: SkillCommandToolEffect;
   description?: string;
   argumentDescription?: string;
   enum?: string[];
+  inspectable?: boolean;
 }
 
 export const textAssistantTool = (
@@ -58,6 +86,7 @@ export const textAssistantTool = (
 ): SkillCommandAssistantTool => ({
   effect: options.effect ?? "read",
   description: options.description,
+  inspectable: options.inspectable,
   parameters: objectSchema({
     [argumentName]: {
       type: "string",

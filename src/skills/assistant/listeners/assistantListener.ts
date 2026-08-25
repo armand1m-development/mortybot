@@ -18,6 +18,11 @@ import { editProgressMessage } from "../utilities/editProgressMessage.ts";
 import { sanitizeHistory } from "../utilities/sanitizeHistory.ts";
 import { evictHistory } from "../utilities/evictHistory.ts";
 import {
+  containsHistoryToolTraceMarker,
+  prependHistoryToolTrace,
+  stripHistoryToolTraceMarkers,
+} from "../utilities/historyToolTrace.ts";
+import {
   formatToolTrace,
   formatUsageTrace,
 } from "../utilities/formatToolTrace.ts";
@@ -49,10 +54,16 @@ import {
   serializeTrajectoryError,
 } from "../trajectory/recorder.ts";
 import type { AssistantTrajectoryRecorder } from "../trajectory/types.ts";
+import type { AssistantAskOptions } from "../middlewares/createAssistantApiMiddleware/types.ts";
 import { collectMessageMedia } from "../vision/collectMessageMedia.ts";
 import { collectAlbumAttachments } from "../vision/albumBuffer.ts";
 import { describeIncomingMedia } from "../vision/describeChatMedia.ts";
-import { appendMediaNotes } from "../vision/mediaMemory.ts";
+import {
+  appendMediaNotes,
+  findDeliveredMediaNoteCommands,
+  scrubStaleDeliveredMediaNotes,
+  stripDeliveredMediaNotes,
+} from "../vision/mediaMemory.ts";
 import { mergeTurnMedia } from "../vision/mergeTurnMedia.ts";
 import type { MediaAttachment } from "../vision/types.ts";
 
@@ -84,18 +95,29 @@ const TOOL_USAGE_INSTRUCTIONS = [
   "## Tools",
   "### When to use tools",
   "- When the user asks Morty to perform one of its documented bot commands, call the matching `bot_` tool instead of merely telling them which slash command to type.",
-  "- Bot tools deliver their native Telegram output directly, including photos and media groups. After a successful bot tool, reply with only a brief contextual confirmation.",
+  "- Read-only tools cost nothing and change nothing. When the user asks about current conditions or about this chat's state — however casually phrased — call the matching tool right away instead of asking whether to proceed: asking permission for a read-only fetch only wastes a turn. Confirmation questions belong to state-changing actions.",
+  "- Bot tools deliver their native Telegram output directly, including photos and media groups. After a successful bot tool, reply with a brief contextual confirmation; when it posted photos, add a short analysis of what they show.",
+  "- Some read-only bot tools accept a `deliver_to_chat` argument. Call them with `deliver_to_chat: false` to receive their output as data and answer from it — for example when the user asks which entries relate to a topic, or any question about part of a listing. Omit the argument (or set it to true) only when the user wants the full listing posted as-is.",
+  "- When a dedicated search tool exists for a large collection — `bot_search_filters` for this chat's filters, say — call it with the user's terms instead of reading the whole collection; it returns only the relevant entries, ranked.",
   "- Never claim a bot command ran, or that its output was delivered, unless you called its tool in this same turn. If you made no tool call, nothing was posted.",
   "- State-changing bot tools do not run immediately. If a tool reports that approval is required, briefly explain the pending action and tell the user to use the Confirm or Cancel button.",
   "- ALWAYS call a search tool when the user asks you to 'search the web', 'look this up', 'find out', or anything implying they want you to retrieve external information.",
   "- ALWAYS call a search tool for questions about current events, recent news, live scores, prices, weather, schedules, or anything that changes over time.",
+  "- Road cameras and any other tool calling itself a live snapshot are stale the moment they are posted. When the user asks about present conditions — however phrased, and however recently a previous fetch's note appears in the conversation history — call the tool again in this same turn.",
+  "- What exists in a particular chat — its filters, meme templates, hashtags, preferences — is state no model can know ahead of time. Never list, count or name such items unless a tool result from this turn backs every one; when no tool can answer, say so plainly instead of inventing.",
   "- If you are uncertain whether your training data covers the topic, search instead of guessing.",
+  "- Call `get_time` whenever an answer depends on what 'now' is — the current time or date, how old something is, whether an event has passed. The bot lives in Amsterdam, and the tool reports that local time plus UTC. Never guess the time.",
   "- Do NOT search for: general knowledge you already know well (e.g. 'what is gravity'), opinions, or questions about this bot's own commands (use the skills doc below).",
   "",
   "### After using tools",
   "- Incorporate the results into your answer naturally.",
   "- Cite sources at the end of your reply when you relied on search results.",
   "- If the search returned no useful results, say so honestly rather than making something up.",
+
+  "### Tool results in conversation history",
+  "- Tool calls and their results are not replayed in the conversation history. An earlier assistant reply may begin with a `[tools called this turn: ...]` marker naming the tools that produced it; no marker means no tool ran in that turn. The marker is written by the bot alone after a reply is delivered — never write, predict, or imitate it in a reply of your own.",
+  "- Media or output that a bot tool delivered in an earlier turn exists only in that turn. Telegram does not re-send it, and neither do you: every new request must invoke the tool again in the same turn.",
+  "- If the user says something was not delivered, believe them immediately and re-run the tool. Never blame their client, and never insist on a delivery you cannot back with a tool call from this turn.",
 ].join("\n");
 
 /**
@@ -116,7 +138,7 @@ const RESPONSE_LENGTH_INSTRUCTIONS = [
   "## Length",
   "- No preamble and no postamble. Do not announce what you are about to do, and do not close by summarising what you just said.",
   "- Do not restate the question, and do not repeat content that is already visible in the chat.",
-  "- When a bot tool has already delivered its output to the chat, never reproduce it — acknowledge it in one line.",
+  "- When a bot tool has already delivered its output to the chat, never reproduce it — acknowledge it briefly, plus a short analysis of any photos it posted.",
 ].join("\n");
 
 /**
@@ -135,7 +157,8 @@ const MEDIA_INSTRUCTIONS = [
   "- Photos, videos, GIFs and stickers in this chat reach you as bracketed descriptions written by a vision pass. Treat them as your own view of the media.",
   "- Answer the question directly. Never say you cannot see images, never mention the description, the brackets, or the vision pass, and never quote a description back at the user.",
   "- The description is all you get. If it does not cover what was asked, say what you cannot make out instead of inventing it.",
-  "- A bracketed note about media a bot command posted describes what the user is looking at right now. When it covers what they actually asked, answer from it instead of only confirming that the command ran.",
+  "- A bracketed note about media a bot command posted, with the time it was fetched, describes what the chat saw at that moment. In the turn that called the tool, answer from it instead of only confirming that the command ran; in any later turn it is a stale record, not live data — re-run the tool before saying anything about present conditions.",
+  "- Bracketed notes are written only by the bot's vision pass after media is really posted. Never write, extend, or imitate one yourself: if no tool call posted media in this turn, there is nothing to describe.",
 ].join("\n");
 
 const CODE_FILE_INSTRUCTIONS = [
@@ -291,6 +314,63 @@ const formatSources = (sources: Source[]): string =>
   sources.map((source) =>
     source.title ? `- [${source.title}](${source.url})` : `- ${source.url}`
   ).join("\n");
+
+/**
+ * The correction handed back to a model that answered with a forged
+ * delivered-media note, so the retry knows exactly what went wrong and what
+ * the honest alternatives are.
+ */
+const buildFabricationCorrection = (
+  commands: string[],
+  forgedMarker: boolean,
+): string =>
+  [
+    "Correction: your previous reply contained fabricated evidence of tool calls you never made in that turn.",
+    ...(commands.length > 0
+      ? [
+        `It invented bracketed media notes (${
+          commands
+            .map((command) => `[… that /${command} posted here…]`)
+            .join(" ")
+        }) for tools that never ran.`,
+      ]
+      : []),
+    ...(forgedMarker
+      ? [
+        'It contained a forged "[tools called this turn: …]" marker. That marker is written only by the bot after a reply is delivered; a reply of yours can never legitimately contain it.',
+      ]
+      : []),
+    "Nothing was posted to the chat, and the user saw no images.",
+    "Answer again. If the user wants current camera images or any other live data, call the matching bot tool for it now; otherwise say plainly that nothing was retrieved. Never write a bracketed media note or a tool-trace marker yourself.",
+    "Earlier conversation has been set aside for this retry: answer the user's message on its own.",
+    "The user never saw the rejected reply. Do not mention it, apologize for it, or call it corrupted or failed — deliver this reply as if it were the first and only one.",
+  ].join(" ");
+
+/**
+ * Messages for the corrective retry after a reply forged delivery evidence.
+ *
+ * The history is deliberately left out. By this point it is the poison: the
+ * model fabricated once while reading it, and a retry that re-reads the same
+ * precedent fabricates again — observed as an apology immediately followed
+ * by a second forged marker. A context-free retry answers the user's message
+ * alone, which is the condition under which the model reliably makes the
+ * real tool call.
+ */
+export const buildFabricationRetryMessages = (
+  systemMessage: OpenAiMessage,
+  userMessage: OpenAiMessage,
+  fabricatedContent: string,
+  commands: string[],
+  forgedMarker: boolean,
+): OpenAiMessage[] => [
+  systemMessage,
+  userMessage,
+  { role: "assistant", content: fabricatedContent },
+  {
+    role: "user",
+    content: buildFabricationCorrection(commands, forgedMarker),
+  },
+];
 
 export const assistantListener: Middleware<Filter<BotContext, "message">> =
   async (ctx) => {
@@ -457,29 +537,37 @@ export const assistantListener: Middleware<Filter<BotContext, "message">> =
         question.length > 0 ? question : NO_TEXT_PROMPT,
       ].filter((part): part is string => Boolean(part)).join("\n\n");
 
-      const history = sanitizeHistory(ctx.session.assistant?.messages ?? []);
+      // Stale delivered-media notes are scrubbed before every request: an
+      // old camera note is worthless as data and dangerous as precedent,
+      // because the model imitates the delivery claim instead of re-running
+      // the tool. The current turn's fresh note joins the history after this.
+      const history = scrubStaleDeliveredMediaNotes(
+        sanitizeHistory(ctx.session.assistant?.messages ?? []),
+      );
       const preferences = ctx.session.assistant?.preferences;
       const speakerPreferences = ctx.from?.id !== undefined
         ? preferences?.users.get(ctx.from.id) ?? []
         : [];
-      const messages: OpenAiMessage[] = [
-        {
-          role: "system",
-          content: await buildSystemPrompt(
-            ctx.language,
-            ctx.assistantApi.tools.length > 0,
-            ctx.session.assistant?.responseLanguage ?? "auto",
-            ctx.session.assistant?.emojisEnabled ??
-              defaultAssistantEmojisEnabled,
-            ctx.configuration.assistantVisionEnabled,
-            buildAssistantPreferencesDirective(
-              preferences?.chat ?? [],
-              speakerPreferences,
-            ),
+      const systemMessage: OpenAiMessage = {
+        role: "system",
+        content: await buildSystemPrompt(
+          ctx.language,
+          ctx.assistantApi.tools.length > 0,
+          ctx.session.assistant?.responseLanguage ?? "auto",
+          ctx.session.assistant?.emojisEnabled ??
+            defaultAssistantEmojisEnabled,
+          ctx.configuration.assistantVisionEnabled,
+          buildAssistantPreferencesDirective(
+            preferences?.chat ?? [],
+            speakerPreferences,
           ),
-        },
+        ),
+      };
+      const userMessage: OpenAiMessage = { role: "user", content: userContent };
+      const messages: OpenAiMessage[] = [
+        systemMessage,
         ...history,
-        { role: "user", content: userContent },
+        userMessage,
       ];
 
       const missReason = getCacheDriftTracker().record(chatId, {
@@ -488,6 +576,76 @@ export const assistantListener: Middleware<Filter<BotContext, "message">> =
         history,
       });
 
+      const askOptions: AssistantAskOptions = {
+        onProgress: (next) => {
+          activity = next;
+        },
+        onPartial: (partial) => {
+          partialAnswer = partial;
+        },
+        onPartialDiscarded: () => {
+          partialAnswer = "";
+        },
+        ...(trajectory
+          ? { onTrajectoryEvent: (event) => trajectory.record(event) }
+          : {}),
+      };
+      let turn = await ctx.assistantApi.ask(messages, askOptions);
+
+      // Two pieces of delivery evidence are machine-written only, never part
+      // of a model reply: bracketed media notes (backed by a same-turn tool
+      // call) and the tool-trace marker (prepended after delivery). A reply
+      // carrying either without the backing tool call is forging it —
+      // typically to skip re-fetching a camera — and is never delivered
+      // as-is: one corrective retry, then the forgery is stripped and the
+      // user is told the truth.
+      const fabricatedCommandsIn = (
+        result: typeof turn,
+      ): string[] =>
+        [
+          ...new Set(findDeliveredMediaNoteCommands(result.content)),
+        ].filter((command) =>
+          !result.toolInvocations.some(({ name }) => name === `bot_${command}`)
+        );
+
+      const stripFabrications = (content: string): string =>
+        stripHistoryToolTraceMarkers(stripDeliveredMediaNotes(content));
+
+      let unbackedNotes = fabricatedCommandsIn(turn);
+      let forgedMarker = containsHistoryToolTraceMarker(turn.content);
+      if (unbackedNotes.length > 0 || forgedMarker) {
+        logger().warn(
+          `Assistant reply forged delivery evidence${
+            unbackedNotes.length > 0
+              ? ` (media notes for: ${
+                unbackedNotes.map((command) => `/${command}`).join(", ")
+              })`
+              : ""
+          }${forgedMarker ? " (tool-trace marker)" : ""}. Retrying once.`,
+        );
+        try {
+          const retried = await ctx.assistantApi.ask(
+            buildFabricationRetryMessages(
+              systemMessage,
+              userMessage,
+              turn.content,
+              unbackedNotes,
+              forgedMarker,
+            ),
+            askOptions,
+          );
+          unbackedNotes = fabricatedCommandsIn(retried);
+          forgedMarker = containsHistoryToolTraceMarker(retried.content);
+          turn = unbackedNotes.length > 0 || forgedMarker
+            ? { ...retried, content: stripFabrications(retried.content) }
+            : retried;
+        } catch (error) {
+          logger().error("Corrective retry after forged evidence failed.");
+          logger().error(error);
+          turn = { ...turn, content: stripFabrications(turn.content) };
+        }
+      }
+
       const {
         content,
         sources,
@@ -495,23 +653,10 @@ export const assistantListener: Middleware<Filter<BotContext, "message">> =
         toolInvocations,
         usage,
         mediaNotes: deliveredMediaNotes,
-      } = await ctx.assistantApi.ask(
-        messages,
-        {
-          onProgress: (next) => {
-            activity = next;
-          },
-          onPartial: (partial) => {
-            partialAnswer = partial;
-          },
-          onPartialDiscarded: () => {
-            partialAnswer = "";
-          },
-          ...(trajectory
-            ? { onTrajectoryEvent: (event) => trajectory.record(event) }
-            : {}),
-        },
-      );
+      } = turn;
+      const answerContent = unbackedNotes.length > 0 || forgedMarker
+        ? `${content}\n\n${ctx.t("assistant.mediaNotDelivered")}`
+        : content;
 
       done = true;
       await ticker.stop();
@@ -527,7 +672,9 @@ export const assistantListener: Middleware<Filter<BotContext, "message">> =
 
       const emojisEnabled = ctx.session.assistant?.emojisEnabled ??
         defaultAssistantEmojisEnabled;
-      const deliveredContent = emojisEnabled ? content : removeEmojis(content);
+      const deliveredContent = emojisEnabled
+        ? answerContent
+        : removeEmojis(answerContent);
       const extracted = extractCodeFiles(deliveredContent);
       const responseText = extracted.text.length > 0
         ? extracted.text
@@ -631,9 +778,11 @@ export const assistantListener: Middleware<Filter<BotContext, "message">> =
           role: "assistant",
           // What a bot tool posted is remembered on the assistant's own turn,
           // so the history keeps alternating user and assistant messages and
-          // eviction still cuts on whole exchanges.
+          // eviction still cuts on whole exchanges. The tool trace keeps the
+          // cause of side-effecting deliveries visible to later turns, so the
+          // model imitates the tool call instead of the delivery claim.
           content: appendMediaNotes(
-            deliveredContent,
+            prependHistoryToolTrace(toolInvocations, deliveredContent),
             deliveredMediaNotes ?? [],
           ),
         },
