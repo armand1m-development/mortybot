@@ -5,7 +5,6 @@ import {
   DEFAULT_ASSISTANT_MAX_TURN_DURATION_MS,
   DEFAULT_ASSISTANT_STREAM_IDLE_TIMEOUT_MS,
 } from "/src/skills/assistant/httpClients/chatCompletion.ts";
-import { DEFAULT_TAILNET_KEEPALIVE_INTERVAL_MS } from "/src/tailnetKeepalive.ts";
 
 export const DEFAULT_API_PORT = 3_000;
 
@@ -45,19 +44,6 @@ export const parseAssistantAllowedChatIds = (
       }
       return chatId;
     });
-};
-
-export const parseTailnetKeepaliveUrls = (
-  value: string | undefined,
-): string[] => {
-  if (value === undefined || value.trim() === "") {
-    return [];
-  }
-
-  return value
-    .split(",")
-    .map((entry) => entry.trim())
-    .filter((entry) => entry.length > 0);
 };
 
 export const parsePositiveInteger = (
@@ -225,18 +211,5 @@ export const loadEnvironment = async (): Promise<Configuration> => {
       false,
     ),
     mcpConfigPath: Deno.env.get("MCP_CONFIG") ?? "./mcp.json",
-    tailnetKeepaliveEnabled: parseBoolean(
-      "TAILNET_KEEPALIVE_ENABLED",
-      Deno.env.get("TAILNET_KEEPALIVE_ENABLED"),
-      true,
-    ),
-    tailnetKeepaliveIntervalMs: parsePositiveInteger(
-      "TAILNET_KEEPALIVE_INTERVAL_MS",
-      Deno.env.get("TAILNET_KEEPALIVE_INTERVAL_MS"),
-      DEFAULT_TAILNET_KEEPALIVE_INTERVAL_MS,
-    ),
-    tailnetKeepaliveUrls: parseTailnetKeepaliveUrls(
-      Deno.env.get("TAILNET_KEEPALIVE_URLS"),
-    ),
   };
 };

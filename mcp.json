@@ -5,12 +5,12 @@
       "args": [
         "run",
         "--allow-env=SEARXNG_SERVER_URL,SEARXNG_MODE,SEARXNG_METHOD",
-        "--allow-net=100.127.91.6:13000",
+        "--allow-net=host.docker.internal:13000",
         "--frozen",
         "./src/skills/assistant/mcp/servers/searxng.ts"
       ],
       "env": {
-        "SEARXNG_SERVER_URL": "http://100.127.91.6:13000",
+        "SEARXNG_SERVER_URL": "http://host.docker.internal:13000",
         "SEARXNG_MODE": "json",
         "SEARXNG_METHOD": "get"
       },

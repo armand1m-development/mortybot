@@ -102,7 +102,6 @@ Commands to get live road camera images from Espírito Santo.
 
 ### Commands
 
-- [x] `/rodosol_now`: Fetch Vila Velha's Rodosol Road camera pictures now.
 - [x] `/tp_now`: Fetch Vila Velha's Third Bridge camera pictures now.
 
 ## Skill: "math"
@@ -381,72 +380,26 @@ You probably want to use a process manager like `systemd`.
 
 ### Docker
 
-This bot is published publicly as a Docker Image, so you should be able to run
-it anywhere you can run a Docker Container.
+This bot runs as a Docker Container on the same host as the sglang and SearXNG
+services it depends on. The compose file maps `host.docker.internal` to the
+host's gateway address, so `OPENAI_BASE_URL` and `mcp.json` can point at
+services listening on the host without going through a VPN or the outside
+network.
 
-To run it locally, just run the following:
-
-```sh
-# create a volume to persist data
-docker volume create mortybot_data
-
-# (optional) build image from source
-docker build . -t armand1m/mortybot
-
-# run the container
-docker run \
-  -e BOT_TOKEN="your-bot-token-here" \
-  --mount source=mortybot_data,target=/app/data \
-  armand1m/mortybot
-```
-
-### Fly
-
-This bot is published in https://fly.io
-
-The CI will take care of publishing the last main branch state into the official
-bot release.
-
-Publishing it in your instance should be easy:
+Copy `.env.example` into `.env`, fill in the tokens, and make sure the model and
+search endpoints match the host services:
 
 ```sh
-# get credentials
-fly auth login
-
-# set the bot token from @BotFather and a Tailscale auth key as secrets
-#
-# secrets in fly are automatically added to
-# the instance as env vars with the same name
-fly secrets set \
-  BOT_TOKEN=123123123:32132132131312 \
-  TAILSCALE_AUTHKEY=tskey-auth-example
-
-# create a volume to hold persistent group data
-# 1gb is more than enough.
-fly vol create mortybot_data -s 1
-
-# ship it
-fly deploy
+OPENAI_BASE_URL=http://host.docker.internal:30000/v1   # sglang on the host
+# mcp.json points SearXNG at http://host.docker.internal:13000
 ```
 
-The Tailscale key should be reusable, pre-authorized, and ephemeral so deploys
-can join the tailnet without manual approval and stale Fly nodes are cleaned up.
-The daemon keeps its node state under `/app/data/tailscale` on the existing Fly
-volume, accepts advertised subnet routes and MagicDNS, and blocks unsolicited
-inbound tailnet connections. Configure the tailnet policy for the key's node or
-tag so it can reach the private model endpoint and port.
+Then build and start it:
 
-`TAILSCALE_ENABLED` is set only in `fly.toml`, so running the Docker image
-elsewhere still starts the bot without requiring Tailscale. Override
-`TAILSCALE_HOSTNAME` if this instance needs a different tailnet name.
+```sh
+docker compose up -d --build
+docker compose logs -f mortybot
+```
 
-After an idle period the first request to a tailnet service used to stall while
-the WireGuard path to the host was re-established through the DERP relay, so the
-bot keeps that path warm: every 25 seconds it GETs `${OPENAI_BASE_URL}/models`,
-where any HTTP answer counts as a success — only the tunnel crossing matters.
-Both the model endpoint and SearXNG live on the same tailnet host, so this one
-probe covers them all; set `TAILNET_KEEPALIVE_URLS` (comma-separated) only if a
-service moves to a different host. The cadence and on/off switch are
-`TAILNET_KEEPALIVE_INTERVAL_MS` and `TAILNET_KEEPALIVE_ENABLED`.
-
-Refer to https://fly.io docs for more details on other commons operations.
+Data persists under `./data`, and the container restarts automatically unless it
+was explicitly stopped (`restart: unless-stopped`).

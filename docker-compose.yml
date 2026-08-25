@@ -1,9 +1,16 @@
-version: '3'
 services:
   mortybot:
-    build: . 
+    build: .
+    container_name: mortybot
     env_file:
       - .env
+    # The bot talks to sglang and SearXNG running directly on this host, so
+    # resolve host.docker.internal to the host's gateway address on the bridge
+    # network and point OPENAI_BASE_URL / mcp.json at it.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "3000:3000"
     volumes:
       - ./data:/app/data
-    
+    restart: unless-stopped
