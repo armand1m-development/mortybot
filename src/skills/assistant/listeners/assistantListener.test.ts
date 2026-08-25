@@ -11,6 +11,7 @@ import { loadSkillModule } from "/src/platform/skillModules/loadSkill.ts";
 import { SkillCommandToolRegistry } from "/src/platform/skillModules/SkillCommandToolRegistry.ts";
 import {
   assistantListener,
+  buildFabricationRetryMessages,
   buildSystemPrompt,
   MAX_CACHED_SYSTEM_PROMPTS,
 } from "./assistantListener.ts";
@@ -67,6 +68,21 @@ Deno.test("directives order language, then emoji, then preferences", async () =>
 
   assertEquals(languageAt >= 0 && emojiAt > languageAt, true);
   assertEquals(preferencesAt > emojiAt, true);
+});
+
+Deno.test("tool instructions document the history tool trace marker", async () => {
+  const withTools = await buildSystemPrompt(
+    ...(["en", true, "auto", true, false, ""] as PromptInputs),
+  );
+
+  assertStringIncludes(withTools, "### Tool results in conversation history");
+  assertStringIncludes(withTools, "`[tools called this turn:");
+
+  const withoutTools = await buildSystemPrompt(...inputs(""));
+  assertEquals(
+    withoutTools.includes("### Tool results in conversation history"),
+    false,
+  );
 });
 
 Deno.test("the prompt cache evicts its least recently used entries", async () => {
@@ -212,4 +228,31 @@ Deno.test("assistant keeps an unknown leading command", async () => {
   ctx.skillCommandTools = await buildRegistry();
 
   await assertRejects(() => runAssistantListener(ctx), Error, NO_TURN_ERROR);
+});
+
+Deno.test("the fabrication retry asks without the poisoned history", () => {
+  const system = { role: "system" as const, content: "system prompt" };
+  const user = { role: "user" as const, content: "third bridge images pls" };
+  const fabricated =
+    "[tools called this turn: bot_tp_now]\nThe cameras are now posted.";
+
+  const retry = buildFabricationRetryMessages(
+    system,
+    user,
+    fabricated,
+    [],
+    true,
+  );
+
+  // System and the user's question, the forged reply, then the correction —
+  // and nothing of the history the model fabricated under.
+  assertEquals(retry.length, 4);
+  assertEquals(retry[0], system);
+  assertEquals(retry[1], user);
+  assertEquals(retry[2], { role: "assistant", content: fabricated });
+  assertEquals(retry[3].role, "user");
+  assertStringIncludes(retry[3].content as string, "set aside");
+  assertStringIncludes(retry[3].content as string, "forged");
+  // The phantom-reply rule: the user never saw the rejected attempt.
+  assertStringIncludes(retry[3].content as string, "never saw");
 });

@@ -1,3 +1,4 @@
+import type { OpenAiMessage } from "../httpClients/types.ts";
 import type { MediaAttachment, MediaKind } from "./types.ts";
 
 /**
@@ -85,12 +86,81 @@ export const buildMediaHeadline = (
     : `Attached ${withSender(attachments)}`;
 };
 
-/** Headline for media a bot command posted into the chat itself. */
+/**
+ * Headline for media a bot command posted into the chat itself.
+ *
+ * Names when the fetch happened, in UTC: the note stays in the history long
+ * after the moment it describes, and without the timestamp a camera snapshot
+ * read three turns later is indistinguishable from current conditions.
+ */
 export const buildDeliveredMediaHeadline = (
   attachments: MediaAttachment[],
   command: string,
+  fetchedAt: Date,
 ): string =>
-  `${summarizeAttachments(attachments)} that /${command} posted here`;
+  `${summarizeAttachments(attachments)} that /${command} posted here, fetched ${
+    formatFetchedAt(fetchedAt)
+  }`;
+
+const formatFetchedAt = (fetchedAt: Date): string =>
+  `${fetchedAt.toISOString().slice(0, 16).replace("T", " ")} UTC`;
+
+/**
+ * Matches a delivered-media note, e.g.
+ * "[4 photos that /tp_now posted here, fetched …: …]" and the older
+ * untimestamped "[4 photos that /tp_now posted here: …]".
+ *
+ * The bracketed form only ever enters the conversation when the bot stores a
+ * turn's own media notes; a model reply that contains one is quoting or
+ * forging the format, never reporting a live delivery.
+ */
+export const DELIVERED_MEDIA_NOTE_PATTERN =
+  /\[\d+[^\]\n]{0,80}? that \/([a-z0-9_]+) posted here[^\]]*\]/g;
+
+const COMMAND_GROUP = 1;
+
+/** Commands whose delivered-media notes a piece of text claims to contain. */
+export const findDeliveredMediaNoteCommands = (content: string): string[] =>
+  [
+    ...content.matchAll(DELIVERED_MEDIA_NOTE_PATTERN),
+  ].map((match) => match[COMMAND_GROUP]);
+
+/** Removes every delivered-media note from a piece of text. */
+export const stripDeliveredMediaNotes = (content: string): string =>
+  content
+    .replace(DELIVERED_MEDIA_NOTE_PATTERN, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+
+/**
+ * What a delivered-media note becomes once its turn has passed: the photos are
+ * gone from the context, and leaving the full note there only teaches the
+ * model to reproduce the format instead of re-running the tool.
+ */
+const staleNoteStub = (command: string): string =>
+  `[/${command} posted photos in this earlier turn; they are no longer available]`;
+
+/**
+ * Replaces delivered-media notes in past assistant turns with their stub.
+ *
+ * Applied to the loaded history before each request: the current turn's fresh
+ * note survives until the next one, but nothing older keeps feeding the model
+ * a copyable claim of delivery.
+ */
+export const scrubStaleDeliveredMediaNotes = (
+  history: OpenAiMessage[],
+): OpenAiMessage[] =>
+  history.map((message) =>
+    message.role === "assistant" && typeof message.content === "string"
+      ? {
+        ...message,
+        content: message.content.replace(
+          DELIVERED_MEDIA_NOTE_PATTERN,
+          (_, command: string) => staleNoteStub(command),
+        ),
+      }
+      : message
+  );
 
 const collapseWhitespace = (text: string): string =>
   text.replace(/\s+/g, " ").trim();

@@ -7,6 +7,10 @@ import type {
 import { normalizeOpenAiTools } from "/src/skills/assistant/utilities/normalizeTools.ts";
 import { executeSkillCommand } from "./executeSkillCommand.ts";
 import { createSentMediaCollector } from "./sentMediaCollector.ts";
+import {
+  createSentTextCollector,
+  createSentTextObserver,
+} from "./sentTextCollector.ts";
 import type { SkillModule } from "./types/SkillModule.ts";
 import type {
   SkillCommand,
@@ -14,6 +18,75 @@ import type {
 } from "./types/SkillCommand.ts";
 
 const TOOL_PREFIX = "bot_";
+
+/**
+ * Appended to the description of volatile commands. The model meets tool
+ * descriptions on every turn, so this is the most local place to counter its
+ * habit of answering "how is it now?" from an earlier fetch's media note.
+ */
+const VOLATILE_TOOL_DIRECTIVE =
+  "Live snapshot: only current at the moment it runs. Call this tool on every request about present conditions, even when an earlier result is quoted in the conversation history; never answer such a request from memory or from an earlier fetch.";
+
+/** Tool argument the model uses to choose between posting and inspecting. */
+const DELIVER_TO_CHAT_ARGUMENT = "deliver_to_chat";
+
+const DELIVER_TO_CHAT_PARAMETER = {
+  type: "boolean",
+  description:
+    "Set false to receive this command's output as data to analyze and answer from, instead of posting it to the chat. Omit it (or set true) when the user wants the full listing posted as-is.",
+};
+
+/**
+ * Merges the delivery switch into a command's schema without mutating the
+ * schema the skill declared.
+ */
+const withDeliverToChatParameter = (
+  parameters: Record<string, unknown>,
+): Record<string, unknown> => ({
+  ...parameters,
+  properties: {
+    ...(parameters.properties as Record<string, unknown> | undefined),
+    [DELIVER_TO_CHAT_ARGUMENT]: DELIVER_TO_CHAT_PARAMETER,
+  },
+});
+
+const parseDeliverToChat = (value: unknown): boolean => {
+  if (value === undefined) {
+    return true;
+  }
+  if (typeof value !== "boolean") {
+    throw new TypeError(`"${DELIVER_TO_CHAT_ARGUMENT}" must be a boolean.`);
+  }
+  return value;
+};
+
+/** Hard ceiling on captured output, so a huge listing cannot flood the turn. */
+const MAX_INSPECTED_OUTPUT_CHARACTERS = 12_000;
+
+/**
+ * A delivered command's short replies — one-line results and error messages —
+ * travel back to the model, because they are the only honest account of what
+ * the user is looking at when no media was posted. Anything longer is a
+ * listing the chat already received, and serializing it again would only
+ * invite the model to repeat it.
+ */
+const MAX_DELIVERED_TEXT_CHARACTERS = 600;
+
+const formatInspectedCommandOutput = (
+  command: string,
+  texts: string[],
+): string => {
+  if (texts.length === 0) {
+    return `/${command} produced no output, and nothing was posted to the chat.`;
+  }
+
+  const joined = texts.join("\n\n");
+  const output = joined.length > MAX_INSPECTED_OUTPUT_CHARACTERS
+    ? `${joined.slice(0, MAX_INSPECTED_OUTPUT_CHARACTERS)}\n…[truncated]`
+    : joined;
+
+  return `/${command} ran with its delivery suppressed. Nothing was posted to the chat. Its full output follows as data — answer the user's question from it, and do not claim anything was sent. If the user wants the listing itself posted, call the tool again with ${DELIVER_TO_CHAT_ARGUMENT}=true.\n\n${output}`;
+};
 
 interface RegisteredCommandTool {
   skillName: string;
@@ -27,6 +100,8 @@ export interface PreparedSkillCommandToolCall {
   input: string;
   effect: SkillCommandToolEffect;
   description: string;
+  /** Whether this call posts its output to the chat or returns it as data. */
+  deliverToChat: boolean;
 }
 
 export interface SkillCommandToolsContext {
@@ -38,7 +113,9 @@ export interface SkillCommandExecutionOptions {
   sourceMessage?: Message;
   /**
    * Inspects the media the command posted into the chat and returns a note
-   * describing it, or undefined when there is nothing worth remembering.
+   * describing it, or undefined when there is nothing worth remembering. The
+   * command's description comes along so the describing pass knows what kind
+   * of media it is looking at.
    *
    * Injected rather than imported so the platform stays unaware of how the
    * assistant looks at images.
@@ -46,6 +123,7 @@ export interface SkillCommandExecutionOptions {
   onMediaSent?: (
     messages: Message[],
     command: string,
+    description?: string,
   ) => Promise<string | undefined>;
 }
 
@@ -88,9 +166,16 @@ export class SkillCommandToolRegistry {
           type: "function" as const,
           function: {
             name,
-            description: command.assistantTool.description ??
-              `${command.description} (MortyBot skill: ${skillName}, command: /${command.command})`,
-            parameters: command.assistantTool.parameters,
+            description: [
+              command.assistantTool.description ??
+                `${command.description} (MortyBot skill: ${skillName}, command: /${command.command})`,
+              ...(command.assistantTool.volatile
+                ? [VOLATILE_TOOL_DIRECTIVE]
+                : []),
+            ].join(" "),
+            parameters: command.assistantTool.inspectable
+              ? withDeliverToChatParameter(command.assistantTool.parameters)
+              : command.assistantTool.parameters,
           },
         })),
     );
@@ -144,6 +229,9 @@ export class SkillCommandToolRegistry {
       input: command.assistantTool.toCommandInput(args),
       effect: command.assistantTool.effect,
       description: command.description,
+      deliverToChat: command.assistantTool.inspectable
+        ? parseDeliverToChat(args[DELIVER_TO_CHAT_ARGUMENT])
+        : true,
     };
   }
 
@@ -157,6 +245,29 @@ export class SkillCommandToolRegistry {
       return { text: "This bot command is no longer available.", sources: [] };
     }
 
+    if (!prepared.deliverToChat) {
+      const text = createSentTextCollector();
+
+      await executeSkillCommand(
+        registered.skillName,
+        registered.command,
+        ctx,
+        prepared.input,
+        {
+          ...(options.sourceMessage
+            ? { sourceMessage: options.sourceMessage }
+            : {}),
+          api: text.wrap(ctx.api),
+        },
+      );
+
+      return {
+        text: formatInspectedCommandOutput(prepared.command, text.texts),
+        sources: [],
+      };
+    }
+
+    const text = createSentTextObserver();
     const media = options.onMediaSent ? createSentMediaCollector() : undefined;
 
     await executeSkillCommand(
@@ -168,22 +279,49 @@ export class SkillCommandToolRegistry {
         ...(options.sourceMessage
           ? { sourceMessage: options.sourceMessage }
           : {}),
-        ...(media ? { api: media.wrap(ctx.api) } : {}),
+        api: media ? media.wrap(text.wrap(ctx.api)) : text.wrap(ctx.api),
       },
     );
 
     const mediaNote = media && media.messages.length > 0
-      ? await options.onMediaSent?.(media.messages, prepared.command)
+      ? await options.onMediaSent?.(
+        media.messages,
+        prepared.command,
+        prepared.description,
+      )
       : undefined;
 
+    // The result must describe what actually happened, because the model's
+    // reply is built on it alone: a command whose fetch failed replies with an
+    // error string, and telling the model "delivery succeeded" turns that
+    // failure into a confident lie.
+    const deliveredText = text.texts.join("\n\n");
+    const textBranch = deliveredText.length > 0 &&
+      deliveredText.length <= MAX_DELIVERED_TEXT_CHARACTERS;
+
+    const resultText = [
+      mediaNote
+        ? [
+          `/${prepared.command} handled the request and delivered its media to the Telegram chat.`,
+          "What it posted is described below. Confirm the delivery in one short line, then briefly analyze the pictures for the user — for camera feeds that means traffic, movement and congestion. Never repeat the description verbatim, and never state anything it does not support.",
+          `What it posted: ${mediaNote}`,
+        ]
+        : media && media.messages.length > 0
+        ? [
+          `/${prepared.command} posted ${media.messages.length} media messages to the Telegram chat, but they could not be analyzed, so nothing is known about what they show. Confirm the delivery in one line and say plainly that you cannot analyze the pictures. Never describe, guess, or invent their content.`,
+        ]
+        : textBranch
+        ? [
+          `/${prepared.command} replied directly in the Telegram chat with the message below. It is the command's own report of what happened: if it announces a failure, relay that honestly instead of claiming success.`,
+          deliveredText,
+        ]
+        : [
+          `/${prepared.command} handled the request and delivered its output or guidance directly in the Telegram chat. Reply with only a brief confirmation.`,
+        ],
+    ].flat().join("\n");
+
     return {
-      text: [
-        `/${prepared.command} handled the request and delivered its output or guidance directly in the Telegram chat. Reply with only a brief confirmation.`,
-        // The model cannot see what the command posted, so the description of
-        // it is the only way an answer can refer to the pictures the user is
-        // looking at right now.
-        ...(mediaNote ? [`What it posted: ${mediaNote}`] : []),
-      ].join("\n"),
+      text: resultText,
       sources: [],
       deliveredToChat: true,
       ...(mediaNote ? { mediaNotes: [mediaNote] } : {}),

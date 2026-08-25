@@ -16,6 +16,7 @@ const createPending = (): PendingAssistantToolConfirmation => ({
     input: "PT",
     effect: "write",
     description: "Change language",
+    deliverToChat: true,
   },
   sourceMessage: {
     message_id: 10,

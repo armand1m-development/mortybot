@@ -54,11 +54,16 @@ export const describeIncomingMedia = async (
  * Describes media a bot command posted while the assistant was running it as a
  * tool, so the assistant can answer questions about pictures it caused to
  * appear but never saw.
+ *
+ * The command's description reaches the describing pass as context, because it
+ * is what tells that pass the pictures are road cameras rather than a meme —
+ * and so what the note should bother to mention.
  */
 export const describeDeliveredMedia = async (
   ctx: BotContext,
   messages: Message[],
   command: string,
+  commandDescription?: string,
 ): Promise<string | undefined> => {
   const attachments = messages.flatMap((message) =>
     collectMessageMedia(message)
@@ -68,14 +73,17 @@ export const describeDeliveredMedia = async (
     return undefined;
   }
 
+  const fetchedAt = new Date();
   const description = await analyzeTelegramMedia(ctx, attachments, {
-    context:
+    context: [
       `the bot itself just posted them by running its /${command} command`,
+      ...(commandDescription ? [`that command ${commandDescription}`] : []),
+    ].join("; "),
   });
 
   return description
     ? formatMediaMemoryNote(
-      buildDeliveredMediaHeadline(attachments, command),
+      buildDeliveredMediaHeadline(attachments, command, fetchedAt),
       description,
     )
     : undefined;

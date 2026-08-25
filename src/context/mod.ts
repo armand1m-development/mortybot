@@ -6,7 +6,7 @@ import type { FileFlavor } from "@grammyjs/files";
 import type { ConfigurationContext } from "/src/platform/configuration/middlewares/types.ts";
 import type { CurrencyApiContext } from "/src/skills/currency/middlewares/createCurrencyApiMiddleware/types.ts";
 import type { WeatherApiContext } from "/src/skills/weather/middlewares/createWeatherApiMiddleware/types.ts";
-import type { RodosolApiContext } from "/src/skills/espiritosanto/middlewares/createRodosolApiMiddleware/types.ts";
+import type { ThirdBridgeApiContext } from "/src/skills/espiritosanto/middlewares/createThirdBridgeApiMiddleware/types.ts";
 import type { LocationsApiContext } from "/src/skills/horeca/middlewares/createLocationsApiMiddleware/types.ts";
 import type { FilterSessionData } from "/src/skills/filters/sessionData/types.ts";
 import type { GoodbyeCounterSessionData } from "/src/skills/goodbye/sessionData/types.ts";
@@ -31,7 +31,7 @@ export type BotContext =
   & FileFlavor<Context>
   & CurrencyApiContext
   & WeatherApiContext
-  & RodosolApiContext
+  & ThirdBridgeApiContext
   & N2yoApiContext
   & ConfigurationContext
   & LocationsApiContext

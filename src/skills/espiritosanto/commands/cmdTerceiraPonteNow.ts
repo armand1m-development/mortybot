@@ -13,7 +13,8 @@ export const cmdTerceiraPonteNow: CommandMiddleware<BotContext> = async (
 
     await ctx.api.sendChatAction(ctx.chat.id, "upload_photo");
 
-    const thirdBridgePictures = await ctx.rodosolApi.fetchThirdBridgeImages();
+    const thirdBridgePictures = await ctx.thirdBridgeApi
+      .fetchThirdBridgeImages();
     const media = thirdBridgePictures.map(({ bytes, extension }, index) => ({
       type: "photo" as const,
       media: new InputFile(

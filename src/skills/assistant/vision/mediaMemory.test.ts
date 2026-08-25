@@ -46,8 +46,9 @@ Deno.test("headlines keep who sent the media and whether it was a reply", () => 
     buildDeliveredMediaHeadline(
       [attachment({}), attachment({ fileId: "b" })],
       "tp_now",
+      new Date("2026-08-22T13:27:21.134Z"),
     ),
-    "2 photos that /tp_now posted here",
+    "2 photos that /tp_now posted here, fetched 2026-08-22 13:27 UTC",
   );
 });
 

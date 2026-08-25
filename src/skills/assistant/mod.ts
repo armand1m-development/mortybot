@@ -25,6 +25,7 @@ import { createInitialAssistantPreferences } from "./utilities/assistantPreferen
 import { cmdAssistantPreferences } from "./commands/cmdAssistantPreferences.ts";
 import { cmdRememberPreference } from "./commands/cmdRememberPreference.ts";
 import { cmdForgetPreference } from "./commands/cmdForgetPreference.ts";
+import { cmdAssistantClear } from "./commands/cmdAssistantClear.ts";
 
 const skillModule: SkillModule = {
   name: "assistant",
@@ -56,6 +57,16 @@ const skillModule: SkillModule = {
         enum: ["ON", "OFF"],
         argumentDescription: "Whether assistant responses may contain emojis.",
       }),
+    },
+    {
+      command: "assistant_clear",
+      aliases: ["clear_context"],
+      description: "Clears the assistant's conversation history for this chat.",
+      handler: cmdAssistantClear,
+      assistantTool: noArgumentAssistantTool(
+        "write",
+        "Forgets every message of this chat's assistant conversation, keeping settings and preferences. Use it when the user asks to clear, reset, or wipe the assistant's memory or context for this chat.",
+      ),
     },
     {
       command: "preferences",

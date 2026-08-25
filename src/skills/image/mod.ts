@@ -4,12 +4,14 @@ import { cmdCreateMeme } from "./commands/cmdCreateMeme.ts";
 import { cmdCreateMemeTemplate } from "./commands/cmdCreateMemeTemplate.ts";
 import { getInitialMemeTemplateSessionData } from "./sessionData/getInitialMemeTemplateSessionData.ts";
 import { cmdGetMemeTemplate } from "./commands/cmdGetMemeTemplate.ts";
+import { cmdListMemeTemplates } from "./commands/cmdListMemeTemplates.ts";
 import { cmdToggleMemeTemplateDebug } from "./commands/cmdToggleMemeTemplateDebug.ts";
 import { createRouter } from "./router/mod.ts";
 import * as queryString from "querystring";
 import {
   assistantToolObjectSchema,
   createAssistantTool,
+  listingAssistantTool,
   noArgumentAssistantTool,
   requireStringArgument,
   textAssistantTool,
@@ -85,6 +87,15 @@ const skillModule: SkillModule = {
             queryString.stringify(texts as Record<string, string>)
           }`;
         },
+      ),
+    },
+    {
+      command: "memes",
+      aliases: ["list_memes"],
+      description: "List this chat's meme templates and their text slots",
+      handler: cmdListMemeTemplates,
+      assistantTool: listingAssistantTool(
+        "List this chat's meme templates: every name with the text slots it takes, `?` marking the optional ones. This is the only source of what templates exist here — call it before bot_create_meme to pick a valid template name and its slots, and to answer which templates this chat has.",
       ),
     },
     {

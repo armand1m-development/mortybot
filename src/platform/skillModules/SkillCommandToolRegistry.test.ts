@@ -2,7 +2,7 @@ import { assert, assertEquals, assertThrows } from "@std/assert";
 import type { BotContext } from "/src/context/mod.ts";
 import { skills } from "/src/skills/skills.ts";
 import { loadSkillModule } from "./loadSkill.ts";
-import { textAssistantTool } from "./assistantTool.ts";
+import { listingAssistantTool, textAssistantTool } from "./assistantTool.ts";
 import { SkillCommandToolRegistry } from "./SkillCommandToolRegistry.ts";
 import type { SkillModule } from "./types/SkillModule.ts";
 
@@ -59,6 +59,48 @@ Deno.test("SkillCommandToolRegistry reports whether a command name is registered
   assertEquals(registry.has("bot_tp_now"), true);
 });
 
+Deno.test("volatile camera commands carry the always-refetch directive", async () => {
+  const modules = await Promise.all(skills.map(loadSkillModule));
+  const registry = new SkillCommandToolRegistry();
+  registry.registerSkills(modules);
+  const tools = registry.getOpenAiTools("private");
+  const descriptionOf = (name: string): string =>
+    tools.find((tool) => tool.function.name === name)?.function.description ??
+      "";
+
+  // Live feeds tell the model to fetch again instead of answering from an
+  // earlier fetch's note in the history — and carry the Portuguese and
+  // English phrasings users actually ask with.
+  for (const name of ["bot_tp_now"]) {
+    assert(descriptionOf(name).includes("Live snapshot"), name);
+    assert(
+      descriptionOf(name).includes("Call this tool on every request"),
+      name,
+    );
+    assert(descriptionOf(name).includes("never ask permission"), name);
+  }
+  assert(descriptionOf("bot_tp_now").includes("terceira ponte"));
+
+  // Static commands must not carry it.
+  assert(!descriptionOf("bot_chat_id").includes("Live snapshot"));
+});
+
+Deno.test("bot_memes is an inspectable listing of this chat's templates", async () => {
+  const modules = await Promise.all(skills.map(loadSkillModule));
+  const registry = new SkillCommandToolRegistry();
+  registry.registerSkills(modules);
+
+  const memes = registry.getOpenAiTools("private").find((tool) =>
+    tool.function.name === "bot_memes"
+  )!;
+  const schema = memes.function.parameters as Record<string, unknown>;
+
+  // The listing is answerable as data, so the model never has to enumerate
+  // this chat's templates from memory.
+  assertEquals(Object.keys(schema.properties as object), ["deliver_to_chat"]);
+  assert(memes.function.description?.includes("only source"));
+});
+
 Deno.test("SkillCommandToolRegistry runs command middleware with scoped match", async () => {
   const order: string[] = [];
   const skill: SkillModule = {
@@ -91,6 +133,7 @@ Deno.test("SkillCommandToolRegistry runs command middleware with scoped match", 
   const ctx = {
     match: "original",
     update: { update_id: 1 },
+    api: {},
   } as unknown as BotContext;
 
   const call = registry.prepare("bot_echo", { text: "hello" }, "private");
@@ -157,7 +200,7 @@ Deno.test("bot_tp_now tool sends the native media group", async () => {
         return Promise.resolve(true);
       },
     },
-    rodosolApi: {
+    thirdBridgeApi: {
       fetchThirdBridgeImages: () =>
         Promise.resolve([
           { bytes: new Uint8Array([1]), extension: "jpg" },
@@ -204,6 +247,7 @@ Deno.test("a tool that posts pictures reports what they showed", async () => {
   registry.registerSkills([skill]);
 
   let observed: number[] = [];
+  let observedDescription: string | undefined;
   const ctx = {
     update: { update_id: 1 },
     api: {
@@ -222,8 +266,9 @@ Deno.test("a tool that posts pictures reports what they showed", async () => {
 
   const call = registry.prepare("bot_cameras", { text: "now" }, "private");
   const result = await registry.execute(ctx, call, {
-    onMediaSent: (messages, command) => {
+    onMediaSent: (messages, command, description) => {
       observed = messages.map((message) => message.message_id);
+      observedDescription = description;
       return Promise.resolve(
         `[2 photos that /${command} posted here: traffic]`,
       );
@@ -231,10 +276,103 @@ Deno.test("a tool that posts pictures reports what they showed", async () => {
   });
 
   assertEquals(observed, [11, 12]);
+  assertEquals(observedDescription, "Post camera pictures");
   assertEquals(result.mediaNotes, [
     "[2 photos that /cameras posted here: traffic]",
   ]);
   assert(result.text.includes("[2 photos that /cameras posted here: traffic]"));
+  // With media described, the model is asked for an analysis, not just a
+  // confirmation.
+  assert(result.text.includes("briefly analyze the pictures"));
+});
+
+Deno.test("a failed fetch reaches the model as the command's own report", async () => {
+  const skill: SkillModule = {
+    name: "test",
+    description: "Test skill",
+    commands: [{
+      command: "cameras",
+      aliases: [],
+      description: "Post camera pictures",
+      assistantTool: textAssistantTool("text"),
+      handler: (ctx) => ctx.reply("Could not fetch the camera images."),
+    }],
+    initializers: [],
+    middlewares: [],
+    sessionDataInitializers: [],
+    listeners: [],
+    inlineQueryListeners: [],
+    migrations: {},
+    router: null,
+  };
+  const registry = new SkillCommandToolRegistry();
+  registry.registerSkills([skill]);
+  const posted: string[] = [];
+  const ctx = listingContext(posted);
+
+  const call = registry.prepare("bot_cameras", { text: "now" }, "private");
+  const result = await registry.execute(ctx, call);
+
+  // The error text itself travels back, so the model relays the failure
+  // instead of confirming a delivery that never happened.
+  assert(result.text.includes("Could not fetch the camera images."));
+  assert(result.text.includes("relay that honestly"));
+  assert(!result.text.includes("delivered its output or guidance"));
+  assertEquals(posted, ["Could not fetch the camera images."]);
+});
+
+Deno.test("media that cannot be analyzed is reported as undescribed", async () => {
+  const registry = new SkillCommandToolRegistry();
+  registry.registerSkills([{
+    ...listingSkill(),
+    commands: [{
+      ...listingSkill().commands[0],
+      command: "cameras",
+      handler: function (ctx: BotContext) {
+        return ctx.replyWithMediaGroup([]);
+      },
+    }],
+  }]);
+  const ctx = {
+    update: { update_id: 1 },
+    api: {
+      sendMediaGroup: () => Promise.resolve([{ message_id: 11 }]),
+    },
+    replyWithMediaGroup(media: unknown[]) {
+      return (this as unknown as BotContext).api.sendMediaGroup(
+        1,
+        media as never,
+      );
+    },
+  } as unknown as BotContext;
+
+  const call = registry.prepare("bot_cameras", { text: "now" }, "private");
+  const result = await registry.execute(ctx, call, {
+    onMediaSent: () => Promise.resolve(undefined),
+  });
+
+  assert(result.text.includes("could not be analyzed"));
+  assert(result.text.includes("Never describe, guess, or invent"));
+  assertEquals(result.mediaNotes, undefined);
+});
+
+Deno.test("a delivered listing longer than the cap is not serialized back", async () => {
+  const registry = new SkillCommandToolRegistry();
+  registry.registerSkills([{
+    ...listingSkill(),
+    commands: [{
+      ...listingSkill().commands[0],
+      handler: (ctx) => ctx.reply("- thing\n".repeat(200)),
+    }],
+  }]);
+  const posted: string[] = [];
+  const ctx = listingContext(posted);
+
+  const call = registry.prepare("bot_things", {}, "private");
+  const result = await registry.execute(ctx, call);
+
+  assert(result.text.includes("brief confirmation"));
+  assert(!result.text.includes("- thing"));
 });
 
 Deno.test("commands that post nothing visual leave no media note", async () => {
@@ -271,4 +409,117 @@ Deno.test("commands that post nothing visual leave no media note", async () => {
 
   assertEquals(asked, false);
   assertEquals(result.mediaNotes, undefined);
+});
+
+const listingSkill = (): SkillModule => ({
+  name: "test",
+  description: "Test skill",
+  commands: [{
+    command: "things",
+    aliases: [],
+    description: "List all things",
+    assistantTool: listingAssistantTool(),
+    handler: (ctx) => ctx.reply("- one\n- two"),
+  }],
+  initializers: [],
+  middlewares: [],
+  sessionDataInitializers: [],
+  listeners: [],
+  inlineQueryListeners: [],
+  migrations: {},
+  router: null,
+});
+
+const listingContext = (posted: string[]) => ({
+  update: { update_id: 1 },
+  chat: { id: 1 },
+  // Context's reply helpers post through `this.api`, mirroring grammy, so the
+  // collector wrapping `api` is what intercepts them.
+  reply(text: string) {
+    return (this as unknown as BotContext).api.sendMessage(1, text as never);
+  },
+  api: {
+    sendMessage: (_chatId: number, text: string) => {
+      posted.push(text);
+      return Promise.resolve({ message_id: 1 });
+    },
+  },
+} as unknown as BotContext);
+
+Deno.test("inspectable tools expose deliver_to_chat, others do not", () => {
+  const registry = new SkillCommandToolRegistry();
+  registry.registerSkills([listingSkill()]);
+
+  const schema = registry.getOpenAiTools()[0].function
+    .parameters as Record<string, Record<string, unknown>>;
+  assertEquals(
+    Object.keys(schema.properties),
+    ["deliver_to_chat"],
+  );
+
+  const registryWithout = new SkillCommandToolRegistry();
+  registryWithout.registerSkills([{
+    ...listingSkill(),
+    commands: [{
+      ...listingSkill().commands[0],
+      assistantTool: textAssistantTool("text"),
+      handler: (ctx) => ctx.reply(ctx.match),
+    }],
+  }]);
+  assertEquals(
+    Object.keys(
+      (registryWithout.getOpenAiTools()[0].function.parameters as Record<
+        string,
+        Record<string, unknown>
+      >).properties,
+    ),
+    ["text"],
+  );
+});
+
+Deno.test("prepare defaults deliver_to_chat to posting and validates it", () => {
+  const registry = new SkillCommandToolRegistry();
+  registry.registerSkills([listingSkill()]);
+
+  assertEquals(registry.prepare("bot_things", {}).deliverToChat, true);
+  assertEquals(
+    registry.prepare("bot_things", { deliver_to_chat: false }).deliverToChat,
+    false,
+  );
+  assertEquals(
+    registry.prepare("bot_things", { deliver_to_chat: true }).deliverToChat,
+    true,
+  );
+  assertThrows(
+    () => registry.prepare("bot_things", { deliver_to_chat: "false" }),
+    TypeError,
+  );
+});
+
+Deno.test("data mode captures the listing instead of posting it", async () => {
+  const registry = new SkillCommandToolRegistry();
+  registry.registerSkills([listingSkill()]);
+  const posted: string[] = [];
+  const ctx = listingContext(posted);
+
+  const call = registry.prepare("bot_things", { deliver_to_chat: false });
+  const result = await registry.execute(ctx, call);
+
+  assertEquals(posted, []);
+  assertEquals(result.deliveredToChat, undefined);
+  assert(result.text.includes("- one\n- two"));
+  assert(result.text.includes("Nothing was posted to the chat"));
+});
+
+Deno.test("delivery mode still posts the listing natively", async () => {
+  const registry = new SkillCommandToolRegistry();
+  registry.registerSkills([listingSkill()]);
+  const posted: string[] = [];
+  const ctx = listingContext(posted);
+
+  const call = registry.prepare("bot_things", {});
+  const result = await registry.execute(ctx, call);
+
+  assertEquals(posted, ["- one\n- two"]);
+  assertEquals(result.deliveredToChat, true);
 });

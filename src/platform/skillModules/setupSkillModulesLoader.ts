@@ -11,6 +11,7 @@ import { loadSkillModule } from "./loadSkill.ts";
 import { Configuration } from "../configuration/middlewares/types.ts";
 import { SkillCommandToolRegistry } from "./SkillCommandToolRegistry.ts";
 import { createInstrumentedCommandHandler } from "./executeSkillCommand.ts";
+import { fitBotCommandMenu } from "/src/utilities/array/fitBotCommandMenu.ts";
 
 const logger = () => getLogger();
 
@@ -170,7 +171,7 @@ export const setupSkillModulesLoader = async (
 
         return variants.map((variantCommand): BotCommand => ({
           command: variantCommand,
-          description: `${description} [skill: ${skill.name}]`,
+          description,
         }));
       },
     );
@@ -320,7 +321,22 @@ export const setupSkillModulesLoader = async (
       logger().debug(JSON.stringify(commands, null, 2));
     }
 
-    await bot.api.setMyCommands(commands);
+    // Telegram rejects an oversized menu with BOT_COMMANDS_TOO_MUCH, which
+    // reads as a counting error while actually being a payload-size one;
+    // without this trim that rejection kills the bot at startup.
+    const fittedCommands = fitBotCommandMenu(commands);
+    if (fittedCommands.length < commands.length) {
+      const dropped = commands.slice(fittedCommands.length).map(
+        ({ command }) => `/${command}`,
+      );
+      logger().warn(
+        `Command menu exceeded Telegram's limits; dropped ${dropped.length} alias entries: ${
+          dropped.join(", ")
+        }.`,
+      );
+    }
+
+    await bot.api.setMyCommands(fittedCommands);
   };
 
   return {
