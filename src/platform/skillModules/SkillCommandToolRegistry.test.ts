@@ -202,10 +202,13 @@ Deno.test("bot_tp_now tool sends the native media group", async () => {
     },
     thirdBridgeApi: {
       fetchThirdBridgeImages: () =>
-        Promise.resolve([
-          { bytes: new Uint8Array([1]), extension: "jpg" },
-          { bytes: new Uint8Array([2]), extension: "jpg" },
-        ]),
+        Promise.resolve({
+          images: [
+            { bytes: new Uint8Array([1]), extension: "jpg" },
+            { bytes: new Uint8Array([2]), extension: "jpg" },
+          ],
+          failures: [],
+        }),
     },
     t: () => "Loading",
     reply: () => Promise.resolve({ message_id: 99 }),

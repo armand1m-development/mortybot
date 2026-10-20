@@ -35,20 +35,23 @@ Deno.test("Third Bridge command removes loading feedback after one uncaptained a
     thirdBridgeApi: {
       fetchThirdBridgeImages: () => {
         events.push("fetch");
-        return Promise.resolve([
-          {
-            alt: "Subida Vitória",
-            bytes: new Uint8Array([0xff, 0xd8, 0xff, 0xd9]),
-            extension: "jpg",
-            mimeType: "image/jpeg",
-          },
-          {
-            alt: "Descida Vitória",
-            bytes: new Uint8Array([0xff, 0xd8, 0xff, 0xd9]),
-            extension: "jpg",
-            mimeType: "image/jpeg",
-          },
-        ]);
+        return Promise.resolve({
+          images: [
+            {
+              alt: "Subida Vitória",
+              bytes: new Uint8Array([0xff, 0xd8, 0xff, 0xd9]),
+              extension: "jpg",
+              mimeType: "image/jpeg",
+            },
+            {
+              alt: "Descida Vitória",
+              bytes: new Uint8Array([0xff, 0xd8, 0xff, 0xd9]),
+              extension: "jpg",
+              mimeType: "image/jpeg",
+            },
+          ],
+          failures: [],
+        });
       },
     },
     t: createTranslator("en"),

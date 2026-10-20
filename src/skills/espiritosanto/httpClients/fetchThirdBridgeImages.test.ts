@@ -62,10 +62,11 @@ Deno.test("fetches all Third Bridge cameras with one public access token", async
     await firstCameraRequest;
     const concurrentCameraRequests = requests.length - 1;
     releaseCameraResponses();
-    const images = await imagesPromise;
+    const { images, failures } = await imagesPromise;
 
     assertEquals(concurrentCameraRequests, CAMERA_IDS.length);
     assertEquals(requests.length, 5);
+    assertEquals(failures.length, 0);
     assertEquals(
       requests.slice(1).map(({ url }) => url.split("/").at(-1)),
       [...CAMERA_IDS],
@@ -118,7 +119,7 @@ Deno.test("refreshes the Third Bridge token once after unauthorized images", asy
   }) as typeof fetch;
 
   try {
-    const images = await fetchThirdBridgeImages();
+    const { images } = await fetchThirdBridgeImages();
 
     assertEquals(tokenRequests, 2);
     assertEquals(imageAuthorizations, [
@@ -150,22 +151,67 @@ Deno.test("rejects invalid Third Bridge token and image responses", async (t) =>
       );
     });
 
-    await t.step("unsupported image content type", async () => {
-      globalThis.fetch = ((input) =>
-        Promise.resolve(
-          getRequestUrl(input).endsWith("/api/auth/token")
-            ? tokenResponse("public-token")
-            : new Response("not an image", {
-              headers: { "content-type": "text/plain" },
-            }),
-        )) as typeof fetch;
+    await t.step(
+      "unsupported image content type degrades to a failure entry",
+      async () => {
+        globalThis.fetch = ((input) =>
+          Promise.resolve(
+            getRequestUrl(input).endsWith("/api/auth/token")
+              ? tokenResponse("public-token")
+              : new Response("not an image", {
+                headers: { "content-type": "text/plain" },
+              }),
+          )) as typeof fetch;
 
-      await assertRejects(
-        fetchThirdBridgeImages,
-        Error,
-        "returned an unsupported content type",
-      );
-    });
+        const { images, failures } = await fetchThirdBridgeImages();
+
+        assertEquals(images.length, 0);
+        assertEquals(failures.length, CAMERA_IDS.length);
+        assertEquals(
+          failures.every(({ error }) =>
+            error instanceof Error &&
+            error.message.includes("returned an unsupported content type")
+          ),
+          true,
+        );
+      },
+    );
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+Deno.test("degrades gracefully when one camera keeps failing", async () => {
+  const originalFetch = globalThis.fetch;
+  let cameraRequests = 0;
+
+  globalThis.fetch = ((input) => {
+    const url = getRequestUrl(input);
+
+    if (url.endsWith("/api/auth/token")) {
+      return Promise.resolve(tokenResponse("public-token"));
+    }
+
+    if (url.endsWith("/Subida_VilaVelha")) {
+      cameraRequests += 1;
+      // Always a 500: the camera never recovers.
+      return Promise.resolve(new Response(null, { status: 500 }));
+    }
+
+    return Promise.resolve(jpegResponse(cameraRequests++ % 250));
+  }) as typeof fetch;
+
+  try {
+    const { images, failures } = await fetchThirdBridgeImages();
+
+    assertEquals(images.length, 3);
+    assertEquals(failures.length, 1);
+    assertEquals(failures[0].camera.id, "Subida_VilaVelha");
+    // 1 batch attempt + CAMERA retry attempts for the failing camera.
+    assertEquals(
+      images.every(({ extension }) => extension === "jpg"),
+      true,
+    );
   } finally {
     globalThis.fetch = originalFetch;
   }

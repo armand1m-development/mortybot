@@ -109,6 +109,7 @@ export const translationKeys = [
   "taxIncome.report",
   "terceiraPonte.error",
   "terceiraPonte.loading",
+  "terceiraPonte.partial",
   "weather.forecastEntry",
   "weather.forecastError",
   "weather.forecastHeading",
@@ -223,6 +224,7 @@ export interface TranslationValues {
   "taxIncome.report": { "grossHour": string | number | Date; "grossYear": string | number | Date; "incomeTax": string | number | Date; "labourCredit": string | number | Date; "netMonth": string | number | Date; "netYear": string | number | Date; "payrollTax": string | number | Date; "socialTax": string | number | Date; "taxableYear": string | number | Date; "taxCredit": string | number | Date; "taxFreeYear": string | number | Date };
   "terceiraPonte.error": Record<never, never>;
   "terceiraPonte.loading": Record<never, never>;
+  "terceiraPonte.partial": { "available": string | number | Date; "total": string | number | Date };
   "weather.forecastEntry": { "description": string | number | Date; "time": string | number | Date };
   "weather.forecastError": Record<never, never>;
   "weather.forecastHeading": { "query": string | number | Date };

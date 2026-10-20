@@ -13,9 +13,25 @@ export const cmdTerceiraPonteNow: CommandMiddleware<BotContext> = async (
 
     await ctx.api.sendChatAction(ctx.chat.id, "upload_photo");
 
-    const thirdBridgePictures = await ctx.thirdBridgeApi
+    const { images, failures } = await ctx.thirdBridgeApi
       .fetchThirdBridgeImages();
-    const media = thirdBridgePictures.map(({ bytes, extension }, index) => ({
+
+    if (images.length === 0) {
+      getLogger().error(
+        "Third Bridge cameras all failed.",
+        failures.map(({ camera, error }) => ({ camera: camera.id, error })),
+      );
+      return ctx.reply(ctx.t("terceiraPonte.error"));
+    }
+
+    if (failures.length > 0) {
+      getLogger().warn(
+        "Third Bridge cameras partially failed.",
+        failures.map(({ camera, error }) => ({ camera: camera.id, error })),
+      );
+    }
+
+    const media = images.map(({ bytes, extension }, index) => ({
       type: "photo" as const,
       media: new InputFile(
         bytes,
@@ -23,7 +39,20 @@ export const cmdTerceiraPonteNow: CommandMiddleware<BotContext> = async (
       ),
     }));
 
-    await ctx.replyWithMediaGroup(media);
+    const album = await ctx.replyWithMediaGroup(media);
+
+    if (failures.length > 0) {
+      const total = images.length + failures.length;
+      await ctx.reply(
+        ctx.t("terceiraPonte.partial", {
+          available: String(images.length),
+          total: String(total),
+        }),
+        album.length > 0 && album[0] !== undefined
+          ? { reply_parameters: { message_id: album[0].message_id } }
+          : undefined,
+      );
+    }
   } catch (error) {
     getLogger().error(error);
     return ctx.reply(ctx.t("terceiraPonte.error"));

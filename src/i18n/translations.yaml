@@ -78,6 +78,7 @@ en:
   terceiraPonte:
     loading: "Loading photos..."
     error: "Failed to fetch Third Bridge camera pictures."
+    partial: "Only {available} of {total} cameras responded. Some views may be missing."
   common:
     replyRequired: "Run this command while replying to a message. Usage: reply to a message with {command}."
     locationReplyRequired: "The replied message must contain a location. Usage: reply to a location with {command}."
@@ -253,6 +254,7 @@ pt:
   terceiraPonte:
     loading: "Carregando fotos..."
     error: "Não foi possível buscar as imagens das câmeras da Terceira Ponte."
+    partial: "Apenas {available} de {total} câmeras responderam. Algumas vistas podem estar ausentes."
   common:
     replyRequired: "Execute este comando respondendo a uma mensagem. Uso: responda a uma mensagem com {command}."
     locationReplyRequired: "A mensagem respondida precisa conter uma localização. Uso: responda a uma localização com {command}."
