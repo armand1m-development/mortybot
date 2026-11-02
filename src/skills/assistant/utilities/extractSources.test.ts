@@ -41,3 +41,21 @@ Deno.test("extractSources reads MCP structured search results", () => {
     }],
   );
 });
+
+Deno.test("extractSources reads crw-enveloped search results", () => {
+  assertEquals(
+    extractSources({
+      success: true,
+      data: {
+        results: [{
+          url: "https://example.com/crw",
+          title: "crw result",
+        }],
+      },
+    }),
+    [{
+      url: "https://example.com/crw",
+      title: "crw result",
+    }],
+  );
+});

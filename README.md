@@ -380,7 +380,7 @@ You probably want to use a process manager like `systemd`.
 
 ### Docker
 
-This bot runs as a Docker Container on the same host as the sglang and SearXNG
+This bot runs as a Docker Container on the same host as the sglang and fastCRW
 services it depends on. The compose file maps `host.docker.internal` to the
 host's gateway address, so `OPENAI_BASE_URL` and `mcp.json` can point at
 services listening on the host without going through a VPN or the outside
@@ -391,7 +391,8 @@ search endpoints match the host services:
 
 ```sh
 OPENAI_BASE_URL=http://host.docker.internal:30000/v1   # sglang on the host
-# mcp.json points SearXNG at http://host.docker.internal:13000
+# mcp.json points fastCRW at http://host.docker.internal:3001/mcp (required:
+# the assistant fails to boot without it)
 ```
 
 Then build and start it:

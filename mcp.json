@@ -1,20 +1,9 @@
 {
   "mcpServers": {
-    "searxng-search": {
-      "command": "deno",
-      "args": [
-        "run",
-        "--allow-env=SEARXNG_SERVER_URL,SEARXNG_MODE,SEARXNG_METHOD",
-        "--allow-net=host.docker.internal:13000",
-        "--frozen",
-        "./src/skills/assistant/mcp/servers/searxng.ts"
-      ],
-      "env": {
-        "SEARXNG_SERVER_URL": "http://host.docker.internal:13000",
-        "SEARXNG_MODE": "json",
-        "SEARXNG_METHOD": "get"
-      },
-      "connectTimeoutMs": 15000,
+    "crw": {
+      "transport": "http",
+      "url": "http://host.docker.internal:3001/mcp",
+      "connectTimeoutMs": 20000,
       "maxConnectAttempts": 3,
       "retryDelayMs": 1000,
       "required": true

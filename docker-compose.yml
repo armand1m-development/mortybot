@@ -4,7 +4,7 @@ services:
     container_name: mortybot
     env_file:
       - .env
-    # The bot talks to sglang and SearXNG running directly on this host, so
+    # The bot talks to sglang and fastCRW running directly on this host, so
     # resolve host.docker.internal to the host's gateway address on the bridge
     # network and point OPENAI_BASE_URL / mcp.json at it.
     extra_hosts:
@@ -13,4 +13,7 @@ services:
       - "3000:3000"
     volumes:
       - ./data:/app/data
+      # Bind-mounted so MCP server changes (mcp.json) apply on container
+      # restart without an image rebuild.
+      - ./mcp.json:/app/mcp.json:ro
     restart: unless-stopped

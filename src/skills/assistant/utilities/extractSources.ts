@@ -51,6 +51,15 @@ export const extractSources = (input: unknown): Source[] => {
     }
   }
 
+  // crw envelopes its payloads as { success, data: { results: [...] } }.
+  if (
+    isRecord(input) && isRecord(input.data) && Array.isArray(input.data.results)
+  ) {
+    if (addFromArray(input.data.results)) {
+      return sources;
+    }
+  }
+
   if (typeof input === "string") {
     const arrayStart = input.indexOf("[");
     const arrayEnd = input.lastIndexOf("]");

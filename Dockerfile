@@ -13,7 +13,6 @@ RUN deno install --frozen
 
 COPY . .
 RUN deno task generate:skills
-RUN deno cache --frozen main.ts src/skills/*/mod.ts \
-  src/skills/assistant/mcp/servers/searxng.ts
+RUN deno cache --frozen main.ts src/skills/*/mod.ts
 
 CMD ["deno", "task", "start"]
